@@ -78,15 +78,17 @@ Android app which allows users to stay informed about local protests and easily 
 **Flow Navigation** (Screen to Screen)
 
 * Login Screen
-   ==> Post Feed
+   ==> Post Feed, Registration Screen
 * Registration Screen
-   ==> Post Feed
+   ==> Post Feed, Login Screen
 * Post Feed
     ==> None, but future version likely involves navigation to post detail screen
 * Creation Screen
    ==> Post Feed (After you finish posting)
 * Map View
    ==> None, but future version likely involves navigation to post detail screen
+* Settings Screen
+   ==> Login Screen
 
 ## Wireframes
 <img src="paper_wireframe.jpg" width=600>
