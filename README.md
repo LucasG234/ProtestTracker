@@ -92,17 +92,132 @@ Android app which allows users to stay informed about local protests and easily 
 
 ## Wireframes
 <img src="paper_wireframe.jpg" width=600>
-<!---
-### [BONUS] Digital Wireframes & Mockups
-
-### [BONUS] Interactive Prototype
 
 ## Schema 
-[This section will be completed in Unit 9]
 ### Models
-[Add table of models]
+#### User
+| Property      | Type     | Description |
+   | ------------- | -------- | ------------|
+   | objectId      | String   | unique id for the user (default field) |
+   | username      | String   | display name chosen by the user at account creation |
+   | password      | String   | password chosen by the user at account creation |
+   | createdAt     | DateTime | date when post was created (default field) |
+   | updatedAt     | DateTime | date when post was last updated (default field) |
+#### Post
+
+   | Property      | Type     | Description |
+   | ------------- | -------- | ------------|
+   | objectId      | String   | unique id for the post (default field) |
+   | author        | \*User| pointer to the user who created the post |
+   | location      | ParseGeoPoint   | latitude and longitude at which the post was created |
+   | text       | String   | text included within post |
+   | image         | File     | image [optionally] included within post |
+   | likedBy    | Relation(User)  | array with pointers to users who liked the post |
+   | ignoredBy    | Relation(User)   | array with pointers to users who have ignored the post |
+   | createdAt     | DateTime | date when post was created (default field) |
+   | updatedAt     | DateTime | date when post was last updated (default field) |
+   
 ### Networking
-- [Add list of network requests by screen ]
-- [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
---->
+* Login Screen
+    * (Read/GET) Query to match given credentials to a User
+        ```java
+        ParseUser.loginInBackground(username, password, new LoginCallback() {
+        @Override
+            public void done(ParseUser user, ParseException e) {
+                // ...
+            }
+        });
+        ```
+* Registration Screen
+    * (Create/POST) Create a new User
+        ```java
+        ParseUser newUser = new ParseUser();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                // ...
+            }
+        });
+        ```
+* Post Feed
+    * (Read/GET) Query all posts where location within geographical limit of User's current location
+        ```java
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+            query.addDescendingOrder(Post.KEY_CREATED_AT);
+            query.setLimit(Post.QUERY_LIMIT);
+            query.include(Post.KEY_USER);
+            query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, Post.MILES_LIMIT);
+            query.findInBackground(new FindCallback<Post>() {
+                @Override
+                public void done(List<Post> posts, ParseException e) {
+                    // ...
+                }
+            });
+        ```
+    * (Create/POST) Create a new like on a post
+        ```java
+            post.getRelation(Post.KEY_LIKED_BY).add(currentUser);
+            post.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                   // ...
+                }
+            });
+        ```
+    * (Delete) Delete existing like
+        ```java
+            post.getRelation(Post.KEY_LIKED_BY).remove(currentUser);
+            post.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                   // ...
+                }
+            });
+        ```
+    * (Create/POST) Ignore a post
+        ```java
+            post.getRelation(Post.KEY_IGNORED_BY).add(currentUser);
+            post.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                   // ...
+                }
+            });
+        ```
+* Creation Screen
+    * (Create/POST) Create a new post
+        ```java
+            Post post = new Post();
+            post.setDescription(description);
+            post.setImage(new ParseFile(photoFile));
+            post.setUser(currentUser);
+            post.setLocation(currentLocation);
+            post.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                   // ...
+                }
+            });
+        ```
+* Map View
+    * (Read/GET) Query all posts where location within geographical bounding box around area visible in Map View
+        ```java
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+            query.addDescendingOrder(Post.KEY_CREATED_AT);
+            query.setLimit(Post.QUERY_LIMIT);
+            query.include(Post.KEY_USER);
+            query.whereWithinGeoBox(Post.KEY_LOCATION, southWestLimit, northEastLimit);
+            query.findInBackground(new FindCallback<Post>() {
+                @Override
+                public void done(List<Post> posts, ParseException e) {
+                    // ...
+                }
+            });
+        ```
+* Settings Screen
+    * (Read/GET) Query for User object containing settings
+        ```java
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        ```
