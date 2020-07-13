@@ -19,7 +19,7 @@ public class Post extends ParseObject {
     public static final String KEY_IGNORED_BY = "ignoredBy";
 
     public User getAuthor() {
-        return (User)getParseUser(KEY_AUTHOR);
+        return (User) getParseUser(KEY_AUTHOR);
     }
 
     public String getText() {

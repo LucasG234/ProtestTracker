@@ -1,12 +1,12 @@
 package com.lucasg234.protesttracker.login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityRegistrationBinding;
@@ -54,7 +54,7 @@ public class RegistrationActivity extends AppCompatActivity {
         newUser.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                if(e != null) {
+                if (e != null) {
                     Log.e(TAG, "Error with login", e);
                     //TODO: possibly improve to be more specific
                     Toast.makeText(RegistrationActivity.this, getString(R.string.error_registration), Toast.LENGTH_SHORT).show();

@@ -1,16 +1,16 @@
 package com.lucasg234.protesttracker.login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.lucasg234.protesttracker.mainactivity.MainActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityLoginBinding;
+import com.lucasg234.protesttracker.mainactivity.MainActivity;
 import com.lucasg234.protesttracker.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Skip this activity if there is already an active user
-        if(User.getCurrentUser() != null) {
+        if (User.getCurrentUser() != null) {
             navigateToActivity(MainActivity.class);
         }
 
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         User.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
-                if(e != null) {
+                if (e != null) {
                     Log.e(TAG, "Error with login", e);
                     //TODO: possibly improve to be more specific
                     Toast.makeText(LoginActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();

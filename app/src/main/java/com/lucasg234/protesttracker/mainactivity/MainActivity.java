@@ -1,13 +1,13 @@
 package com.lucasg234.protesttracker.mainactivity;
 
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucasg234.protesttracker.R;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment fragment;
-                switch(item.getItemId()) {
+                switch (item.getItemId()) {
                     case R.id.bottomNavigationFeed:
                         fragment = FeedFragment.newInstance("", "");
                         break;

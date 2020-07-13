@@ -3,20 +3,17 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentSettingsBinding;
 import com.lucasg234.protesttracker.login.LoginActivity;
 import com.lucasg234.protesttracker.models.User;
-import com.parse.ParseUser;
 
 /**
  * A simple {@link Fragment} subclass.
