@@ -1,8 +1,11 @@
-package com.lucasg234.protesttracker;
+package com.lucasg234.protesttracker.login;
 
 import android.app.Application;
 
+import com.lucasg234.protesttracker.R;
+import com.lucasg234.protesttracker.models.Post;
 import com.parse.Parse;
+import com.parse.ParseObject;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -12,6 +15,9 @@ public class ParseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Register model subclasses
+        ParseObject.registerSubclass(Post.class);
 
         //TODO
         // Use for troubleshooting -- remove this line for production

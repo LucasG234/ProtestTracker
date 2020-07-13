@@ -1,8 +1,10 @@
-package com.lucasg234.protesttracker;
+package com.lucasg234.protesttracker.mainactivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.lucasg234.protesttracker.R;
 
 public class MainActivity extends AppCompatActivity {
 

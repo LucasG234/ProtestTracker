@@ -1,4 +1,4 @@
-package com.lucasg234.protesttracker;
+package com.lucasg234.protesttracker.login;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.lucasg234.protesttracker.mainactivity.MainActivity;
+import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityLoginBinding;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
