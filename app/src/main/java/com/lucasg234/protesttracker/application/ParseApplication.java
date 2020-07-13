@@ -1,4 +1,4 @@
-package com.lucasg234.protesttracker.login;
+package com.lucasg234.protesttracker.application;
 
 import android.app.Application;
 

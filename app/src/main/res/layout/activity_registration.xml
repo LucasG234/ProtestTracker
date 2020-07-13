@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".login.LoginActivity">
+    tools:context=".login.RegistrationActivity">
 
     <EditText
-        android:id="@+id/loginUsernameText"
+        android:id="@+id/registrationUsernameText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/loginPasswordText"
+        android:id="@+id/registrationPasswordText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
@@ -28,27 +28,39 @@
         android:hint="@string/password_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginUsernameText" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationUsernameText" />
 
-    <Button
-        android:id="@+id/loginSubmitButton"
+    <EditText
+        android:id="@+id/registrationPasswordConfirmText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
-        android:text="@string/login_button"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:hint="@string/password_confirm_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordText" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationPasswordText" />
 
     <Button
-        android:id="@+id/loginToRegistrationButton"
+        android:id="@+id/registrationSubmitButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
-        android:text="@string/login_to_registration_button"
+        android:text="@string/register_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginSubmitButton" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationPasswordConfirmText" />
+
+    <Button
+        android:id="@+id/registrationToLoginButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/standard_margin"
+        android:text="@string/registration_to_login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registrationSubmitButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
