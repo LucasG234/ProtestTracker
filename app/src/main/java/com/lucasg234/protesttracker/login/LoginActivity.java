@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.lucasg234.protesttracker.mainactivity.MainActivity;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityLoginBinding;
+import com.lucasg234.protesttracker.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -27,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Skip this activity if there is already an active user
-        if(ParseUser.getCurrentUser() != null) {
+        if(User.getCurrentUser() != null) {
             navigateToMainActivity();
         }
 
@@ -56,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(String username, String password) {
-        ParseUser.logInInBackground(username, password, new LogInCallback() {
+        User.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException e) {
                 if(e != null) {
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void registerUser(String username, String password) {
-        ParseUser newUser = new ParseUser();
+        User newUser = new User();
         newUser.setUsername(username);
         newUser.setPassword(password);
         newUser.signUpInBackground(new SignUpCallback() {

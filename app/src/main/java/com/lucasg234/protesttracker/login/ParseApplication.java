@@ -4,8 +4,10 @@ import android.app.Application;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.models.User;
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -18,6 +20,7 @@ public class ParseApplication extends Application {
 
         // Register model subclasses
         ParseObject.registerSubclass(Post.class);
+        ParseUser.registerSubclass(User.class);
 
         //TODO
         // Use for troubleshooting -- remove this line for production
