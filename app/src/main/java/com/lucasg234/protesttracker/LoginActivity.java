@@ -12,6 +12,7 @@ import com.lucasg234.protesttracker.databinding.ActivityLoginBinding;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,12 +24,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
-
+        // Skip this activity if there is already an active user
         if(ParseUser.getCurrentUser() != null) {
             navigateToMainActivity();
         }
+
+        mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
 
         mBinding.loginSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +39,16 @@ public class LoginActivity extends AppCompatActivity {
                 String username = mBinding.loginUsernameText.getText().toString();
                 String password = mBinding.loginPasswordText.getText().toString();
                 loginUser(username, password);
+            }
+        });
+
+        mBinding.loginRegistrationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "Register button clicked");
+                String username = mBinding.loginUsernameText.getText().toString();
+                String password = mBinding.loginPasswordText.getText().toString();
+                registerUser(username, password);
             }
         });
     }
@@ -52,6 +64,26 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 navigateToMainActivity();
+                Toast.makeText(LoginActivity.this, getString(R.string.login_completed), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void registerUser(String username, String password) {
+        ParseUser newUser = new ParseUser();
+        newUser.setUsername(username);
+        newUser.setPassword(password);
+        newUser.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e != null) {
+                    Log.e(TAG, "Error with login", e);
+                    //TODO: possibly improve to be more specific
+                    Toast.makeText(LoginActivity.this, getString(R.string.error_registration), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                navigateToMainActivity();
+                Toast.makeText(LoginActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
             }
         });
     }
