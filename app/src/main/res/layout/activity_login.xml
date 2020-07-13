@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
         android:ems="10"
-        android:inputType="text"
         android:hint="@string/username_hint"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,8 +24,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
         android:ems="10"
-        android:inputType="textPassword"
         android:hint="@string/password_hint"
+        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginUsernameText" />
