@@ -26,6 +26,10 @@ public class LoginActivity extends AppCompatActivity {
         mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
+        if(ParseUser.getCurrentUser() != null) {
+            navigateToMainActivity();
+        }
+
         mBinding.loginSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if(e != null) {
                     Log.e(TAG, "Error with login", e);
+                    //TODO: possibly improve to be more specific
                     Toast.makeText(LoginActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -54,5 +59,6 @@ public class LoginActivity extends AppCompatActivity {
     private void navigateToMainActivity() {
         Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(mainIntent);
+        finish();
     }
 }
