@@ -15,4 +15,6 @@
 
     <string name="error_login">Error with login. Check username and password and try again.</string>
     <string name="error_registration">Error with registration. That username may already be taken.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
