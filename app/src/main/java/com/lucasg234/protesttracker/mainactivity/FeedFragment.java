@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
@@ -86,6 +87,14 @@ public class FeedFragment extends Fragment {
         mBinding.feedRecyclerView.setAdapter(mAdapter);
         mBinding.feedRecyclerView.setLayoutManager(layoutManager);
         mBinding.feedRecyclerView.addOnScrollListener(mEndlessScrollListener);
+
+        // Setup refresh listener which triggers new data loading
+        mBinding.feedSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                queryInitialPosts();
+            }
+        });
     }
 
     private void queryInitialPosts() {
@@ -104,6 +113,7 @@ public class FeedFragment extends Fragment {
                 // Clear any existing posts and add new ones
                 mAdapter.clear();
                 mAdapter.addAll(posts);
+                mBinding.feedSwipeContainer.setRefreshing(false);
                 mEndlessScrollListener.resetState();
             }
         });
