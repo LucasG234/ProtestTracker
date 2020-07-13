@@ -2,4 +2,5 @@
 <resources>
     <dimen name="standard_margin">16dp</dimen>
     <dimen name="small_margin">8dp</dimen>
+    <dimen name="matchConstraint">0dp</dimen>
 </resources>

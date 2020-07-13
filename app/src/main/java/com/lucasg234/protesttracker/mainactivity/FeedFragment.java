@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
@@ -20,6 +21,7 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,8 +34,8 @@ public class FeedFragment extends Fragment {
     private static final String TAG = "FeedFragment";
 
     private FragmentFeedBinding mBinding;
-    private List<Post> mPosts;
     private FeedAdapter mAdapter;
+    private EndlessRecyclerViewScrollListener mEndlessScrollListener;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -67,15 +69,26 @@ public class FeedFragment extends Fragment {
 
         mBinding = FragmentFeedBinding.bind(view);
 
-        mPosts = new ArrayList<>();
-        mAdapter = new FeedAdapter(getContext(), mPosts);
-        mBinding.feedRecyclerView.setAdapter(mAdapter);
-        mBinding.feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        queryPosts();
+        configureRecyclerView();
+        queryInitialPosts();
     }
 
-    private void queryPosts() {
+    private void configureRecyclerView() {
+        mAdapter = new FeedAdapter(getContext(), new ArrayList<Post>());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mEndlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                queryAdditionalPosts();
+            }
+        };
+
+        mBinding.feedRecyclerView.setAdapter(mAdapter);
+        mBinding.feedRecyclerView.setLayoutManager(layoutManager);
+        mBinding.feedRecyclerView.addOnScrollListener(mEndlessScrollListener);
+    }
+
+    private void queryInitialPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
@@ -84,13 +97,40 @@ public class FeedFragment extends Fragment {
             @Override
             public void done(List<Post> posts, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Error querying posts", e);
+                    Log.e(TAG, "Error querying initial posts", e);
                     Toast.makeText(getContext(), getString(R.string.error_load), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // Add the posts
-                mPosts.addAll(posts);
-                mAdapter.notifyDataSetChanged();
+                // Clear any existing posts and add new ones
+                mAdapter.clear();
+                mAdapter.addAll(posts);
+                mEndlessScrollListener.resetState();
+            }
+        });
+    }
+
+    private void queryAdditionalPosts() {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
+        query.setLimit(Post.QUERY_LIMIT);
+        query.include(Post.KEY_AUTHOR);
+
+        // For new posts, only get posts older [with date less than]
+        // the last post in the list
+        List<Post> posts = mAdapter.getPosts();
+        Date oldestPostDate = posts.get(posts.size()-1).getCreatedAt();
+        query.whereLessThan(Post.KEY_CREATED_AT, oldestPostDate);
+
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error querying additional posts", e);
+                    Toast.makeText(getContext(), getString(R.string.error_load), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Add new posts, but do not clear old ones
+                mAdapter.addAll(posts);
             }
         });
     }

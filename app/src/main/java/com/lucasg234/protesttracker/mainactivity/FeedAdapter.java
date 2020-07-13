@@ -42,6 +42,23 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         return mPosts.size();
     }
 
+    // Helper method to add new posts to RecyclerView
+    public void addAll(List<Post> posts) {
+        mPosts.addAll(posts);
+        notifyDataSetChanged();
+    }
+
+    // Helper method to clear the RecyclerView
+    public void clear() {
+        mPosts.clear();
+        notifyDataSetChanged();
+    }
+
+    // Helper method allowing other classes to get Posts from the RecyclerView
+    public List<Post> getPosts() {
+        return mPosts;
+    }
+
     class FeedViewHolder extends RecyclerView.ViewHolder {
 
         private ItemFeedPostBinding mBinding;

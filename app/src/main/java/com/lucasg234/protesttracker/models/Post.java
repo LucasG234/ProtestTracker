@@ -20,7 +20,7 @@ public class Post extends ParseObject {
     public static final String KEY_IGNORED_BY = "ignoredBy";
 
     // Additional constants
-    public static final int QUERY_LIMIT = 5;
+    public static final int QUERY_LIMIT = 20;
 
     public User getAuthor() {
         return (User) getParseUser(KEY_AUTHOR);
