@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = MapFragment.newInstance("", "");
                         break;
                     case R.id.bottomNavigationSettings:
-                        fragment = SettingsFragment.newInstance("", "");
+                        fragment = SettingsFragment.newInstance();
                         break;
                     default:
                         Log.i(TAG, "Bottom Navigation View selected unknown icon : " + item.toString());
