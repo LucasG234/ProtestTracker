@@ -19,4 +19,5 @@
 
     <string name="error_login">Error with login. Check username and password and try again.</string>
     <string name="error_registration">Error with registration. That username may already be taken.</string>
+    <string name="error_load">Error loading resources. Please check your connection and try again.</string>
 </resources>

@@ -1,13 +1,26 @@
 package com.lucasg234.protesttracker.mainactivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.lucasg234.protesttracker.R;
+import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
+import com.lucasg234.protesttracker.models.Post;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,14 +29,11 @@ import com.lucasg234.protesttracker.R;
  */
 public class FeedFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = "FeedFragment";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private FragmentFeedBinding mBinding;
+    private List<Post> mPosts;
+    private FeedAdapter mAdapter;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -33,33 +43,55 @@ public class FeedFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FeedFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static FeedFragment newInstance(String param1, String param2) {
-        FeedFragment fragment = new FeedFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        return new FeedFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_feed, container, false);
+        return FragmentFeedBinding.inflate(inflater, container, false).getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mBinding = FragmentFeedBinding.bind(view);
+
+        mPosts = new ArrayList<>();
+        mAdapter = new FeedAdapter(getContext(), mPosts);
+        mBinding.feedRecyclerView.setAdapter(mAdapter);
+        mBinding.feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        queryPosts();
+    }
+
+    private void queryPosts() {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
+        query.setLimit(Post.QUERY_LIMIT);
+        query.include(Post.KEY_AUTHOR);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error querying posts", e);
+                    Toast.makeText(getContext(), getString(R.string.error_load), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // Add the posts
+                mPosts.addAll(posts);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

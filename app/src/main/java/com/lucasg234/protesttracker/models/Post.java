@@ -5,6 +5,7 @@ import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -17,6 +18,9 @@ public class Post extends ParseObject {
     public static final String KEY_LOCATION = "location";
     public static final String KEY_LIKED_BY = "likedBy";
     public static final String KEY_IGNORED_BY = "ignoredBy";
+
+    // Additional constants
+    public static final int QUERY_LIMIT = 5;
 
     public User getAuthor() {
         return (User) getParseUser(KEY_AUTHOR);
