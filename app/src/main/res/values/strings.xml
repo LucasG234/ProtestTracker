@@ -19,8 +19,14 @@
     <string name="bottom_navigation_map">Map</string>
     <string name="bottom_navigation_settings">Settings</string>
 
+    <!-- Text for ComposeActivity -->
+    <string name="compose_text_hint">What\'s happening?</string>
+    <string name="compose_submit_button">Post</string>
+
     <!-- Toast error text -->
     <string name="error_login">Error with login. Check username and password and try again.</string>
     <string name="error_registration">Error with registration. That username may already be taken.</string>
     <string name="error_load">Error loading resources. Please check your connection and try again.</string>
+    <string name="error_save">Error saving post. Please check your connection and try again.</string>
+
 </resources>
