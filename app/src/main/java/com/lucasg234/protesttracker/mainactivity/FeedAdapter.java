@@ -1,12 +1,15 @@
 package com.lucasg234.protesttracker.mainactivity;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.models.Post;
 
@@ -76,6 +79,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         public void bind(Post post) {
             mBinding.postText.setText(post.getText());
             mBinding.postUsername.setText(post.getAuthor().getUsername());
+
+            if (post.getImage() != null) {
+                mBinding.postImage.setVisibility(View.VISIBLE);
+                Log.i(TAG, post.getImage().getUrl());
+                Glide.with(mContext)
+                        .load(post.getImage().getUrl())
+                        .into(mBinding.postImage);
+            } else {
+                mBinding.postImage.setVisibility(View.GONE);
+            }
         }
     }
 }

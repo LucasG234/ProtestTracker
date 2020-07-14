@@ -2,5 +2,7 @@
 <resources>
     <dimen name="standard_margin">16dp</dimen>
     <dimen name="small_margin">8dp</dimen>
-    <dimen name="matchConstraint">0dp</dimen>
+    <dimen name="match_constraint">0dp</dimen>
+
+    <dimen name="standard_image_height">300dp</dimen>
 </resources>
