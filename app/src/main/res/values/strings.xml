@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ProtestTracker</string>
 
+    <!-- Text for login, registration, logout -->
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="password_confirm_hint">Confirm Password</string>
@@ -12,11 +13,13 @@
     <string name="login_completed">Successfully logged in!</string>
     <string name="account_created">New account created!</string>
 
+    <!-- Text for BottomNavigationView -->
     <string name="bottom_navigation_feed">Feed</string>
     <string name="bottom_navigation_compose">Compose</string>
     <string name="bottom_navigation_map">Map</string>
     <string name="bottom_navigation_settings">Settings</string>
 
+    <!-- Toast error text -->
     <string name="error_login">Error with login. Check username and password and try again.</string>
     <string name="error_registration">Error with registration. That username may already be taken.</string>
     <string name="error_load">Error loading resources. Please check your connection and try again.</string>

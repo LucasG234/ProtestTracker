@@ -12,6 +12,9 @@ import com.parse.ParseUser;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * Application class which configures Parse upon app initialization
+ */
 public class ParseApplication extends Application {
 
     @Override

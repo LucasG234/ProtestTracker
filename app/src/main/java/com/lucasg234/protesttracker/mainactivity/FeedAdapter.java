@@ -12,6 +12,10 @@ import com.lucasg234.protesttracker.models.Post;
 
 import java.util.List;
 
+/**
+ * RecyclerView Adapter used by the FeedFragment
+ * Holds all posts queried from Parse
+ */
 public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
 
     private static final String TAG = "FeedAdapter";

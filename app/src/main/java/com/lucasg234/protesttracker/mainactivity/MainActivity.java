@@ -13,6 +13,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityMainBinding;
 
+/**
+ * Central activity which holds the FeedFragment, MapFragment, ComposeFragment, and SettingsFragment
+ * Handles navigation between the Fragments
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";

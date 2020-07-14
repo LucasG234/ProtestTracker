@@ -16,6 +16,10 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+/**
+ * Launcher activity which allows users to log into existing accounts
+ * Contains button to access RegistrationActivity
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
@@ -53,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    // Attempts to login to a Parse account with the given credentials
     private void loginUser(String username, String password) {
         User.logInInBackground(username, password, new LogInCallback() {
             @Override

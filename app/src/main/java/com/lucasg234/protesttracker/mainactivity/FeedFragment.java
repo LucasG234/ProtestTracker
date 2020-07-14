@@ -26,9 +26,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link FeedFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment containing a RecyclerView using FeedAdapter
+ * Displays and queries for posts
  */
 public class FeedFragment extends Fragment {
 
@@ -43,10 +42,7 @@ public class FeedFragment extends Fragment {
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment FeedFragment.
+     * Use this factory method to create a new instance of FeedFragment
      */
     public static FeedFragment newInstance(String param1, String param2) {
         return new FeedFragment();
@@ -97,6 +93,7 @@ public class FeedFragment extends Fragment {
         });
     }
 
+    // Removes all posts within the FeedAdapter and replaces them with the result of a new query
     private void queryInitialPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
@@ -119,6 +116,7 @@ public class FeedFragment extends Fragment {
         });
     }
 
+    // Adds the result of a new query to the end of the FeedAdapter
     private void queryAdditionalPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
@@ -128,7 +126,7 @@ public class FeedFragment extends Fragment {
         // For new posts, only get posts older [with date less than]
         // the last post in the list
         List<Post> posts = mAdapter.getPosts();
-        Date oldestPostDate = posts.get(posts.size()-1).getCreatedAt();
+        Date oldestPostDate = posts.get(posts.size() - 1).getCreatedAt();
         query.whereLessThan(Post.KEY_CREATED_AT, oldestPostDate);
 
         query.findInBackground(new FindCallback<Post>() {

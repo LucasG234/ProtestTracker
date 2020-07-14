@@ -5,8 +5,11 @@ import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
-import com.parse.ParseUser;
 
+/**
+ * Parse object which stores user posts
+ * All fields are represented by key constants
+ */
 @ParseClassName("Post")
 public class Post extends ParseObject {
     // Keys for all Parse fields

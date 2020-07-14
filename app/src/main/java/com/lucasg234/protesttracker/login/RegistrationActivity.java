@@ -15,6 +15,10 @@ import com.lucasg234.protesttracker.models.User;
 import com.parse.ParseException;
 import com.parse.SignUpCallback;
 
+/**
+ * Activity which allows users to log to create new accounts
+ * Accessed from LoginActivity, with a button to return to it
+ */
 public class RegistrationActivity extends AppCompatActivity {
 
     private static final String TAG = "RegistrationActivity";
@@ -47,6 +51,7 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
+    // Attempts to create new Parse user (and log into it)
     private void registerUser(String username, String password) {
         User newUser = new User();
         newUser.setUsername(username);
