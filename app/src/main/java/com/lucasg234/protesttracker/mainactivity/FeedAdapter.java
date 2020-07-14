@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.util.Utils;
 
 import java.util.List;
 
@@ -80,11 +81,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postText.setText(post.getText());
             mBinding.postUsername.setText(post.getAuthor().getUsername());
 
+            String relativeCreationTime = Utils.dateToRelative(post.getCreatedAt());
+            mBinding.postCreatedAt.setText(relativeCreationTime);
+
             if (post.getImage() != null) {
                 mBinding.postImage.setVisibility(View.VISIBLE);
                 Log.i(TAG, post.getImage().getUrl());
                 Glide.with(mContext)
                         .load(post.getImage().getUrl())
+                        .centerCrop()
                         .into(mBinding.postImage);
             } else {
                 mBinding.postImage.setVisibility(View.GONE);
