@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/bottomNavigationFeed"
-        android:icon="@drawable/outline_home_24"
+        android:icon="@drawable/selector_feed_icon"
         android:title="@string/bottom_navigation_feed"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/bottomNavigationCompose"
-        android:icon="@drawable/outline_add_circle_24"
+        android:icon="@drawable/selector_compose_icon"
         android:title="@string/bottom_navigation_compose"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/bottomNavigationMap"
-        android:icon="@drawable/outline_map_24"
+        android:icon="@drawable/selector_map_icon"
         android:title="@string/bottom_navigation_map"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/bottomNavigationSettings"
-        android:icon="@drawable/outline_settings_24"
+        android:icon="@drawable/selector_settings_icon"
         android:title="@string/bottom_navigation_settings"
         app:showAsAction="ifRoom" />
 </menu>
