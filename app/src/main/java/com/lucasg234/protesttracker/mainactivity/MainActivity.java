@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment;
                 switch (item.getItemId()) {
                     case R.id.bottomNavigationFeed:
-                        fragment = FeedFragment.newInstance("", "");
+                        fragment = FeedFragment.newInstance();
                         break;
                     case R.id.bottomNavigationCompose:
-                        fragment = ComposeFragment.newInstance("", "");
+                        fragment = ComposeFragment.newInstance();
                         break;
                     case R.id.bottomNavigationMap:
                         fragment = MapFragment.newInstance("", "");

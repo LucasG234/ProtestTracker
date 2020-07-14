@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * Fragment containing a RecyclerView using FeedAdapter
- * Displays and queries for posts
+ * Queries for and displays post from Parse
  */
 public class FeedFragment extends Fragment {
 
@@ -44,7 +44,7 @@ public class FeedFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of FeedFragment
      */
-    public static FeedFragment newInstance(String param1, String param2) {
+    public static FeedFragment newInstance() {
         return new FeedFragment();
     }
 
