@@ -57,7 +57,7 @@ public class ComposeFragment extends Fragment {
 
         mBinding = FragmentComposeBinding.bind(view);
 
-        mBinding.buttonSubmitPost.setOnClickListener(new View.OnClickListener() {
+        mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 savePost();
@@ -73,7 +73,7 @@ public class ComposeFragment extends Fragment {
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e != null) {
+                if (e != null) {
                     Log.e(TAG, "Error saving post", e);
                     Toast.makeText(getContext(), getString(R.string.error_save), Toast.LENGTH_SHORT).show();
                     return;
