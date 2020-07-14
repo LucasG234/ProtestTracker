@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="icon_size">24dp</dimen>
+    <dimen name="icon_viewport">24</dimen>
     <dimen name="standard_margin">16dp</dimen>
     <dimen name="small_margin">8dp</dimen>
     <dimen name="match_constraint">0dp</dimen>
-
     <dimen name="standard_image_height">300dp</dimen>
 </resources>
