@@ -1,6 +1,8 @@
 package com.lucasg234.protesttracker.mainactivity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +27,8 @@ import com.parse.SaveCallback;
 
 import java.io.File;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * Fragment where user can create posts
  * Saves posts to Parse
@@ -33,10 +37,12 @@ public class ComposeFragment extends Fragment {
 
     private static final String TAG = "ComposeFragment";
 
-    public final static int ACTIVITY_REQUEST_CODE_CAPTURE_IMAGE = 635;
+    public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
+    public static final int ACTIVITY_REQUEST_CODE_GALLERY = 321;
     public static final String TEMP_PHOTO_NAME = "ProtestTrackerTemp.jpg";
 
     private FragmentComposeBinding mBinding;
+    private File mTempImageStorage;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -80,7 +86,10 @@ public class ComposeFragment extends Fragment {
                 savePost();
             }
         });
+
+        configureTempImageStorage();
     }
+
 
     // Constructs Post object and saves it to the Parse server
     private void savePost() {
@@ -106,23 +115,19 @@ public class ComposeFragment extends Fragment {
         // create Intent to take a picture and return control to the calling application
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        // photoFile is the target file the full size image will be stored into
-        File photoFile = getPhotoFileUri(TEMP_PHOTO_NAME);
-
-        // wrap this target File object into a content provider
+        // wrap this our target File object into a content provider
         // required for API >= 24
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", photoFile);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", mTempImageStorage);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
         // So as long as the result is not null, it's safe to use the intent.
         if (cameraIntent.resolveActivity(getContext().getPackageManager()) != null) {
-            startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE_CAPTURE_IMAGE);
+            startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE_CAMERA);
         }
     }
 
-    // Helper method which creates storage for the photo taken by the camera
-    private File getPhotoFileUri(String tempPhotoName) {
+    private void configureTempImageStorage() {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
@@ -133,9 +138,25 @@ public class ComposeFragment extends Fragment {
             Log.d(TAG, "failed to create directory");
         }
 
-        // Return the file target for the photo based on filename
-        File file = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
+        // Create the file target for camera taken images based on the constant file name
+        mTempImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
+    }
 
-        return file;
+    // Used to receive photos after camera or gallery usage
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != RESULT_OK) {
+            Toast.makeText(getContext(), getString(R.string.error_receive_image), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        switch(requestCode) {
+            case ACTIVITY_REQUEST_CODE_CAMERA:
+                Log.i(TAG, "received photo");
+                Bitmap takenImage = BitmapFactory.decodeFile(mTempImageStorage.getAbsolutePath());
+                // Load the taken image into the preview space
+                mBinding.composeImagePreview.setImageBitmap(takenImage);
+                break;
+        }
     }
 }

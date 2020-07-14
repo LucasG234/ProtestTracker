@@ -30,5 +30,6 @@
     <string name="error_registration">Error with registration. That username may already be taken.</string>
     <string name="error_load">Error loading resources. Please check your connection and try again.</string>
     <string name="error_save">Error saving post. Please check your connection and try again.</string>
+    <string name="error_receive_image">Image was not received. Please try again.</string>
 
 </resources>
