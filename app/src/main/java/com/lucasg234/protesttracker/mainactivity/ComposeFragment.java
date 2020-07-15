@@ -1,8 +1,12 @@
 package com.lucasg234.protesttracker.mainactivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -25,6 +30,7 @@ import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.util.ImageUtils;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.SaveCallback;
 
 import java.io.File;
@@ -49,6 +55,7 @@ public class ComposeFragment extends Fragment {
 
     private FragmentComposeBinding mBinding;
     private File mTempInternalImageStorage;
+    private Location mCurrentLocation;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -83,7 +90,7 @@ public class ComposeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Let PermissionsDispatcher handle permission requests
-                ComposeFragmentPermissionsDispatcher.savePostWithPermissionCheck(ComposeFragment.this);
+                savePost();
             }
         });
 
@@ -148,10 +155,8 @@ public class ComposeFragment extends Fragment {
         mTempInternalImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
     }
 
-    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
-    // Constructs Post object and saves it to the Parse server
-    // Not private to be used by PermissionsDispatcher
-     void savePost() {
+        // Constructs Post object and saves it to the Parse server
+    private void savePost() {
         Post post = new Post();
         post.setText(mBinding.composeEditText.getText().toString());
         post.setAuthor((User) User.getCurrentUser());
@@ -160,6 +165,15 @@ public class ComposeFragment extends Fragment {
         if (mBinding.composeImagePreview.getDrawable() != null) {
             // If there is, the current image will be stored within the the temp image storage
             post.setImage(new ParseFile(mTempInternalImageStorage));
+        }
+
+        ComposeFragmentPermissionsDispatcher.getLocationWithPermissionCheck(this);
+        // Try to find the current location
+        if (mCurrentLocation != null) {
+            post.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+        }
+        else {
+            Toast.makeText(getContext(), getString(R.string.error_location_permission), Toast.LENGTH_SHORT).show();
         }
 
         post.saveInBackground(new SaveCallback() {
@@ -205,6 +219,18 @@ public class ComposeFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
+    // Not private so it can be used by Permission Dispatcher
+    public void getLocation() {
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        mCurrentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
     @Override
