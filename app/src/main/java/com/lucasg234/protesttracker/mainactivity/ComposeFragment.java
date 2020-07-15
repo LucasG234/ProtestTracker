@@ -145,8 +145,11 @@ public class ComposeFragment extends Fragment {
         Post post = new Post();
         post.setText(mBinding.composeEditText.getText().toString());
         post.setAuthor((User) User.getCurrentUser());
-        // The current image will be stored within the the temp image storage
-        post.setImage(new ParseFile(mTempInternalImageStorage));
+        // Check if there is currently a previewed image
+        if(mBinding.composeImagePreview.getDrawable()!= null) {
+            // If there is, the current image will be stored within the the temp image storage
+            post.setImage(new ParseFile(mTempInternalImageStorage));
+        }
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
