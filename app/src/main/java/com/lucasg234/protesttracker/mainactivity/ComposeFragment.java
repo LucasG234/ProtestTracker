@@ -1,5 +1,6 @@
 package com.lucasg234.protesttracker.mainactivity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -28,12 +29,16 @@ import com.parse.SaveCallback;
 
 import java.io.File;
 
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
+
 import static android.app.Activity.RESULT_OK;
 
 /**
  * Fragment where user can create posts
  * Saves posts to Parse
  */
+@RuntimePermissions
 public class ComposeFragment extends Fragment {
 
     public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
@@ -77,7 +82,8 @@ public class ComposeFragment extends Fragment {
         mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                savePost();
+                // Let PermissionsDispatcher handle permission requests
+                ComposeFragmentPermissionsDispatcher.savePostWithPermissionCheck(ComposeFragment.this);
             }
         });
 
@@ -142,16 +148,20 @@ public class ComposeFragment extends Fragment {
         mTempInternalImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
     }
 
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
     // Constructs Post object and saves it to the Parse server
-    private void savePost() {
+    // Not private to be used by PermissionsDispatcher
+     void savePost() {
         Post post = new Post();
         post.setText(mBinding.composeEditText.getText().toString());
         post.setAuthor((User) User.getCurrentUser());
+
         // Check if there is currently a previewed image
         if (mBinding.composeImagePreview.getDrawable() != null) {
             // If there is, the current image will be stored within the the temp image storage
             post.setImage(new ParseFile(mTempInternalImageStorage));
         }
+
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -195,5 +205,12 @@ public class ComposeFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // Delegate the permission handling to generated method from PermissionsDispatcher
+        ComposeFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 }

@@ -48,6 +48,5 @@ public class PostDetailActivity extends AppCompatActivity {
         } else {
             mBinding.detailImage.setVisibility(View.GONE);
         }
-        // Set image height to matchConstraint
     }
 }
