@@ -1,7 +1,6 @@
 package com.lucasg234.protesttracker.util;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
@@ -22,7 +21,6 @@ import java.io.IOException;
 public class ImageUtils {
 
     private static final String TAG = "ImageUtils";
-
 
 
     // Saves an image to an internal storage destination

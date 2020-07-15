@@ -39,7 +39,9 @@ public class ComposeFragment extends Fragment {
     public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
     public static final int ACTIVITY_REQUEST_CODE_GALLERY = 321;
     public static final String TEMP_PHOTO_NAME = "ProtestTrackerTemp.jpg";
+
     private static final String TAG = "ComposeFragment";
+
     private FragmentComposeBinding mBinding;
     private File mTempInternalImageStorage;
 
@@ -146,7 +148,7 @@ public class ComposeFragment extends Fragment {
         post.setText(mBinding.composeEditText.getText().toString());
         post.setAuthor((User) User.getCurrentUser());
         // Check if there is currently a previewed image
-        if(mBinding.composeImagePreview.getDrawable()!= null) {
+        if (mBinding.composeImagePreview.getDrawable() != null) {
             // If there is, the current image will be stored within the the temp image storage
             post.setImage(new ParseFile(mTempInternalImageStorage));
         }

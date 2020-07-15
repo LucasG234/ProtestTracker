@@ -29,28 +29,28 @@ public class Post extends ParseObject {
         return (User) getParseUser(KEY_AUTHOR);
     }
 
-    public String getText() {
-        return getString(KEY_TEXT);
-    }
-
-    public ParseFile getImage() {
-        return getParseFile(KEY_IMAGE);
-    }
-
-    public ParseGeoPoint getLocation() {
-        return getParseGeoPoint(KEY_LOCATION);
-    }
-
     public void setAuthor(User author) {
         put(KEY_AUTHOR, author);
+    }
+
+    public String getText() {
+        return getString(KEY_TEXT);
     }
 
     public void setText(String text) {
         put(KEY_TEXT, text);
     }
 
+    public ParseFile getImage() {
+        return getParseFile(KEY_IMAGE);
+    }
+
     public void setImage(ParseFile image) {
         put(KEY_IMAGE, image);
+    }
+
+    public ParseGeoPoint getLocation() {
+        return getParseGeoPoint(KEY_LOCATION);
     }
 
     public void setLocation(ParseGeoPoint location) {
