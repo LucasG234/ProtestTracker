@@ -1,6 +1,5 @@
 package com.lucasg234.protesttracker.mainactivity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -27,6 +25,7 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentComposeBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
+import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.ImageUtils;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -135,6 +134,17 @@ public class ComposeFragment extends Fragment {
         mBinding.composeImagePreview.setImageBitmap(takenImage);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // If permission was just granted to allow location services, then restart saving the image again
+        if(requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+            savePost();
+        }
+    }
+
     private void configureTempImageStorage() {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
@@ -150,16 +160,22 @@ public class ComposeFragment extends Fragment {
         mTempInternalImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
     }
 
-        // Constructs Post object and saves it to the Parse server
+    // Constructs Post object and saves it to the Parse server
     private void savePost() {
         Post post = new Post();
 
-        // Search for location first, and cancel the post if it cannot be found
+        // Ensure location permissions before attempting to make post
+        if(!LocationPermissions.checkLocationPermission(getContext())) {
+            Log.i(TAG, "Cancelling post save to ask for permissions");
+            LocationPermissions.requestLocationPermission(this);
+            return;
+        }
+
+        // Next ensure current location can be found
         Location currentLocation = getCurrentLocation();
         if (currentLocation != null) {
             post.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
-        }
-        else {
+        } else {
             Log.e(TAG, "Couldn't find a location");
             Toast.makeText(getContext(), getString(R.string.error_location), Toast.LENGTH_SHORT).show();
             return;
@@ -220,10 +236,9 @@ public class ComposeFragment extends Fragment {
     }
 
     // Returns the last known location of the user
-    public Location getCurrentLocation() {
+    private Location getCurrentLocation() {
         LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (!LocationPermissions.checkLocationPermission(getContext())) {
             Log.e(TAG, "No location permissions");
             return null;
         }
