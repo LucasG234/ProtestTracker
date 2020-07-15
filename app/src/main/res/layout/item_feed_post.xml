@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/postLayoutContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -16,14 +17,14 @@
         tools:text="lucas" />
 
     <TextView
-    android:id="@+id/postCreatedAt"
-    android:layout_width="@dimen/match_constraint"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/small_margin"
-    app:layout_constraintBottom_toBottomOf="@+id/postUsername"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="@+id/postUsername"
-    tools:text="1 day ago" />
+        android:id="@+id/postCreatedAt"
+        android:layout_width="@dimen/match_constraint"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/small_margin"
+        app:layout_constraintBottom_toBottomOf="@+id/postUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/postUsername"
+        tools:text="1 day ago" />
 
     <TextView
         android:id="@+id/postText"

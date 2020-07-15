@@ -26,10 +26,18 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private Context mContext;
     private List<Post> mPosts;
+    private PostInteractionListener mInteractionListener;
 
-    public FeedAdapter(Context context, List<Post> posts) {
+    public FeedAdapter(Context context, List<Post> posts, PostInteractionListener interactionListener) {
         this.mContext = context;
         this.mPosts = posts;
+        this.mInteractionListener = interactionListener;
+    }
+
+    // This interface handles interaction with the FeedFragment MainActivity on interactions
+    // This can be extended to include double taps, long holds, swipes, etc.
+    public interface PostInteractionListener {
+        void onPostClicked(int position);
     }
 
     @NonNull
@@ -94,6 +102,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             } else {
                 mBinding.postImage.setVisibility(View.GONE);
             }
+
+            mBinding.postLayoutContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mInteractionListener.onPostClicked(getAdapterPosition());
+                }
+            });
         }
     }
 }

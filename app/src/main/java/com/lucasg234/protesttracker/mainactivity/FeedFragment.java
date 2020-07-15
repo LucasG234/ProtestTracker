@@ -1,5 +1,6 @@
 package com.lucasg234.protesttracker.mainactivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
+import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -71,7 +73,15 @@ public class FeedFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        mAdapter = new FeedAdapter(getContext(), new ArrayList<Post>());
+        FeedAdapter.PostInteractionListener interactionListener = new FeedAdapter.PostInteractionListener() {
+            @Override
+            public void onPostClicked(int position) {
+                Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
+                startActivity(detailIntent);
+            }
+        };
+        mAdapter = new FeedAdapter(getContext(), new ArrayList<Post>(), interactionListener);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mEndlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
