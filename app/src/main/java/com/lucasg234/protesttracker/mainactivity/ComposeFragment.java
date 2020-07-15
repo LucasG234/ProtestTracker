@@ -35,16 +35,12 @@ import com.parse.SaveCallback;
 
 import java.io.File;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
-
 import static android.app.Activity.RESULT_OK;
 
 /**
  * Fragment where user can create posts
  * Saves posts to Parse
  */
-@RuntimePermissions
 public class ComposeFragment extends Fragment {
 
     public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
@@ -55,7 +51,6 @@ public class ComposeFragment extends Fragment {
 
     private FragmentComposeBinding mBinding;
     private File mTempInternalImageStorage;
-    private Location mCurrentLocation;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -158,6 +153,18 @@ public class ComposeFragment extends Fragment {
         // Constructs Post object and saves it to the Parse server
     private void savePost() {
         Post post = new Post();
+
+        // Search for location first, and cancel the post if it cannot be found
+        Location currentLocation = getCurrentLocation();
+        if (currentLocation != null) {
+            post.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
+        }
+        else {
+            Log.e(TAG, "Couldn't find a location");
+            Toast.makeText(getContext(), getString(R.string.error_location), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         post.setText(mBinding.composeEditText.getText().toString());
         post.setAuthor((User) User.getCurrentUser());
 
@@ -165,15 +172,6 @@ public class ComposeFragment extends Fragment {
         if (mBinding.composeImagePreview.getDrawable() != null) {
             // If there is, the current image will be stored within the the temp image storage
             post.setImage(new ParseFile(mTempInternalImageStorage));
-        }
-
-        ComposeFragmentPermissionsDispatcher.getLocationWithPermissionCheck(this);
-        // Try to find the current location
-        if (mCurrentLocation != null) {
-            post.setLocation(new ParseGeoPoint(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
-        }
-        else {
-            Toast.makeText(getContext(), getString(R.string.error_location_permission), Toast.LENGTH_SHORT).show();
         }
 
         post.saveInBackground(new SaveCallback() {
@@ -221,22 +219,14 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION})
-    // Not private so it can be used by Permission Dispatcher
-    public void getLocation() {
+    // Returns the last known location of the user
+    public Location getCurrentLocation() {
         LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            Log.e(TAG, "No location permissions");
+            return null;
         }
-
-        mCurrentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // Delegate the permission handling to generated method from PermissionsDispatcher
-        ComposeFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+        return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 }

@@ -33,6 +33,6 @@
     <string name="error_receive_image">Image was not received. Please try again.</string>
     <string name="error_camera_missing">No installed app to open camera from.</string>
     <string name="error_gallery_missing">No installed app to select photos from.</string>
-    <string name="error_location_permission">Necessary permissions not given to attach location to post.</string>
+    <string name="error_location">Could not find current location. Check your GPS and permission settings and try again.</string>
 
 </resources>
