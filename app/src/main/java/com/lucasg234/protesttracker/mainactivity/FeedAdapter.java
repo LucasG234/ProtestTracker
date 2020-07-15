@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.Utils;
 
 import java.util.List;
@@ -91,6 +92,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
             String relativeCreationTime = Utils.dateToRelative(post.getCreatedAt());
             mBinding.postCreatedAt.setText(relativeCreationTime);
+
+            String relativeLocation = LocationUtils.relativeLocation(mContext, post.getLocation());
+            mBinding.postLocation.setText(relativeLocation);
 
             if (post.getImage() != null) {
                 mBinding.postImage.setVisibility(View.VISIBLE);

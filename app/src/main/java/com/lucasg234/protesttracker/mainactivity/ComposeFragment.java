@@ -1,11 +1,9 @@
 package com.lucasg234.protesttracker.mainactivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,6 +25,7 @@ import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.ImageUtils;
+import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -139,8 +138,8 @@ public class ComposeFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // If permission was just granted to allow location services, then restart saving the image again
-        if(requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+        if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             savePost();
         }
     }
@@ -165,14 +164,14 @@ public class ComposeFragment extends Fragment {
         Post post = new Post();
 
         // Ensure location permissions before attempting to make post
-        if(!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(getContext())) {
             Log.i(TAG, "Cancelling post save to ask for permissions");
             LocationPermissions.requestLocationPermission(this);
             return;
         }
 
         // Next ensure current location can be found
-        Location currentLocation = getCurrentLocation();
+        Location currentLocation = LocationUtils.getCurrentLocation(getContext());
         if (currentLocation != null) {
             post.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
         } else {
@@ -233,15 +232,5 @@ public class ComposeFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
         }
-    }
-
-    // Returns the last known location of the user
-    private Location getCurrentLocation() {
-        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        if (!LocationPermissions.checkLocationPermission(getContext())) {
-            Log.e(TAG, "No location permissions");
-            return null;
-        }
-        return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 }

@@ -4,6 +4,7 @@
     <dimen name="icon_viewport">24</dimen>
     <dimen name="standard_margin">16dp</dimen>
     <dimen name="small_margin">8dp</dimen>
+    <dimen name="large_margin">32dp</dimen>
     <dimen name="match_constraint">0dp</dimen>
     <dimen name="standard_image_height">300dp</dimen>
 </resources>

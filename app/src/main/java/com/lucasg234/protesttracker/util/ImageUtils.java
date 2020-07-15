@@ -22,7 +22,6 @@ public class ImageUtils {
 
     private static final String TAG = "ImageUtils";
 
-
     // Saves an image to an internal storage destination
     public static void saveImageToInternalStorage(Bitmap bitmapImage, File saveDestination) {
         FileOutputStream fileOutputStream = null;
