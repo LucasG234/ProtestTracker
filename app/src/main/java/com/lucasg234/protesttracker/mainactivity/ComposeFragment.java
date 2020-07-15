@@ -3,9 +3,11 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -29,6 +31,7 @@ import com.parse.ParseFile;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
@@ -119,6 +122,7 @@ public class ComposeFragment extends Fragment {
                 Log.i(TAG, "received photo from gallery");
                 Uri photoUri = data.getData();
                 takenImage = receiveExternalImage(photoUri);
+                saveToInternalStorage(takenImage);
                 break;
             default:
                 Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
@@ -179,8 +183,7 @@ public class ComposeFragment extends Fragment {
         // Ensure there is an app which can handle the intent before calling it
         if (cameraIntent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE_CAMERA);
-        }
-        else {
+        } else {
             Toast.makeText(getContext(), getString(R.string.error_camera_missing), Toast.LENGTH_SHORT).show();
         }
     }
@@ -192,8 +195,7 @@ public class ComposeFragment extends Fragment {
         // Ensure there is an app which can handle the intent before calling it
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(intent, ACTIVITY_REQUEST_CODE_GALLERY);
-        }
-        else {
+        } else {
             Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
         }
     }
@@ -241,7 +243,40 @@ public class ComposeFragment extends Fragment {
         return rotatedBitmap;
     }
 
+    // Receives bitmap from the gallery
     private Bitmap receiveExternalImage(Uri externalUri) {
-        return null;
+        Bitmap imageBitmap = null;
+        try {
+            // check version of Android on device
+            if (Build.VERSION.SDK_INT > 27) {
+                // on newer versions of Android, use the new decodeBitmap method
+                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), externalUri);
+                imageBitmap = ImageDecoder.decodeBitmap(source);
+            } else {
+                // support older versions of Android by using getBitmap
+                imageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), externalUri);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageBitmap;
+    }
+
+    private void saveToInternalStorage(Bitmap bitmapImage) {
+
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(mTempInternalImageStorage);
+            // Quality of 100 tells Compressor to maintain original quality
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+        } catch (Exception e) {
+            Log.e(TAG, "Error writing image to internal storage", e);
+        } finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Error closing FileOutputStream", e);
+            }
+        }
     }
 }
