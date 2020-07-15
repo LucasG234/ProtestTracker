@@ -77,6 +77,7 @@ public class FeedFragment extends Fragment {
             @Override
             public void onPostClicked(int position) {
                 Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
+                detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mAdapter.getPosts().get(position));
                 startActivity(detailIntent);
             }
         };

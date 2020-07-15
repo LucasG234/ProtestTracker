@@ -6,4 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".detailactivity.PostDetailActivity">
 
+        <TextView
+            android:id="@+id/detailUsername"
+            android:layout_width="@dimen/match_constraint"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_margin"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="lucas" />
+
+        <TextView
+            android:id="@+id/detailCreatedAt"
+            android:layout_width="@dimen/match_constraint"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintBottom_toBottomOf="@+id/detailUsername"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/detailUsername"
+            tools:text="1 day ago" />
+
+        <TextView
+            android:id="@+id/detailText"
+            android:layout_width="@dimen/match_constraint"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailUsername"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut porttitor condimentum enim at interdum. Aenean bibendum, tortor sit amet cursus ultricies, turpis risus laoreet tortor, et tristique orci nibh in elit. Nullam sit amet lectus rhoncus nisi dictum mattis quis sit amet mi. Morbi vel lorem eros." />
+
+        <ImageView
+            android:id="@+id/detailImage"
+            android:layout_width="@dimen/match_constraint"
+            android:layout_height="@dimen/match_constraint"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailText"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>
