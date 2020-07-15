@@ -10,6 +10,9 @@ import com.parse.ParseGeoPoint;
 
 import java.util.Locale;
 
+/**
+ * Utility class which deals with Location, ParseGeoPoint, and LatLng objects
+ */
 public class LocationUtils {
     private static final String TAG = "LocationUtils";
 
@@ -38,7 +41,7 @@ public class LocationUtils {
     private static String metersToImperialString(float meters) {
         float miles = meters * 0.000621371f;
         String out;
-        if(miles < 0.1) {
+        if (miles < 0.1) {
             // If less than .1 miles use feet instead
             int feet = Math.round(miles * 5280f);
             out = String.format(Locale.getDefault(), "%d feet", feet);

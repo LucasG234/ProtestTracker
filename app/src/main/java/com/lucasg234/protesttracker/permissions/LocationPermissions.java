@@ -7,6 +7,9 @@ import android.content.pm.PackageManager;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+/**
+ * Utility class with methods which handle permission for accessing fine and coarse location
+ */
 public class LocationPermissions {
     public static final int REQUEST_CODE_LOCATION_PERMISSIONS = 12;
 

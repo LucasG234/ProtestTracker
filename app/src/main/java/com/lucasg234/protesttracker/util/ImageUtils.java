@@ -16,7 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Utility class which holds methods useful for storing and receiving images internally and externally
+ * Utility class which holds methods useful for storing and receiving images
+ * From internal and external memory
  */
 public class ImageUtils {
 
