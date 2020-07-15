@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.parse.ParseGeoPoint;
 
@@ -43,6 +44,7 @@ public class LocationUtils {
         return metersToImperialString(metersBetween) + " away";
     }
 
+    // Converts the ParseGeoPoint given into a String representing its address
     public static String toAddress(Context context, ParseGeoPoint targetGeoPoint) {
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addressList;
@@ -52,13 +54,15 @@ public class LocationUtils {
             addressList = geocoder.getFromLocation(targetGeoPoint.getLatitude(), targetGeoPoint.getLongitude(), 1);
         } catch (IOException e) {
             Log.e(TAG, "Error generating address list from location", e);
-            // If address cannot be found, return latitude and longitude as string
-            return "(" + targetGeoPoint.getLatitude() + ", " + targetGeoPoint.getLongitude() + ")";
+            return context.getString(R.string.error_address_generation);
         }
 
-        Address closestAddress = addressList.get(0);
-
-        return closestAddress.getAddressLine(0);
+        if (addressList.size() >= 1) {
+            return addressList.get(0).getAddressLine(0);
+        } else {
+            Log.e(TAG, "No address for location");
+            return context.getString(R.string.error_address_generation);
+        }
     }
 
     // Helper method to convert meters to human readable imperial units
