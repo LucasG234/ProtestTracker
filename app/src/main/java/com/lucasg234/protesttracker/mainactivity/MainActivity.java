@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                         fragment = ComposeFragment.newInstance();
                         break;
                     case R.id.bottomNavigationMap:
-                        fragment = MapFragment.newInstance("", "");
+                        fragment = MapFragment.newInstance();
                         break;
                     case R.id.bottomNavigationSettings:
                         fragment = SettingsFragment.newInstance();

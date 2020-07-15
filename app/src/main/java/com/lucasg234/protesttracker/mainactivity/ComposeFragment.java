@@ -39,14 +39,12 @@ import static android.app.Activity.RESULT_OK;
  */
 public class ComposeFragment extends Fragment {
 
-    private static final String TAG = "ComposeFragment";
-
     public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
     public static final int ACTIVITY_REQUEST_CODE_GALLERY = 321;
     public static final String TEMP_PHOTO_NAME = "ProtestTrackerTemp.jpg";
-
+    private static final String TAG = "ComposeFragment";
     private FragmentComposeBinding mBinding;
-    private File mTempImageStorage;
+    private File mTempInternalImageStorage;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -77,6 +75,13 @@ public class ComposeFragment extends Fragment {
 
         mBinding = FragmentComposeBinding.bind(view);
 
+        mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                savePost();
+            }
+        });
+
         mBinding.composeCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,10 +89,10 @@ public class ComposeFragment extends Fragment {
             }
         });
 
-        mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
+        mBinding.composeGalleryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                savePost();
+                openGallery();
             }
         });
 
@@ -97,20 +102,30 @@ public class ComposeFragment extends Fragment {
     // Used to receive photos after camera or gallery usage
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode != RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             Toast.makeText(getContext(), getString(R.string.error_receive_image), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        switch(requestCode) {
+        Bitmap takenImage;
+
+        switch (requestCode) {
             case ACTIVITY_REQUEST_CODE_CAMERA:
-                Log.i(TAG, "received photo");
-                // Does necessary resizing and rotations
-                Bitmap takenImage = receiveImage();
-                // Load the taken image into the preview space
-                mBinding.composeImagePreview.setImageBitmap(takenImage);
+                Log.i(TAG, "received photo from camera");
+                // receiveImage handles necessary resizing and rotations
+                takenImage = decodeInternalImage(Uri.fromFile(mTempInternalImageStorage));
                 break;
+            case ACTIVITY_REQUEST_CODE_GALLERY:
+                Log.i(TAG, "received photo from gallery");
+                Uri photoUri = data.getData();
+                takenImage = receiveExternalImage(photoUri);
+                break;
+            default:
+                Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
+                return;
         }
+        // Load the taken image into the preview space
+        mBinding.composeImagePreview.setImageBitmap(takenImage);
     }
 
     private void configureTempImageStorage() {
@@ -120,12 +135,12 @@ public class ComposeFragment extends Fragment {
         File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
 
         // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
+        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
             Log.d(TAG, "failed to create directory");
         }
 
         // Create the file target for camera taken images based on the constant file name
-        mTempImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
+        mTempInternalImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
     }
 
 
@@ -135,7 +150,7 @@ public class ComposeFragment extends Fragment {
         post.setText(mBinding.composeEditText.getText().toString());
         post.setAuthor((User) User.getCurrentUser());
         // The current image will be stored within the the temp image storage
-        post.setImage(new ParseFile(mTempImageStorage));
+        post.setImage(new ParseFile(mTempInternalImageStorage));
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -158,30 +173,40 @@ public class ComposeFragment extends Fragment {
 
         // wrap this our target File object into a content provider
         // required for API >= 24
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", mTempImageStorage);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", mTempInternalImageStorage);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
-        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
-        // So as long as the result is not null, it's safe to use the intent.
+        // Ensure there is an app which can handle the intent before calling it
         if (cameraIntent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE_CAMERA);
         }
+        else {
+            Toast.makeText(getContext(), getString(R.string.error_camera_missing), Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private Bitmap receiveImage() {
-        // Create and configure BitmapFactory
-        BitmapFactory.Options bounds = new BitmapFactory.Options();
-        bounds.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mTempImageStorage.getAbsolutePath(), bounds);
-        BitmapFactory.Options opts = new BitmapFactory.Options();
+    private void openGallery() {
+        // Create intent for picking a photo from the gallery
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
+        // Ensure there is an app which can handle the intent before calling it
+        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+            startActivityForResult(intent, ACTIVITY_REQUEST_CODE_GALLERY);
+        }
+        else {
+            Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Correctly decodes images which are internally stored
+    private Bitmap decodeInternalImage(Uri internalUri) {
         // Decode the image in temp storage to a bitmap
-        Bitmap imageBitmap = BitmapFactory.decodeFile(mTempImageStorage.getAbsolutePath(), opts);
+        Bitmap imageBitmap = BitmapFactory.decodeFile(internalUri.getPath());
 
         // Attempt to read EXIF Data about the image
         ExifInterface exif = null;
         try {
-            exif = new ExifInterface(mTempImageStorage.getAbsolutePath());
+            exif = new ExifInterface(internalUri.getPath());
         } catch (IOException e) {
             Log.e(TAG, "Error getting EXIF data", e);
             // If there is no EXIF data available, return the original Bitmap
@@ -192,7 +217,7 @@ public class ComposeFragment extends Fragment {
         String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
         int orientation = orientString != null ? Integer.parseInt(orientString) : ExifInterface.ORIENTATION_NORMAL;
         int rotationAngle;
-        switch(orientation) {
+        switch (orientation) {
             default:
                 rotationAngle = 0;
                 break;
@@ -210,9 +235,13 @@ public class ComposeFragment extends Fragment {
         // Rotate the Bitmap
         Matrix matrix = new Matrix();
         matrix.setRotate(rotationAngle, (float) imageBitmap.getWidth() / 2, (float) imageBitmap.getHeight() / 2);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
+        Bitmap rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
 
         // Return resulting image
         return rotatedBitmap;
+    }
+
+    private Bitmap receiveExternalImage(Uri externalUri) {
+        return null;
     }
 }
