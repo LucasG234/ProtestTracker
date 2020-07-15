@@ -93,7 +93,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             String relativeCreationTime = Utils.dateToRelative(post.getCreatedAt());
             mBinding.postCreatedAt.setText(relativeCreationTime);
 
-            String relativeLocation = LocationUtils.relativeLocation(mContext, post.getLocation());
+            String relativeLocation = LocationUtils.toRelativeLocation(mContext, post.getLocation());
             mBinding.postLocation.setText(relativeLocation);
 
             if (post.getImage() != null) {

@@ -36,6 +36,16 @@
             app:layout_constraintTop_toBottomOf="@+id/detailUsername"
             tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut porttitor condimentum enim at interdum. Aenean bibendum, tortor sit amet cursus ultricies, turpis risus laoreet tortor, et tristique orci nibh in elit. Nullam sit amet lectus rhoncus nisi dictum mattis quis sit amet mi. Morbi vel lorem eros." />
 
+        <TextView
+            android:id="@+id/detailLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailText"
+            tools:text="5 miles North" />
+
         <ImageView
             android:id="@+id/detailImage"
             android:layout_width="@dimen/match_constraint"

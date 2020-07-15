@@ -3,13 +3,13 @@ package com.lucasg234.protesttracker.detailactivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ActivityPostDetailBinding;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.Utils;
 
 /**
@@ -32,12 +32,14 @@ public class PostDetailActivity extends AppCompatActivity {
 
         Post post = getIntent().getExtras().getParcelable(KEY_INTENT_EXTRA_POST);
 
-
         mBinding.detailText.setText(post.getText());
         mBinding.detailUsername.setText(post.getAuthor().getUsername());
 
         String relativeCreationTime = Utils.dateToRelative(post.getCreatedAt());
         mBinding.detailCreatedAt.setText(relativeCreationTime);
+
+        String address = LocationUtils.toAddress(this, post.getLocation());
+        mBinding.detailLocation.setText(address);
 
         if (post.getImage() != null) {
             mBinding.detailImage.setVisibility(View.VISIBLE);

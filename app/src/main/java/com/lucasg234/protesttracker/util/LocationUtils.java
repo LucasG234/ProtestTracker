@@ -1,6 +1,8 @@
 package com.lucasg234.protesttracker.util;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
@@ -8,6 +10,8 @@ import android.util.Log;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.parse.ParseGeoPoint;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -26,7 +30,8 @@ public class LocationUtils {
         return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
     }
 
-    public static String relativeLocation(Context context, ParseGeoPoint targetGeoPoint) {
+    // Returns a string displays the relative location of a post from the user's current location
+    public static String toRelativeLocation(Context context, ParseGeoPoint targetGeoPoint) {
         Location currentLocation = getCurrentLocation(context);
         // Provide empty string because there is no provider
         Location targetLocation = new Location("");
@@ -38,6 +43,25 @@ public class LocationUtils {
         return metersToImperialString(metersBetween) + " away";
     }
 
+    public static String toAddress(Context context, ParseGeoPoint targetGeoPoint) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addressList;
+        try {
+            // maxResults represents how many nearby addresses to return
+            // Set to 1 to get only the closest address
+            addressList = geocoder.getFromLocation(targetGeoPoint.getLatitude(), targetGeoPoint.getLongitude(), 1);
+        } catch (IOException e) {
+            Log.e(TAG, "Error generating address list from location", e);
+            // If address cannot be found, return latitude and longitude as string
+            return "(" + targetGeoPoint.getLatitude() + ", " + targetGeoPoint.getLongitude() + ")";
+        }
+
+        Address closestAddress = addressList.get(0);
+
+        return closestAddress.getAddressLine(0);
+    }
+
+    // Helper method to convert meters to human readable imperial units
     private static String metersToImperialString(float meters) {
         float miles = meters * 0.000621371f;
         String out;
