@@ -2,12 +2,7 @@ package com.lucasg234.protesttracker.mainactivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageDecoder;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -26,13 +21,12 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentComposeBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
+import com.lucasg234.protesttracker.util.ImageUtils;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -115,14 +109,13 @@ public class ComposeFragment extends Fragment {
         switch (requestCode) {
             case ACTIVITY_REQUEST_CODE_CAMERA:
                 Log.i(TAG, "received photo from camera");
-                // receiveImage handles necessary resizing and rotations
-                takenImage = decodeInternalImage(Uri.fromFile(mTempInternalImageStorage));
+                takenImage = ImageUtils.decodeInternalImage(Uri.fromFile(mTempInternalImageStorage));
                 break;
             case ACTIVITY_REQUEST_CODE_GALLERY:
                 Log.i(TAG, "received photo from gallery");
                 Uri photoUri = data.getData();
-                takenImage = receiveExternalImage(photoUri);
-                saveToInternalStorage(takenImage);
+                takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
+                ImageUtils.saveImageToInternalStorage(takenImage, mTempInternalImageStorage);
                 break;
             default:
                 Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
@@ -146,7 +139,6 @@ public class ComposeFragment extends Fragment {
         // Create the file target for camera taken images based on the constant file name
         mTempInternalImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
     }
-
 
     // Constructs Post object and saves it to the Parse server
     private void savePost() {
@@ -197,86 +189,6 @@ public class ComposeFragment extends Fragment {
             startActivityForResult(intent, ACTIVITY_REQUEST_CODE_GALLERY);
         } else {
             Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    // Correctly decodes images which are internally stored
-    private Bitmap decodeInternalImage(Uri internalUri) {
-        // Decode the image in temp storage to a bitmap
-        Bitmap imageBitmap = BitmapFactory.decodeFile(internalUri.getPath());
-
-        // Attempt to read EXIF Data about the image
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(internalUri.getPath());
-        } catch (IOException e) {
-            Log.e(TAG, "Error getting EXIF data", e);
-            // If there is no EXIF data available, return the original Bitmap
-            return imageBitmap;
-        }
-
-        // Find the correct orientation for the image from the EXIF data
-        String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-        int orientation = orientString != null ? Integer.parseInt(orientString) : ExifInterface.ORIENTATION_NORMAL;
-        int rotationAngle;
-        switch (orientation) {
-            default:
-                rotationAngle = 0;
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                rotationAngle = 90;
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_180:
-                rotationAngle = 180;
-                break;
-            case ExifInterface.ORIENTATION_ROTATE_270:
-                rotationAngle = 270;
-                break;
-        }
-
-        // Rotate the Bitmap
-        Matrix matrix = new Matrix();
-        matrix.setRotate(rotationAngle, (float) imageBitmap.getWidth() / 2, (float) imageBitmap.getHeight() / 2);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageBitmap.getWidth(), imageBitmap.getHeight(), matrix, true);
-
-        // Return resulting image
-        return rotatedBitmap;
-    }
-
-    // Receives bitmap from the gallery
-    private Bitmap receiveExternalImage(Uri externalUri) {
-        Bitmap imageBitmap = null;
-        try {
-            // check version of Android on device
-            if (Build.VERSION.SDK_INT > 27) {
-                // on newer versions of Android, use the new decodeBitmap method
-                ImageDecoder.Source source = ImageDecoder.createSource(getContext().getContentResolver(), externalUri);
-                imageBitmap = ImageDecoder.decodeBitmap(source);
-            } else {
-                // support older versions of Android by using getBitmap
-                imageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), externalUri);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return imageBitmap;
-    }
-
-    private void saveToInternalStorage(Bitmap bitmapImage) {
-
-        FileOutputStream fileOutputStream = null;
-        try {
-            fileOutputStream = new FileOutputStream(mTempInternalImageStorage);
-            // Quality of 100 tells Compressor to maintain original quality
-            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-        } catch (Exception e) {
-            Log.e(TAG, "Error writing image to internal storage", e);
-        } finally {
-            try {
-                fileOutputStream.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Error closing FileOutputStream", e);
-            }
         }
     }
 }

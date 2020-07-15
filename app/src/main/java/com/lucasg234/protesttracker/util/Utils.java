@@ -4,6 +4,9 @@ import android.text.format.DateUtils;
 
 import java.util.Date;
 
+/**
+ * Utility class which holds generally useful methods
+ */
 public class Utils {
 
     // Converts a Date object to a relative string based off of the current time
