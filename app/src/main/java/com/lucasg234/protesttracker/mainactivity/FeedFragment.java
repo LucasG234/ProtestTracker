@@ -1,6 +1,7 @@
 package com.lucasg234.protesttracker.mainactivity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -69,6 +71,12 @@ public class FeedFragment extends Fragment {
         mBinding = FragmentFeedBinding.bind(view);
 
         configureRecyclerView();
+
+        // Ask for location permissions before loading posts into the feed
+        // If they are not given, posts will load without relative positions
+        if(!LocationPermissions.checkLocationPermission(getContext())) {
+            LocationPermissions.requestLocationPermission(this);
+        }
         queryInitialPosts();
     }
 
@@ -152,5 +160,17 @@ public class FeedFragment extends Fragment {
                 mAdapter.addAll(posts);
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // If permission was just granted to allow location services, then notify the adapter
+        // This will rebind the currently viewed posts with the location information
+        if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 }
