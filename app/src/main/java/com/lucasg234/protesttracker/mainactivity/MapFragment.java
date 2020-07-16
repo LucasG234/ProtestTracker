@@ -1,6 +1,5 @@
 package com.lucasg234.protesttracker.mainactivity;
 
-import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentMapBinding;
 import com.lucasg234.protesttracker.util.LocationUtils;
@@ -32,9 +30,15 @@ import com.lucasg234.protesttracker.util.LocationUtils;
  */
 public class MapFragment extends Fragment {
 
+    // Default zoom level on the map
     private static final int DEFAULT_ZOOM_LEVEL = 17;
-    private static final long UPDATE_INTERVAL = 60000;  /* 60 secs */
-    private static final long FASTEST_INTERVAL = 5000; /* 5 secs */
+    // Minimum distance change between locations. Set to 10 meters
+    // If user does not move this distance, no updates will be created.
+    public static final float MINIMUM_DISPLACEMENT = 10;
+    // Maximum time to wait for a LocationUpdate. Set to 60 seconds
+    private static final int UPDATE_INTERVAL = 60000;
+    // Minimum time to wait for a locationUpdate. Set to 5 seconds
+    private static final int FASTEST_INTERVAL = 5000;
 
     private static final String TAG = "MapFragment";
 
@@ -82,32 +86,32 @@ public class MapFragment extends Fragment {
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
-        LatLng currentLocation = LocationUtils.toLatLng(LocationUtils.getCurrentLocation(getContext()));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM_LEVEL));
-
-        subscribeToLocationRequests();
+        subscribeToLocationRequests(map);
     }
 
-    private void subscribeToLocationRequests() {
+    private void subscribeToLocationRequests(final GoogleMap map) {
         // Create a LocationRequest
         LocationRequest locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
+        locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
 
         // Call onLocationChange method when new Location is found
         LocationServices.getFusedLocationProviderClient(getContext())
                 .requestLocationUpdates(locationRequest, new LocationCallback() {
                             @Override
                             public void onLocationResult(LocationResult locationResult) {
-                                onLocationChange(locationResult.getLastLocation());
+                                onLocationChange(locationResult.getLastLocation(), map);
                             }
                         },
                         Looper.myLooper());
     }
 
-    private void onLocationChange(Location lastLocation) {
+    // Method called every FASTEST_INTERVAL seconds as long as user as moved at least MINIMUM_DISPLACEMENT
+    private void onLocationChange(Location lastLocation, GoogleMap map) {
         // This is where post markers will be changed
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));
     }
 }
