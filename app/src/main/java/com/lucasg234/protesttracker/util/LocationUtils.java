@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.parse.ParseGeoPoint;
@@ -20,6 +21,11 @@ import java.util.Locale;
  */
 public class LocationUtils {
     private static final String TAG = "LocationUtils";
+
+    // Converts a Location object to the equivalent LatLng object
+    public static LatLng toLatLng(Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
 
     // Returns the last known location of the user
     public static Location getCurrentLocation(Context context) {
