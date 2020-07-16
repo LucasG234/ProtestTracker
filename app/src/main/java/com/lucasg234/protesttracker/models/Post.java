@@ -1,5 +1,7 @@
 package com.lucasg234.protesttracker.models;
 
+import androidx.annotation.Nullable;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
@@ -11,7 +13,7 @@ import com.parse.ParseRelation;
  * All fields are represented by key constants
  */
 @ParseClassName("Post")
-public class Post extends ParseObject {
+public class Post extends ParseObject implements Comparable<Post> {
     // Keys for all Parse fields
     public static final String KEY_OBJECT_ID = "objectId";
     public static final String KEY_CREATED_AT = "createdAt";
@@ -24,6 +26,16 @@ public class Post extends ParseObject {
 
     // Additional constants
     public static final int QUERY_LIMIT = 20;
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return obj instanceof Post && this.getObjectId().equals(((Post) obj).getObjectId());
+    }
+
+    @Override
+    public int compareTo(Post post) {
+        return this.getObjectId().compareTo(post.getObjectId());
+    }
 
     public User getAuthor() {
         return (User) getParseUser(KEY_AUTHOR);
@@ -65,4 +77,5 @@ public class Post extends ParseObject {
     public ParseRelation<User> getIgnoredBy() {
         return getRelation(KEY_IGNORED_BY);
     }
+
 }

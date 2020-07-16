@@ -92,9 +92,12 @@ public class MapFragment extends Fragment {
             LocationPermissions.requestLocationPermission(this);
             return;
         }
-        // Configure initial settings
+        // Map follows current user's location
         map.setMyLocationEnabled(true);
+        // Adds a button that zooms the camera to the user
         map.getUiSettings().setMyLocationButtonEnabled(true);
+        // Adds our listener to add markers
+        map.setOnCameraMoveListener(new MapListener(getContext(), map));
 
         subscribeToLocationRequests(map);
     }
@@ -122,9 +125,8 @@ public class MapFragment extends Fragment {
                         Looper.myLooper());
     }
 
-    // Method called every FASTEST_INTERVAL seconds as long as user as moved at least MINIMUM_DISPLACEMENT
+    // Method called every FASTEST_INTERVAL seconds as long as user has moved at least MINIMUM_DISPLACEMENT
     private void onLocationChange(Location lastLocation, GoogleMap map) {
-        // This is where post markers will be changed
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));
     }
