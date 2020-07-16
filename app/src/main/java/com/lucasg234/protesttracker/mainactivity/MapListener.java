@@ -3,11 +3,13 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.util.LocationUtils;
@@ -70,6 +72,10 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
+                if(e != null) {
+                    Log.e(TAG, "Error querying posts for markers");
+                    Toast.makeText(mContext, mContext.getString(R.string.error_load), Toast.LENGTH_SHORT).show();
+                }
                 addMarkers(posts);
                 mStoredPosts.addAll(posts);
                 Log.i(TAG, "Total posts collected: " + mStoredPosts.size());

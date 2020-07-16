@@ -84,7 +84,9 @@ public class ComposeFragment extends Fragment {
         mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                savePost();
+                if (validatePost()) {
+                    savePost();
+                }
             }
         });
 
@@ -92,7 +94,7 @@ public class ComposeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Configure internal storage for the image if not already done, then open the camera to take it
-                if(mInternalImageStorage != null) {
+                if (mInternalImageStorage != null) {
                     configureTempImageStorage();
                 }
                 openCamera();
@@ -173,6 +175,25 @@ public class ComposeFragment extends Fragment {
             Toast.makeText(getContext(), getString(R.string.error_file_generation), Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    // Determines whether the current composeEditText and composeImagePreview represent a valid post
+    // Outputs an error message in a Toast if false
+    private boolean validatePost() {
+        String text = mBinding.composeEditText.getText().toString();
+
+        // Ensure text is not empty or only whitespace
+        if (text.trim().isEmpty()) {
+            Toast.makeText(getContext(), getString(R.string.error_post_no_text), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        // Impose maximum text length
+        else if (text.length() > Post.MAXIMUM_LENGTH) {
+            Toast.makeText(getContext(), getString(R.string.error_post_over_maximum), Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        return true;
     }
 
     // Constructs Post object and saves it to the Parse server

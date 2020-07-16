@@ -26,6 +26,7 @@ public class Post extends ParseObject implements Comparable<Post> {
 
     // Additional constants
     public static final int QUERY_LIMIT = 20;
+    public static final int MAXIMUM_LENGTH = 300;
 
     @Override
     public boolean equals(@Nullable Object obj) {

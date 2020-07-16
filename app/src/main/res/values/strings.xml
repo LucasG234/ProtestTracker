@@ -37,5 +37,7 @@
     <string name="error_address_generation">Address for image origin unknown.</string>
     <string name="error_map_load">Map could not load. Check your connection and try again.</string>
     <string name="error_file_generation">Could not access files.</string>
+    <string name="error_post_no_text">Cannot create a post with no text.</string>
+    <string name="error_post_over_maximum">Cannot create a post over the maximum length.</string>
 
 </resources>
