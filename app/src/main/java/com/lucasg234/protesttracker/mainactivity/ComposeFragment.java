@@ -104,6 +104,10 @@ public class ComposeFragment extends Fragment {
         mBinding.composeGalleryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Configure internal storage for the image if not already done, then open the gallery to find it
+                if (mInternalImageStorage == null) {
+                    configureTempImageStorage();
+                }
                 openGallery();
             }
         });

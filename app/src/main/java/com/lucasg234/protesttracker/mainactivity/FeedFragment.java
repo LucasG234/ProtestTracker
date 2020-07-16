@@ -20,10 +20,12 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -169,20 +171,28 @@ public class FeedFragment extends Fragment {
 
     private class FeedInteractionListener implements FeedAdapter.PostInteractionListener {
 
+        // Open a PostDetailActivity on the clicked post
         @Override
-        public void onPostClicked(int position) {
+        public void onPostClicked(Post post) {
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mAdapter.getPosts().get(position));
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
             startActivity(detailIntent);
         }
 
+        // Add the current user to the ignoredBy relation for the post
+        // Then remove it from the feed
         @Override
-        public void onIgnoreClicked(int position) {
-            
+        public void onIgnoreClicked(Post post) {
+            ParseRelation<User> ignoredBy = post.getIgnoredBy();
+            ignoredBy.add((User) User.getCurrentUser());
+            post.saveInBackground();
+
+            mAdapter.getPosts().remove(post);
+            mAdapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onRecommendClicked(int position) {
+        public void onRecommendClicked(Post post) {
 
         }
     }

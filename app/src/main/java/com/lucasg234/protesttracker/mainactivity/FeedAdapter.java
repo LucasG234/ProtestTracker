@@ -39,9 +39,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // This interface handles interaction with the FeedFragment MainActivity on interactions
     // This can be extended to include double taps, long holds, swipes, etc.
     public interface PostInteractionListener {
-        void onPostClicked(int position);
-        void onIgnoreClicked(int position);
-        void onRecommendClicked(int position);
+        void onPostClicked(Post post);
+
+        void onIgnoreClicked(Post post);
+
+        void onRecommendClicked(Post post);
     }
 
     @NonNull
@@ -78,6 +80,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     public List<Post> getPosts() {
         return mPosts;
     }
+
 
     class FeedViewHolder extends RecyclerView.ViewHolder {
 
@@ -117,21 +120,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postLayoutContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onPostClicked(getAdapterPosition());
+                    mInteractionListener.onPostClicked(mPosts.get(getAdapterPosition()));
                 }
             });
 
             mBinding.postIgnoreButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onIgnoreClicked(getAdapterPosition());
+                    mInteractionListener.onIgnoreClicked(mPosts.get(getAdapterPosition()));
                 }
             });
 
             mBinding.postRecommendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onRecommendClicked(getAdapterPosition());
+                    mInteractionListener.onRecommendClicked(mPosts.get(getAdapterPosition()));
                 }
             });
         }
