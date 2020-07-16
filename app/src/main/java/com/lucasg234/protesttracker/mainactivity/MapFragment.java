@@ -96,8 +96,12 @@ public class MapFragment extends Fragment {
         map.setMyLocationEnabled(true);
         // Adds a button that zooms the camera to the user
         map.getUiSettings().setMyLocationButtonEnabled(true);
+
         // Adds our listener to add markers
-        map.setOnCameraMoveListener(new MapListener(getContext(), map));
+        MapListener mapListener = new MapListener(getContext(), map);
+        map.setOnCameraMoveListener(mapListener);
+        // Call listener immediately to add markers before any user movement
+        mapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
 
         subscribeToLocationRequests(map);
     }

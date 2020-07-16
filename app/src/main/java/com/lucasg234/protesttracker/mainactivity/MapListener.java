@@ -12,7 +12,7 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -24,8 +24,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener {
 
     private Context mContext;
     private GoogleMap mMap;
-    // Set used to prevent duplicates with better performance
-    private SortedSet<Post> mPosts;
+    // Set used to hold all posts found efficiently without order
+    private Set<Post> mPosts;
 
     public MapListener(Context context, GoogleMap map) {
         this.mContext = context;
@@ -36,7 +36,10 @@ public class MapListener implements GoogleMap.OnCameraMoveListener {
     // On Camera move, find the current visibleBounds and query for posts within them
     @Override
     public void onCameraMove() {
-        LatLngBounds visibleBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+        queryPostsInBounds(mMap.getProjection().getVisibleRegion().latLngBounds);
+    }
+
+    public void queryPostsInBounds(LatLngBounds visibleBounds) {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 
         ParseGeoPoint southwest = new ParseGeoPoint(visibleBounds.southwest.latitude, visibleBounds.southwest.longitude);
@@ -49,10 +52,14 @@ public class MapListener implements GoogleMap.OnCameraMoveListener {
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
-                // No duplicate posts added natively for the SortedSet
+                addMarkers(posts);
                 mPosts.addAll(posts);
-                Log.i(TAG, "Posts number:" + mPosts.size());
+                Log.i(TAG, "Total posts collected: " + mPosts.size());
             }
         });
+    }
+
+    private void addMarkers(List<Post> posts) {
+        posts.removeAll(mPosts);
     }
 }
