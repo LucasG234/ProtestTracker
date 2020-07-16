@@ -5,7 +5,9 @@ import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -25,12 +27,12 @@ public class MapListener implements GoogleMap.OnCameraMoveListener {
     private Context mContext;
     private GoogleMap mMap;
     // Set used to hold all posts found efficiently without order
-    private Set<Post> mPosts;
+    private Set<Post> mStoredPosts;
 
     public MapListener(Context context, GoogleMap map) {
         this.mContext = context;
         this.mMap = map;
-        this.mPosts = new TreeSet<Post>();
+        this.mStoredPosts = new TreeSet<Post>();
     }
 
     // On Camera move, find the current visibleBounds and query for posts within them
@@ -53,13 +55,20 @@ public class MapListener implements GoogleMap.OnCameraMoveListener {
             @Override
             public void done(List<Post> posts, ParseException e) {
                 addMarkers(posts);
-                mPosts.addAll(posts);
-                Log.i(TAG, "Total posts collected: " + mPosts.size());
+                mStoredPosts.addAll(posts);
+                Log.i(TAG, "Total posts collected: " + mStoredPosts.size());
             }
         });
     }
 
-    private void addMarkers(List<Post> posts) {
-        posts.removeAll(mPosts);
+    private void addMarkers(List<Post> newPosts) {
+        newPosts.removeAll(mStoredPosts);
+        for (Post post : newPosts) {
+            MarkerOptions marker = new MarkerOptions();
+            marker.position(LocationUtils.toLatLng(post.getLocation()));
+            marker.title(post.getAuthor().getUsername());
+            marker.snippet(post.getText());
+            mMap.addMarker(marker);
+        }
     }
 }

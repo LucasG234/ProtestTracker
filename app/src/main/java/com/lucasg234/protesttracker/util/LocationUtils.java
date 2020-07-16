@@ -27,6 +27,11 @@ public class LocationUtils {
         return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
+    // Converts a ParseGeoPoint object to the equivalent LatLng object
+    public static LatLng toLatLng(ParseGeoPoint location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
     // Returns the last known location of the user
     public static Location getCurrentLocation(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
