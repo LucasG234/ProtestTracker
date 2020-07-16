@@ -16,6 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.lucas.fileprovider"
