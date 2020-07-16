@@ -48,7 +48,7 @@ public class ComposeFragment extends Fragment {
     private static final String TAG = "ComposeFragment";
 
     private FragmentComposeBinding mBinding;
-    private File mTempInternalImageStorage;
+    private File mInternalImageStorage;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -82,7 +82,6 @@ public class ComposeFragment extends Fragment {
         mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Let PermissionsDispatcher handle permission requests
                 savePost();
             }
         });
@@ -90,7 +89,9 @@ public class ComposeFragment extends Fragment {
         mBinding.composeCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openCamera();
+                // Configure internal storage for the image, then open the camera to take it
+                File internalStorage = configureTempImageStorage();
+                openCamera(internalStorage);
             }
         });
 
@@ -100,8 +101,6 @@ public class ComposeFragment extends Fragment {
                 openGallery();
             }
         });
-
-        configureTempImageStorage();
     }
 
     // Used to receive photos after camera or gallery usage
@@ -117,13 +116,13 @@ public class ComposeFragment extends Fragment {
         switch (requestCode) {
             case ACTIVITY_REQUEST_CODE_CAMERA:
                 Log.i(TAG, "received photo from camera");
-                takenImage = ImageUtils.decodeInternalImage(Uri.fromFile(mTempInternalImageStorage));
+                takenImage = ImageUtils.decodeInternalImage(Uri.fromFile(mInternalImageStorage));
                 break;
             case ACTIVITY_REQUEST_CODE_GALLERY:
                 Log.i(TAG, "received photo from gallery");
                 Uri photoUri = data.getData();
                 takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
-                ImageUtils.saveImageToInternalStorage(takenImage, mTempInternalImageStorage);
+                ImageUtils.saveImageToInternalStorage(takenImage, mInternalImageStorage);
                 break;
             default:
                 Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
@@ -144,7 +143,7 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    private void configureTempImageStorage() {
+    private File configureTempImageStorage() {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
@@ -156,7 +155,7 @@ public class ComposeFragment extends Fragment {
         }
 
         // Create the file target for camera taken images based on the constant file name
-        mTempInternalImageStorage = new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
+        return new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
     }
 
     // Constructs Post object and saves it to the Parse server
@@ -186,7 +185,7 @@ public class ComposeFragment extends Fragment {
         // Check if there is currently a previewed image
         if (mBinding.composeImagePreview.getDrawable() != null) {
             // If there is, the current image will be stored within the the temp image storage
-            post.setImage(new ParseFile(mTempInternalImageStorage));
+            post.setImage(new ParseFile(mInternalImageStorage));
         }
 
         post.saveInBackground(new SaveCallback() {
@@ -201,17 +200,20 @@ public class ComposeFragment extends Fragment {
                 Log.i(TAG, "Saved post successfully");
                 mBinding.composeEditText.setText("");
                 mBinding.composeImagePreview.setImageBitmap(null);
+                // Delete the take image from internal storage
+                mInternalImageStorage.delete();
+                mInternalImageStorage = null;
             }
         });
     }
 
-    private void openCamera() {
+    private void openCamera(File internalStorage) {
         // create Intent to take a picture and return control to the calling application
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // wrap this our target File object into a content provider
         // required for API >= 24
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", mTempInternalImageStorage);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", internalStorage);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         // Ensure there is an app which can handle the intent before calling it
