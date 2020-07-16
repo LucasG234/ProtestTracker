@@ -64,6 +64,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         });
     }
 
+    // Adds all new posts within current visible bounds to mStoredPosts and calls addMarkers
     public void queryPostsInBounds(LatLngBounds visibleBounds) {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 
@@ -84,6 +85,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         });
     }
 
+    // Adds markers to map for each new post
     private void addMarkers(List<Post> newPosts) {
         newPosts.removeAll(mStoredPosts);
         for (Post post : newPosts) {

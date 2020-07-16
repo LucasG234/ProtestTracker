@@ -3,7 +3,6 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -102,34 +97,37 @@ public class MapFragment extends Fragment {
         map.setOnCameraMoveListener(mapListener);
         map.setOnInfoWindowClickListener(mapListener);
 
-        // Call listener immediately to add markers before any user movement
+        // Call set location and call listener immediately to add markers before any user movement
+        onLocationChange(LocationUtils.getCurrentLocation(getContext()), map);
         mapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
 
-        subscribeToLocationRequests(map);
+        // Map automatically handles movement
+        // No need to subscribe to location changes unless handling specific actions
+//        subscribeToLocationRequests(map);
     }
-
-    private void subscribeToLocationRequests(final GoogleMap map) {
-        // Create a LocationRequest
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        locationRequest.setInterval(UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL);
-        locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
-
-        if (!LocationPermissions.checkLocationPermission(getContext())) {
-            LocationPermissions.requestLocationPermission(this);
-            return;
-        }
-        // Call onLocationChange method when new Location is found
-        LocationServices.getFusedLocationProviderClient(getContext())
-                .requestLocationUpdates(locationRequest, new LocationCallback() {
-                            @Override
-                            public void onLocationResult(LocationResult locationResult) {
-                                onLocationChange(locationResult.getLastLocation(), map);
-                            }
-                        },
-                        Looper.myLooper());
-    }
+//
+//    private void subscribeToLocationRequests(final GoogleMap map) {
+//        // Create a LocationRequest
+//        LocationRequest locationRequest = new LocationRequest();
+//        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//        locationRequest.setInterval(UPDATE_INTERVAL);
+//        locationRequest.setFastestInterval(FASTEST_INTERVAL);
+//        locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
+//
+//        if (!LocationPermissions.checkLocationPermission(getContext())) {
+//            LocationPermissions.requestLocationPermission(this);
+//            return;
+//        }
+//        // Call onLocationChange method when new Location is found
+//        LocationServices.getFusedLocationProviderClient(getContext())
+//                .requestLocationUpdates(locationRequest, new LocationCallback() {
+//                            @Override
+//                            public void onLocationResult(LocationResult locationResult) {
+//                                onLocationChange(locationResult.getLastLocation(), map);
+//                            }
+//                        },
+//                        Looper.myLooper());
+//    }
 
     // Method called every FASTEST_INTERVAL seconds as long as user has moved at least MINIMUM_DISPLACEMENT
     private void onLocationChange(Location lastLocation, GoogleMap map) {
