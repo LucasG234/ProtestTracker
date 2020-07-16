@@ -81,14 +81,7 @@ public class FeedFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        FeedAdapter.PostInteractionListener interactionListener = new FeedAdapter.PostInteractionListener() {
-            @Override
-            public void onPostClicked(int position) {
-                Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
-                detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mAdapter.getPosts().get(position));
-                startActivity(detailIntent);
-            }
-        };
+        FeedAdapter.PostInteractionListener interactionListener = new FeedInteractionListener();
         mAdapter = new FeedAdapter(getContext(), new ArrayList<Post>(), interactionListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -171,6 +164,26 @@ public class FeedFragment extends Fragment {
         if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class FeedInteractionListener implements FeedAdapter.PostInteractionListener {
+
+        @Override
+        public void onPostClicked(int position) {
+            Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mAdapter.getPosts().get(position));
+            startActivity(detailIntent);
+        }
+
+        @Override
+        public void onIgnoreClicked(int position) {
+            
+        }
+
+        @Override
+        public void onRecommendClicked(int position) {
+
         }
     }
 }

@@ -40,6 +40,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // This can be extended to include double taps, long holds, swipes, etc.
     public interface PostInteractionListener {
         void onPostClicked(int position);
+        void onIgnoreClicked(int position);
+        void onRecommendClicked(int position);
     }
 
     @NonNull
@@ -116,6 +118,20 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 @Override
                 public void onClick(View view) {
                     mInteractionListener.onPostClicked(getAdapterPosition());
+                }
+            });
+
+            mBinding.postIgnoreButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mInteractionListener.onIgnoreClicked(getAdapterPosition());
+                }
+            });
+
+            mBinding.postRecommendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mInteractionListener.onRecommendClicked(getAdapterPosition());
                 }
             });
         }

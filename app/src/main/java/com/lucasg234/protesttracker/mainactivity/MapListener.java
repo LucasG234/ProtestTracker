@@ -72,7 +72,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
-                if(e != null) {
+                if (e != null) {
                     Log.e(TAG, "Error querying posts for markers");
                     Toast.makeText(mContext, mContext.getString(R.string.error_load), Toast.LENGTH_SHORT).show();
                 }
