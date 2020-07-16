@@ -100,6 +100,8 @@ public class MapFragment extends Fragment {
         // Adds our listener to add markers
         MapListener mapListener = new MapListener(getContext(), map);
         map.setOnCameraMoveListener(mapListener);
+        map.setOnInfoWindowClickListener(mapListener);
+
         // Call listener immediately to add markers before any user movement
         mapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
 

@@ -15,7 +15,6 @@ import com.lucasg234.protesttracker.util.Utils;
 /**
  * Fragment which displays additional details about a given post
  * Created in FeedFragment when posts are clicked by users
- * TODO: create in MapFragment
  */
 public class PostDetailActivity extends AppCompatActivity {
 
