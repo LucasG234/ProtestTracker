@@ -1,5 +1,6 @@
 package com.lucasg234.protesttracker.mainactivity;
 
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentMapBinding;
+import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.LocationUtils;
 
 /**
@@ -79,9 +82,17 @@ public class MapFragment extends Fragment {
                 }
             });
         }
+        else {
+            Log.e(TAG, "mapFragment was null on onViewCreated");
+            Toast.makeText(getContext(), getString(R.string.error_map_load), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loadMap(GoogleMap map) {
+        if (!LocationPermissions.checkLocationPermission(getContext())) {
+            LocationPermissions.requestLocationPermission(this);
+            return;
+        }
         // Configure initial settings
         map.setMyLocationEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(true);
@@ -97,6 +108,10 @@ public class MapFragment extends Fragment {
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
 
+        if(!LocationPermissions.checkLocationPermission(getContext())) {
+            LocationPermissions.requestLocationPermission(this);
+            return;
+        }
         // Call onLocationChange method when new Location is found
         LocationServices.getFusedLocationProviderClient(getContext())
                 .requestLocationUpdates(locationRequest, new LocationCallback() {
@@ -113,5 +128,20 @@ public class MapFragment extends Fragment {
         // This is where post markers will be changed
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // If permission was just granted to allow location services, then restart view loading
+        if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        getFragmentManager()
+                .beginTransaction()
+                .detach(this)
+                .attach(this)
+                .commit();
+        }
     }
 }

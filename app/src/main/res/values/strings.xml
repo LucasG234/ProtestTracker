@@ -35,5 +35,6 @@
     <string name="error_gallery_missing">No installed app to select photos from.</string>
     <string name="error_location">Could not find current location. Check your GPS and permission settings and try again.</string>
     <string name="error_address_generation">Address for image origin unknown.</string>
+    <string name="error_map_load">Map could not load. Check your connection and try again.</string>
 
 </resources>
