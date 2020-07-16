@@ -82,6 +82,7 @@ public class MapFragment extends Fragment {
         }
     }
 
+    // Configures the GoogleMap
     private void loadMap(GoogleMap map) {
         if (!LocationPermissions.checkLocationPermission(getContext())) {
             LocationPermissions.requestLocationPermission(this);

@@ -12,31 +12,30 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
  * This listener is notified whenever the user moves the camera
  * It handles the turning Parse posts into Markers on the map
  */
-public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.OnInfoWindowClickListener{
+public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.OnInfoWindowClickListener {
     private static final String TAG = "MapListener";
 
     private Context mContext;
     private GoogleMap mMap;
     // Set used to hold all posts found efficiently without order
-    private Set<Post> mStoredPosts;
+    private PostSet mStoredPosts;
 
     public MapListener(Context context, GoogleMap map) {
         this.mContext = context;
         this.mMap = map;
-        this.mStoredPosts = new TreeSet<Post>();
+        this.mStoredPosts = new PostSet();
     }
 
     // Called on camera movement
@@ -50,18 +49,11 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // Launches a PostDetailActivity
     @Override
     public void onInfoWindowClick(Marker marker) {
-        // Find the post this window is associated with
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        query.whereEqualTo(Post.KEY_OBJECT_ID, marker.getTag());
-        query.include(Post.KEY_AUTHOR);
-        query.getFirstInBackground(new GetCallback<Post>() {
-            @Override
-            public void done(Post post, ParseException e) {
-                Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
-                detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-                mContext.startActivity(detailIntent);
-            }
-        });
+        Post markerPost = mStoredPosts.getPostById((String) marker.getTag());
+
+        Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
+        detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
+        mContext.startActivity(detailIntent);
     }
 
     // Adds all new posts within current visible bounds to mStoredPosts and calls addMarkers
@@ -97,6 +89,18 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             Marker marker = mMap.addMarker(markerOptions);
             // Tag is used to identify which post this marker represents
             marker.setTag(post.getObjectId());
+        }
+    }
+
+    private class PostSet extends TreeSet<Post> {
+        public Post getPostById(String objectId) {
+            Iterator<Post> iter = this.descendingIterator();
+            while (iter.hasNext()) {
+                Post post = iter.next();
+                if (post.getObjectId().equals(objectId))
+                    return post;
+            }
+            return null;
         }
     }
 }
