@@ -94,7 +94,7 @@ public class ComposeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 // Configure internal storage for the image if not already done, then open the camera to take it
-                if (mInternalImageStorage != null) {
+                if (mInternalImageStorage == null) {
                     configureTempImageStorage();
                 }
                 openCamera();
