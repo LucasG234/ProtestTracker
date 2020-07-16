@@ -36,5 +36,6 @@
     <string name="error_location">Could not find current location. Check your GPS and permission settings and try again.</string>
     <string name="error_address_generation">Address for image origin unknown.</string>
     <string name="error_map_load">Map could not load. Check your connection and try again.</string>
+    <string name="error_file_generation">Could not access files.</string>
 
 </resources>

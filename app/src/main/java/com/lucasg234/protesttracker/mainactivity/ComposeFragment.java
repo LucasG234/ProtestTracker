@@ -32,6 +32,9 @@ import com.parse.ParseGeoPoint;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -43,7 +46,6 @@ public class ComposeFragment extends Fragment {
 
     public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
     public static final int ACTIVITY_REQUEST_CODE_GALLERY = 321;
-    public static final String TEMP_PHOTO_NAME = "ProtestTrackerTemp.jpg";
 
     private static final String TAG = "ComposeFragment";
 
@@ -154,8 +156,22 @@ public class ComposeFragment extends Fragment {
             Log.d(TAG, "failed to create directory");
         }
 
-        // Create the file target for camera taken images based on the constant file name
-        return new File(mediaStorageDir.getPath() + File.separator + TEMP_PHOTO_NAME);
+        // Generate photo name based upon current time
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        try {
+            File internalStorage = File.createTempFile(
+                    timeStamp,  /* prefix */
+                    ".jpg",         /* suffix */
+                    mediaStorageDir      /* directory */
+            );
+            mInternalImageStorage = internalStorage;
+            return internalStorage;
+        } catch (IOException e) {
+            Log.e(TAG, "Could not generate internal image storage");
+            Toast.makeText(getContext(), getString(R.string.error_file_generation), Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
     }
 
     // Constructs Post object and saves it to the Parse server
