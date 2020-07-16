@@ -81,8 +81,7 @@ public class MapFragment extends Fragment {
                     loadMap(googleMap);
                 }
             });
-        }
-        else {
+        } else {
             Log.e(TAG, "mapFragment was null on onViewCreated");
             Toast.makeText(getContext(), getString(R.string.error_map_load), Toast.LENGTH_SHORT).show();
         }
@@ -108,7 +107,7 @@ public class MapFragment extends Fragment {
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
         locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
 
-        if(!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(getContext())) {
             LocationPermissions.requestLocationPermission(this);
             return;
         }
@@ -137,11 +136,11 @@ public class MapFragment extends Fragment {
         // If permission was just granted to allow location services, then restart view loading
         if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-        getFragmentManager()
-                .beginTransaction()
-                .detach(this)
-                .attach(this)
-                .commit();
+            getFragmentManager()
+                    .beginTransaction()
+                    .detach(this)
+                    .attach(this)
+                    .commit();
         }
     }
 }

@@ -91,9 +91,11 @@ public class ComposeFragment extends Fragment {
         mBinding.composeCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Configure internal storage for the image, then open the camera to take it
-                File internalStorage = configureTempImageStorage();
-                openCamera(internalStorage);
+                // Configure internal storage for the image if not already done, then open the camera to take it
+                if(mInternalImageStorage != null) {
+                    configureTempImageStorage();
+                }
+                openCamera();
             }
         });
 
@@ -145,7 +147,9 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    private File configureTempImageStorage() {
+    // Method which generates a File object for the camera to store images into
+    // Called only whenever the user opens
+    private void configureTempImageStorage() {
         // Get safe storage directory for photos
         // Use `getExternalFilesDir` on Context to access package-specific directories.
         // This way, we don't need to request external read/write runtime permissions.
@@ -159,17 +163,14 @@ public class ComposeFragment extends Fragment {
         // Generate photo name based upon current time
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         try {
-            File internalStorage = File.createTempFile(
+            mInternalImageStorage = File.createTempFile(
                     timeStamp,  /* prefix */
                     ".jpg",         /* suffix */
                     mediaStorageDir      /* directory */
             );
-            mInternalImageStorage = internalStorage;
-            return internalStorage;
         } catch (IOException e) {
-            Log.e(TAG, "Could not generate internal image storage");
+            Log.e(TAG, "Could not generate internal image storage", e);
             Toast.makeText(getContext(), getString(R.string.error_file_generation), Toast.LENGTH_SHORT).show();
-            return null;
         }
 
     }
@@ -223,13 +224,13 @@ public class ComposeFragment extends Fragment {
         });
     }
 
-    private void openCamera(File internalStorage) {
+    private void openCamera() {
         // create Intent to take a picture and return control to the calling application
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         // wrap this our target File object into a content provider
         // required for API >= 24
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", internalStorage);
+        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", mInternalImageStorage);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         // Ensure there is an app which can handle the intent before calling it

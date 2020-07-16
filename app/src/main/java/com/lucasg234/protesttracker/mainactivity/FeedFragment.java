@@ -74,7 +74,7 @@ public class FeedFragment extends Fragment {
 
         // Ask for location permissions before loading posts into the feed
         // If they are not given, posts will load without relative positions
-        if(!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(getContext())) {
             LocationPermissions.requestLocationPermission(this);
         }
         queryInitialPosts();
