@@ -13,6 +13,10 @@
     <string name="login_completed">Successfully logged in!</string>
     <string name="account_created">New account created!</string>
 
+    <!-- Text for items in the Post Feed -->
+    <string name="post_recommend_button">Recommend</string>
+    <string name="post_ignore_button">Ignore</string>
+
     <!-- Text for BottomNavigationView -->
     <string name="bottom_navigation_feed">Feed</string>
     <string name="bottom_navigation_compose">Compose</string>
