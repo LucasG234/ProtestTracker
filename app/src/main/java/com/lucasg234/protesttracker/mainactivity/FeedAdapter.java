@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
@@ -59,7 +60,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
         void onIgnoreClicked(Post post);
 
-        void onRecommendClicked(Post post);
+        // Requires the ViewHolder as a parameter to make visual changes
+        void onRecommendClicked(Post post, FeedViewHolder feedViewHolder);
     }
 
     @NonNull
@@ -119,13 +121,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
     }
 
-    public void likePost(Post post) {
-        // Add functionality to visually like the post here
-    }
-
-    public void unLikePost(Post post) {
-        // Add functionality to visually unlike the post here
-    }
 
     // This method checks numberVisible posts starting from positionStart (inclusive)
     // If it determines that they are ignored, and removes them from the visible posts list if they are
@@ -263,9 +258,18 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postRecommendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onRecommendClicked(mVisiblePosts.get(getAdapterPosition()));
+                    mInteractionListener.onRecommendClicked(mVisiblePosts.get(getAdapterPosition()), FeedViewHolder.this);
                 }
             });
+        }
+
+        public void setLiked(boolean liked) {
+            if (liked) {
+                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
+            } else {
+                // 0 represents no background color
+                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorNone));
+            }
         }
     }
 }

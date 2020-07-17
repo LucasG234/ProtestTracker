@@ -191,7 +191,7 @@ public class FeedFragment extends Fragment {
         // First check whether the post is already liked by the User
         // Then like or unlike it through the adapter
         @Override
-        public void onRecommendClicked(final Post post) {
+        public void onRecommendClicked(final Post post, final FeedAdapter.FeedViewHolder feedViewHolder) {
             final ParseRelation<User> likedBy = post.getLikedBy();
             ParseQuery likedByQuery = likedBy.getQuery();
             likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
@@ -207,12 +207,12 @@ public class FeedFragment extends Fragment {
                         Log.i(TAG, "Post which user clicked on is liked");
                         likedBy.remove((User) User.getCurrentUser());
                         post.saveInBackground();
-                        mAdapter.unLikePost(post);
+                        feedViewHolder.setLiked(false);
                     } else {
                         Log.i(TAG, "Post which user clicked on is not liked");
                         likedBy.add((User) User.getCurrentUser());
                         post.saveInBackground();
-                        mAdapter.likePost(post);
+                        feedViewHolder.setLiked(true);
                     }
                 }
             });
