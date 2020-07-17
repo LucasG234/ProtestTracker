@@ -27,6 +27,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
+import com.parse.SaveCallback;
 
 import java.util.Date;
 import java.util.List;
@@ -191,7 +192,7 @@ public class FeedFragment extends Fragment {
         // First check whether the post is already liked by the User
         // Then like or unlike it through the adapter
         @Override
-        public void onRecommendClicked(final Post post, final FeedAdapter.FeedViewHolder feedViewHolder) {
+        public void onRecommendClicked(final Post post, final int position) {
             final ParseRelation<User> likedBy = post.getLikedBy();
             ParseQuery likedByQuery = likedBy.getQuery();
             likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
@@ -199,21 +200,28 @@ public class FeedFragment extends Fragment {
                 @Override
                 public void done(int count, ParseException e) {
                     if (e != null) {
-                        Log.e(TAG, "Error in determining if post liked", e);
+                        Log.e(TAG, "Error in determining if post liked on recommend button clicked", e);
                         Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     if (count > 0) {
-                        Log.i(TAG, "Post which user clicked on is liked");
                         likedBy.remove((User) User.getCurrentUser());
                         post.saveInBackground();
-                        feedViewHolder.setLiked(false);
                     } else {
-                        Log.i(TAG, "Post which user clicked on is not liked");
                         likedBy.add((User) User.getCurrentUser());
                         post.saveInBackground();
-                        feedViewHolder.setLiked(true);
                     }
+                    post.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                Log.e(TAG, "Error saving change to like status", e);
+                                Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                            }
+
+                            mAdapter.notifyItemChanged(position);
+                        }
+                    });
                 }
             });
         }

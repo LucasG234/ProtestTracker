@@ -20,6 +20,7 @@ import com.lucasg234.protesttracker.util.Utils;
 import com.parse.CountCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -60,8 +61,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
         void onIgnoreClicked(Post post);
 
-        // Requires the ViewHolder as a parameter to make visual changes
-        void onRecommendClicked(Post post, FeedViewHolder feedViewHolder);
+        // Requires the position of the post as a parameter to make visual changes
+        void onRecommendClicked(Post post, int position);
     }
 
     @NonNull
@@ -258,18 +259,31 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postRecommendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onRecommendClicked(mVisiblePosts.get(getAdapterPosition()), FeedViewHolder.this);
+                    mInteractionListener.onRecommendClicked(mVisiblePosts.get(getAdapterPosition()), getAdapterPosition());
                 }
             });
+
+            checkLiked(post);
         }
 
-        public void setLiked(boolean liked) {
-            if (liked) {
-                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
-            } else {
-                // 0 represents no background color
-                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorNone));
-            }
+        public void checkLiked(final Post post) {
+            final ParseRelation<User> likedBy = post.getLikedBy();
+            ParseQuery likedByQuery = likedBy.getQuery();
+            likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+            likedByQuery.countInBackground(new CountCallback() {
+                @Override
+                public void done(int count, ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
+                        return;
+                    }
+                    if (count > 0) {
+                        mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
+                    } else {
+                        mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorNone));
+                    }
+                }
+            });
         }
     }
 }
