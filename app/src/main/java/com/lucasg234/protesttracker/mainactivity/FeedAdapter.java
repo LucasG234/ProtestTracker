@@ -12,9 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.Utils;
+import com.parse.CountCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -62,6 +66,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
+        checkIgnoredInBackground(mPosts.get(position));
         holder.bind(mPosts.get(position));
     }
 
@@ -95,6 +100,26 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mIgnored.add(post);
             notifyItemRemoved(position);
         }
+    }
+
+    // This method checks if a post is ignored in the background
+    // If it is, it removes it from the Adapter and adds it to the ignoredBy list
+    private void checkIgnoredInBackground(final Post post) {
+        ParseQuery<User> ignoredQuery = post.getIgnoredBy().getQuery();
+        ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+        ignoredQuery.countInBackground(new CountCallback() {
+            @Override
+            public void done(int count, ParseException e) {
+                if (e != null) {
+                    // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
+                    Log.e(TAG, "Error checking ignored status", e);
+                    return;
+                }
+                if (count > 0) {
+                    ignorePost(post);
+                }
+            }
+        });
     }
 
 
