@@ -22,8 +22,10 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -105,7 +107,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         int position = mVisiblePosts.indexOf(post);
         // indexOf returns -1 if the object was not found in the list
         if (position != -1) {
-
+            mVisiblePosts.remove(post);
+            mIgnoredPosts.add(post);
+            notifyItemRemoved(position);
         }
     }
 
@@ -130,7 +134,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             }
 
             if (ignored) {
-                // Can't call ignorePost because currently iterating
+                // Can't call ignore post because adapter has not been informed of any of the new data yet
                 iter.remove();
                 mIgnoredPosts.add(currPost);
             } else {
@@ -147,25 +151,41 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // If it determines that they are ignored, it removes them from the visible posts list if they are
     // Should be used for all posts which are not initially visible
     public void checkIgnoredInBackground(int positionStart) {
-        positionStart += 5;
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
+        // Generate all queries and store in map
+        // Queries are stored as keys associated with their posts
+        Map<ParseQuery, Post> queries = new LinkedHashMap<>();
         while (iter.hasNext()) {
             final Post currPost = iter.next();
             ParseQuery<User> ignoredQuery = currPost.getIgnoredBy().getQuery();
             ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
-            ignoredQuery.countInBackground(new CountCallback() {
-                @Override
-                public void done(int count, ParseException e) {
-                    if (e != null) {
-                        // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
-                        Log.e(TAG, "Error checking ignored status", e);
-                        return;
-                    }
-                    if (count > 0) {
-                        ignorePost(currPost);
-                    }
-                }
-            });
+            queries.put(ignoredQuery, currPost);
+        }
+
+        // Send out all queries at the same time to avoid errors
+        for (ParseQuery query : queries.keySet()) {
+            query.countInBackground(new IgnoredBackgroundCallback(queries.get(query)));
+        }
+    }
+
+    class IgnoredBackgroundCallback implements CountCallback {
+
+        private Post mPost;
+
+        public IgnoredBackgroundCallback(Post post) {
+            this.mPost = post;
+        }
+
+        @Override
+        public void done(int count, ParseException e) {
+            if (e != null) {
+                // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
+                Log.e(TAG, "Error checking ignored status", e);
+                return;
+            }
+            if (count > 0) {
+                ignorePost(mPost);
+            }
         }
     }
 
