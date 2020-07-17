@@ -23,6 +23,7 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 /**
@@ -35,15 +36,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private Context mContext;
     private PostInteractionListener mInteractionListener;
-    private List<Post> mPosts;
-    private Set<Post> mIgnored;
+    private List<Post> mVisiblePosts;
+    private Set<Post> mIgnoredPosts;
 
     public FeedAdapter(Context context, PostInteractionListener interactionListener) {
         this.mContext = context;
         this.mInteractionListener = interactionListener;
 
-        this.mPosts = new ArrayList<>();
-        this.mIgnored = new HashSet<>();
+        this.mVisiblePosts = new ArrayList<>();
+        this.mIgnoredPosts = new HashSet<>();
     }
 
     // This interface handles interaction with the FeedFragment MainActivity on interactions
@@ -66,60 +67,64 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
-        checkIgnoredInBackground(mPosts.get(position));
-        holder.bind(mPosts.get(position));
+        holder.bind(mVisiblePosts.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mPosts.size();
+        return mVisiblePosts.size();
     }
 
     // Helper method to add new posts to RecyclerView
     public void addAll(List<Post> posts) {
-        mPosts.addAll(posts);
+        mVisiblePosts.addAll(posts);
         notifyDataSetChanged();
     }
 
     // Helper method to clear the RecyclerView
     public void clear() {
-        mPosts.clear();
+        mVisiblePosts.clear();
         notifyDataSetChanged();
     }
 
     // Helper method allowing other classes to get Posts from the RecyclerView
     public List<Post> getPosts() {
-        return mPosts;
+        return mVisiblePosts;
     }
 
     public void ignorePost(Post post) {
-        int position = mPosts.indexOf(post);
+        int position = mVisiblePosts.indexOf(post);
         // indexOf returns -1 if the object was not found in the list
         if (position != -1) {
-            mPosts.remove(post);
-            mIgnored.add(post);
+            mVisiblePosts.remove(post);
+            mIgnoredPosts.add(post);
             notifyItemRemoved(position);
         }
     }
 
-    // This method checks if a post is ignored in the background
-    // If it is, it removes it from the Adapter and adds it to the ignoredBy list
-    private void checkIgnoredInBackground(final Post post) {
-        ParseQuery<User> ignoredQuery = post.getIgnoredBy().getQuery();
-        ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
-        ignoredQuery.countInBackground(new CountCallback() {
-            @Override
-            public void done(int count, ParseException e) {
-                if (e != null) {
-                    // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
-                    Log.e(TAG, "Error checking ignored status", e);
-                    return;
+    // This method checks all posts from positionStart to the end of the adapter
+    // If it determines that they are ignored, it removes them from the visible posts list
+    // Should be used for all posts which are not initially visible
+    public void checkIgnoredInBackground(int positionStart) {
+        ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
+        while (iter.hasNext()) {
+            final Post currPost = iter.next();
+            ParseQuery<User> ignoredQuery = currPost.getIgnoredBy().getQuery();
+            ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+            ignoredQuery.countInBackground(new CountCallback() {
+                @Override
+                public void done(int count, ParseException e) {
+                    if (e != null) {
+                        // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
+                        Log.e(TAG, "Error checking ignored status", e);
+                        return;
+                    }
+                    if (count > 0) {
+                        ignorePost(currPost);
+                    }
                 }
-                if (count > 0) {
-                    ignorePost(post);
-                }
-            }
-        });
+            });
+        }
     }
 
 
@@ -161,21 +166,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postLayoutContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onPostClicked(mPosts.get(getAdapterPosition()));
+                    mInteractionListener.onPostClicked(mVisiblePosts.get(getAdapterPosition()));
                 }
             });
 
             mBinding.postIgnoreButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onIgnoreClicked(mPosts.get(getAdapterPosition()));
+                    mInteractionListener.onIgnoreClicked(mVisiblePosts.get(getAdapterPosition()));
                 }
             });
 
             mBinding.postRecommendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onRecommendClicked(mPosts.get(getAdapterPosition()));
+                    mInteractionListener.onRecommendClicked(mVisiblePosts.get(getAdapterPosition()));
                 }
             });
         }
