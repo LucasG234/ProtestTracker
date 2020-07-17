@@ -96,16 +96,50 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         int position = mVisiblePosts.indexOf(post);
         // indexOf returns -1 if the object was not found in the list
         if (position != -1) {
-            mVisiblePosts.remove(post);
-            mIgnoredPosts.add(post);
-            notifyItemRemoved(position);
+
+        }
+    }
+
+
+    // This method checks numberVisible posts starting from positionStart (inclusive)
+    // If it determines that they are ignored, and removes them from the visible posts list if they are
+    // Will continue checking posts until it finds numberVisible posts which are not ignored
+    // Should be used for all posts which will be initially visible
+    public void checkIgnored(int positionStart, int numberVisible) {
+        ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
+        while (iter.hasNext()) {
+            final Post currPost = iter.next();
+            ParseQuery<User> ignoredQuery = currPost.getIgnoredBy().getQuery();
+            ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+            boolean ignored;
+            try {
+                ignored = ignoredQuery.count() > 0;
+            } catch (ParseException e) {
+                // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
+                Log.e(TAG, "Error checking ignored status", e);
+                ignored = false;
+            }
+
+            if (ignored) {
+                // Can't call ignorePost because currently iterating
+                iter.remove();
+                mIgnoredPosts.add(currPost);
+            } else {
+                // User numberVisible variable as a counter for how many non-ignored posts we have found
+                numberVisible--;
+                if (numberVisible == 0) {
+                    return;
+                }
+            }
         }
     }
 
     // This method checks all posts from positionStart to the end of the adapter
-    // If it determines that they are ignored, it removes them from the visible posts list
+    // If it determines that they are ignored, it removes them from the visible posts list if they are
     // Should be used for all posts which are not initially visible
     public void checkIgnoredInBackground(int positionStart) {
+        checkIgnored(positionStart, 5);
+        positionStart += 5;
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
         while (iter.hasNext()) {
             final Post currPost = iter.next();
