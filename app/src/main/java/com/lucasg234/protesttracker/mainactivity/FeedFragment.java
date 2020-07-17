@@ -22,6 +22,7 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -177,7 +178,7 @@ public class FeedFragment extends Fragment {
         }
 
         // Add the current user to the ignoredBy relation for the post
-        // Then remove it from the feed
+        // Then remove it from the adapter
         @Override
         public void onIgnoreClicked(Post post) {
             ParseRelation<User> ignoredBy = post.getIgnoredBy();
@@ -187,9 +188,24 @@ public class FeedFragment extends Fragment {
             mAdapter.ignorePost(post);
         }
 
+        // First check whether the post is already liked by the User
+        // Then like or unlike it through the adapter
         @Override
         public void onRecommendClicked(Post post) {
-
+            final ParseRelation<User> likedBy = post.getLikedBy();
+            ParseQuery likedByQuery = likedBy.getQuery();
+            likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+            likedByQuery.countInBackground(new CountCallback() {
+                @Override
+                public void done(int count, ParseException e) {
+                    if (e != null) {
+                        Log.e(TAG, "Error in determining if post liked", e);
+                        Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Log.i(TAG, "post which user clicked on is liked: " + (count > 0));
+                }
+            });
         }
     }
 }
