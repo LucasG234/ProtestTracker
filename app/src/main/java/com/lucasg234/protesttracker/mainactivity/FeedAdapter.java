@@ -97,6 +97,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     // Helper method to clear the RecyclerView
     public void clear() {
+        // Clears only visible posts. Ignored posts are retained to speed up repeat loading
         mVisiblePosts.clear();
         notifyDataSetChanged();
     }
@@ -126,6 +127,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
         while (iter.hasNext()) {
             final Post currPost = iter.next();
+            if (mIgnoredPosts.contains(currPost)) {
+                iter.remove();
+                continue;
+            }
             ParseQuery<User> ignoredQuery = currPost.getIgnoredBy().getQuery();
             ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
             boolean ignored;
@@ -167,8 +172,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
 
         // Send out all queries at the same time to avoid errors
-        for (ParseQuery query : queries.keySet()) {
-            query.countInBackground(new IgnoredBackgroundCallback(queries.get(query)));
+        for (ParseQuery ignoreQuery : queries.keySet()) {
+            Post post = queries.get(ignoreQuery);
+            if (mIgnoredPosts.contains(post)) {
+                ignorePost(post);
+            } else {
+                ignoreQuery.countInBackground(new IgnoredBackgroundCallback(post));
+            }
         }
     }
 
