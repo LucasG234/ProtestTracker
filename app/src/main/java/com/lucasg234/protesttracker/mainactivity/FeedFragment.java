@@ -125,9 +125,6 @@ public class FeedFragment extends Fragment {
                 mAdapter.addAll(posts);
                 mBinding.feedSwipeContainer.setRefreshing(false);
                 mEndlessScrollListener.resetState();
-
-                // Check whether all posts are ignored
-                mAdapter.checkIgnoredInBackground(0);
             }
         });
     }
@@ -153,12 +150,8 @@ public class FeedFragment extends Fragment {
                     Toast.makeText(getContext(), getString(R.string.error_load), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // Store old number of posts
-                int oldSize = mAdapter.getItemCount();
                 // Add new posts, but do not clear old ones
                 mAdapter.addAll(posts);
-                // Check whether new posts are ignored
-                mAdapter.checkIgnoredInBackground(oldSize);
             }
         });
     }

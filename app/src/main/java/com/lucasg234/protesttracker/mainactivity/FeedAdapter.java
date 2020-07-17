@@ -76,9 +76,18 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
     // Helper method to add new posts to RecyclerView
-    public void addAll(List<Post> posts) {
-        mVisiblePosts.addAll(posts);
+    public void addAll(List<Post> newPosts) {
+        // Store old number of posts
+        int oldSize = getItemCount();
+        // Add new posts, but do not update visually yet
+        mVisiblePosts.addAll(newPosts);
+        // If there are few other posts, check whether these are ignored immediately
+        if (oldSize < 5) {
+            checkIgnoredInForeground(oldSize, 5 - oldSize);
+        }
+        // Allow the adapter to start loading in posts, then check all posts in background
         notifyDataSetChanged();
+        checkIgnoredInBackground(oldSize);
     }
 
     // Helper method to clear the RecyclerView
@@ -105,7 +114,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // If it determines that they are ignored, and removes them from the visible posts list if they are
     // Will continue checking posts until it finds numberVisible posts which are not ignored
     // Should be used for all posts which will be initially visible
-    public void checkIgnored(int positionStart, int numberVisible) {
+    public void checkIgnoredInForeground(int positionStart, int numberVisible) {
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
         while (iter.hasNext()) {
             final Post currPost = iter.next();
@@ -138,7 +147,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // If it determines that they are ignored, it removes them from the visible posts list if they are
     // Should be used for all posts which are not initially visible
     public void checkIgnoredInBackground(int positionStart) {
-        checkIgnored(positionStart, 5);
         positionStart += 5;
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
         while (iter.hasNext()) {
