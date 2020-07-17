@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ActivityPostDetailBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.util.LocationUtils;
-import com.lucasg234.protesttracker.util.Utils;
+import com.lucasg234.protesttracker.util.DateUtils;
 
 /**
  * Fragment which displays additional details about a given post
@@ -34,7 +34,7 @@ public class PostDetailActivity extends AppCompatActivity {
         mBinding.detailText.setText(post.getText());
         mBinding.detailUsername.setText(post.getAuthor().getUsername());
 
-        String relativeCreationTime = Utils.dateToRelative(post.getCreatedAt());
+        String relativeCreationTime = DateUtils.dateToRelative(post.getCreatedAt());
         mBinding.detailCreatedAt.setText(relativeCreationTime);
 
         String address = LocationUtils.toAddress(this, post.getLocation());
