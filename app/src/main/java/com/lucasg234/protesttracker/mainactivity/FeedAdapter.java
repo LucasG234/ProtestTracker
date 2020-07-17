@@ -16,7 +16,10 @@ import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.Utils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * RecyclerView Adapter used by the FeedFragment
@@ -27,13 +30,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private static final String TAG = "FeedAdapter";
 
     private Context mContext;
-    private List<Post> mPosts;
     private PostInteractionListener mInteractionListener;
+    private List<Post> mPosts;
+    private Set<Post> mIgnored;
 
-    public FeedAdapter(Context context, List<Post> posts, PostInteractionListener interactionListener) {
+    public FeedAdapter(Context context, PostInteractionListener interactionListener) {
         this.mContext = context;
-        this.mPosts = posts;
         this.mInteractionListener = interactionListener;
+
+        this.mPosts = new ArrayList<>();
+        this.mIgnored = new HashSet<>();
     }
 
     // This interface handles interaction with the FeedFragment MainActivity on interactions
@@ -79,6 +85,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // Helper method allowing other classes to get Posts from the RecyclerView
     public List<Post> getPosts() {
         return mPosts;
+    }
+
+    public void ignorePost(Post post) {
+        int position = mPosts.indexOf(post);
+        // indexOf returns -1 if the object was not found in the list
+        if (position != -1) {
+            mPosts.remove(post);
+            mIgnored.add(post);
+            notifyItemRemoved(position);
+        }
     }
 
 

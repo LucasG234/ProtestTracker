@@ -27,7 +27,6 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class FeedFragment extends Fragment {
 
     private void configureRecyclerView() {
         FeedAdapter.PostInteractionListener interactionListener = new FeedInteractionListener();
-        mAdapter = new FeedAdapter(getContext(), new ArrayList<Post>(), interactionListener);
+        mAdapter = new FeedAdapter(getContext(), interactionListener);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mEndlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -187,8 +186,7 @@ public class FeedFragment extends Fragment {
             ignoredBy.add((User) User.getCurrentUser());
             post.saveInBackground();
 
-            mAdapter.getPosts().remove(post);
-            mAdapter.notifyDataSetChanged();
+            mAdapter.ignorePost(post);
         }
 
         @Override
