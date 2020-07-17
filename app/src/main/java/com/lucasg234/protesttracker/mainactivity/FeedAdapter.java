@@ -119,6 +119,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
     }
 
+    public void likePost(Post post) {
+        // Add functionality to visually like the post here
+    }
+
+    public void unLikePost(Post post) {
+        // Add functionality to visually unlike the post here
+    }
+
     // This method checks numberVisible posts starting from positionStart (inclusive)
     // If it determines that they are ignored, and removes them from the visible posts list if they are
     // Will continue checking posts until it finds numberVisible posts which are not ignored
