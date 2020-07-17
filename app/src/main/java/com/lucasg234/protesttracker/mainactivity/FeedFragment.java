@@ -204,7 +204,8 @@ public class FeedFragment extends Fragment {
                         Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if (count > 0) {
+                    final boolean liked = count > 0;
+                    if (liked) {
                         likedBy.remove((User) User.getCurrentUser());
                         post.saveInBackground();
                     } else {
@@ -219,7 +220,8 @@ public class FeedFragment extends Fragment {
                                 Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
                             }
 
-                            mAdapter.notifyItemChanged(position);
+                            // Reverse liked due to change
+                            mAdapter.notifyItemChanged(position, !liked);
                         }
                     });
                 }

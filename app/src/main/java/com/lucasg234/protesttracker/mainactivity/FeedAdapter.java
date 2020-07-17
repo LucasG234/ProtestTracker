@@ -79,6 +79,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
     @Override
+    public void onBindViewHolder(@NonNull FeedViewHolder holder, int position, @NonNull List<Object> payloads) {
+        // Custom payloads made in this format
+        // All other calls to this method have empty payloads
+        if (payloads.size() == 1 && payloads.get(0) instanceof Boolean) {
+            holder.switchLiked((boolean) payloads.get(0));
+        } else {
+            super.onBindViewHolder(holder, position, payloads);
+        }
+    }
+
+    @Override
     public int getItemCount() {
         return mVisiblePosts.size();
     }
@@ -266,7 +277,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             checkLiked(post);
         }
 
-        public void checkLiked(final Post post) {
+        private void checkLiked(final Post post) {
             final ParseRelation<User> likedBy = post.getLikedBy();
             ParseQuery likedByQuery = likedBy.getQuery();
             likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
@@ -277,13 +288,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                         Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
                         return;
                     }
-                    if (count > 0) {
-                        mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
-                    } else {
-                        mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.colorNone));
-                    }
+                    switchLiked(count > 0);
                 }
             });
+        }
+
+        public void switchLiked(boolean liked) {
+            int backgroundColorCode = liked ? mContext.getResources().getColor(R.color.colorPrimary)
+                    : mContext.getResources().getColor(R.color.colorNone);
+            mBinding.getRoot().setBackgroundColor(backgroundColorCode);
         }
     }
 }
