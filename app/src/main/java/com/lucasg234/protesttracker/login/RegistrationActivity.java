@@ -38,7 +38,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 Log.i(TAG, "Register button clicked");
                 String username = mBinding.registrationUsernameText.getText().toString();
                 String password = mBinding.registrationPasswordText.getText().toString();
-                registerUser(username, password);
+                String confirmPassword = mBinding.registrationPasswordConfirmText.getText().toString();
+                if (validateRegistration(username, password, confirmPassword)) {
+                    registerUser(username, password);
+                }
             }
         });
 
@@ -49,6 +52,16 @@ public class RegistrationActivity extends AppCompatActivity {
                 navigateToActivity(LoginActivity.class);
             }
         });
+    }
+
+    // Ensure username and password meet all rules
+    private boolean validateRegistration(String username, String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, getString(R.string.error_password_match), Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            return true;
+        }
     }
 
     // Attempts to create new Parse user (and log into it)
