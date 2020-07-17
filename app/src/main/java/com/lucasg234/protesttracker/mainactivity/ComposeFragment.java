@@ -242,8 +242,10 @@ public class ComposeFragment extends Fragment {
                 Log.i(TAG, "Saved post successfully");
                 mBinding.composeEditText.setText("");
                 mBinding.composeImagePreview.setImageBitmap(null);
-                // Delete the take image from internal storage
-                mInternalImageStorage.delete();
+                // Delete the take image from internal storage if there is one
+                if (mInternalImageStorage != null) {
+                    mInternalImageStorage.delete();
+                }
                 mInternalImageStorage = null;
             }
         });

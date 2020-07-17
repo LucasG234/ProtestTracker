@@ -33,9 +33,19 @@ public class Post extends ParseObject implements Comparable<Post> {
         return obj instanceof Post && this.getObjectId().equals(((Post) obj).getObjectId());
     }
 
+    // Returns 0 if equal. Otherwise, sorts by the time the posts were createdAt
+    // Posts created at the same time sort by ObjectId
     @Override
     public int compareTo(Post post) {
-        return this.getObjectId().compareTo(post.getObjectId());
+        if (this.equals(post)) {
+            return 0;
+        } else if (this.getCreatedAt().compareTo(post.getCreatedAt()) == 0) {
+            // Do not return 0 if only the createdAt times are equal
+            // This would ruin consistency with equals
+            return this.getObjectId().compareTo(post.getObjectId());
+        } else {
+            return this.getCreatedAt().compareTo(post.getCreatedAt());
+        }
     }
 
     public User getAuthor() {

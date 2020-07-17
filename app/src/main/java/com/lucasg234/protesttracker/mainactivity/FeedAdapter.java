@@ -21,12 +21,12 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * RecyclerView Adapter used by the FeedFragment
@@ -36,18 +36,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private static final String TAG = "FeedAdapter";
 
+    public static final int NUMBER_POSTS_VISIBLE = 5;
+
     private Context mContext;
     private PostInteractionListener mInteractionListener;
     private List<Post> mVisiblePosts;
-    private Set<Post> mIgnoredPosts;
+    private SortedSet<Post> mIgnoredPosts;
 
     public FeedAdapter(Context context, PostInteractionListener interactionListener) {
         this.mContext = context;
         this.mInteractionListener = interactionListener;
 
         this.mVisiblePosts = new ArrayList<>();
-        this.mIgnoredPosts = new HashSet<>();
+        this.mIgnoredPosts = new TreeSet<>();
     }
+
 
     // This interface handles interaction with the FeedFragment MainActivity on interactions
     // This can be extended to include double taps, long holds, swipes, etc.
@@ -84,8 +87,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         // Add new posts, but do not update visually yet
         mVisiblePosts.addAll(newPosts);
         // If there are few other posts, check whether these are ignored immediately
-        if (oldSize < 5) {
-            checkIgnoredInForeground(oldSize, 5 - oldSize);
+        if (oldSize < NUMBER_POSTS_VISIBLE) {
+            checkIgnoredInForeground(oldSize, NUMBER_POSTS_VISIBLE - oldSize);
         }
         // Allow the adapter to start loading in posts, then check all posts in background
         notifyDataSetChanged();
@@ -98,9 +101,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         notifyDataSetChanged();
     }
 
-    // Helper method allowing other classes to get Posts from the RecyclerView
-    public List<Post> getPosts() {
-        return mVisiblePosts;
+    // Returns the oldest post known, considering visible and ignored list
+    public Post getOldestPost() {
+        Post oldestVisible = mVisiblePosts.get(mVisiblePosts.size() - 1);
+        Post oldestIgnored = mIgnoredPosts.last();
+        return oldestVisible.compareTo(oldestIgnored) < 0 ? oldestVisible : oldestIgnored;
     }
 
     public void ignorePost(Post post) {
@@ -112,7 +117,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             notifyItemRemoved(position);
         }
     }
-
 
     // This method checks numberVisible posts starting from positionStart (inclusive)
     // If it determines that they are ignored, and removes them from the visible posts list if they are
@@ -188,7 +192,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             }
         }
     }
-
 
     class FeedViewHolder extends RecyclerView.ViewHolder {
 

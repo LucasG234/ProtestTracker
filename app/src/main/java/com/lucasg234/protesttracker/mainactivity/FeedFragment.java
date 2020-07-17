@@ -136,10 +136,8 @@ public class FeedFragment extends Fragment {
         query.setLimit(Post.QUERY_LIMIT);
         query.include(Post.KEY_AUTHOR);
 
-        // For new posts, only get posts older [with date less than]
-        // the last post in the list
-        List<Post> posts = mAdapter.getPosts();
-        Date oldestPostDate = posts.get(posts.size() - 1).getCreatedAt();
+        // For new posts, only get posts older [with date less than] the last post
+        Date oldestPostDate = mAdapter.getOldestPost().getCreatedAt();
         query.whereLessThan(Post.KEY_CREATED_AT, oldestPostDate);
 
         query.findInBackground(new FindCallback<Post>() {
