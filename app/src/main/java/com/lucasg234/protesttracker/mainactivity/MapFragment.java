@@ -34,9 +34,9 @@ public class MapFragment extends Fragment {
     // If user does not move this distance, no updates will be created.
     public static final float MINIMUM_DISPLACEMENT = 10;
     // Maximum time to wait for a LocationUpdate. Set to 60 seconds
-    private static final int UPDATE_INTERVAL = 60000;
+    private static final int UPDATE_INTERVAL_MS = 60000;
     // Minimum time to wait for a locationUpdate. Set to 5 seconds
-    private static final int FASTEST_INTERVAL = 5000;
+    private static final int FASTEST_INTERVAL_MS = 5000;
 
     private static final String TAG = "MapFragment";
 
@@ -111,8 +111,8 @@ public class MapFragment extends Fragment {
 //        // Create a LocationRequest
 //        LocationRequest locationRequest = new LocationRequest();
 //        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//        locationRequest.setInterval(UPDATE_INTERVAL);
-//        locationRequest.setFastestInterval(FASTEST_INTERVAL);
+//        locationRequest.setInterval(UPDATE_INTERVAL_MS);
+//        locationRequest.setFastestInterval(FASTEST_INTERVAL_MS);
 //        locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
 //
 //        if (!LocationPermissions.checkLocationPermission(getContext())) {
@@ -130,7 +130,7 @@ public class MapFragment extends Fragment {
 //                        Looper.myLooper());
 //    }
 
-    // Method called every FASTEST_INTERVAL seconds as long as user has moved at least MINIMUM_DISPLACEMENT
+    // Method called every FASTEST_INTERVAL_MS milliseconds as long as user has moved at least MINIMUM_DISPLACEMENT
     private void onLocationChange(Location lastLocation, GoogleMap map) {
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));

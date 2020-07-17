@@ -123,7 +123,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // If it determines that they are ignored, and removes them from the visible posts list if they are
     // Will continue checking posts until it finds numberVisible posts which are not ignored
     // Should be used for all posts which will be initially visible
-    public void checkIgnoredInForeground(int positionStart, int numberVisible) {
+    private void checkIgnoredInForeground(int positionStart, int numberVisible) {
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
         while (iter.hasNext()) {
             final Post currPost = iter.next();
@@ -147,7 +147,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 iter.remove();
                 mIgnoredPosts.add(currPost);
             } else {
-                // User numberVisible variable as a counter for how many non-ignored posts we have found
+                // Use numberVisible variable as a counter for how many non-ignored posts we have found
                 numberVisible--;
                 if (numberVisible == 0) {
                     return;
@@ -159,7 +159,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // This method checks all posts from positionStart to the end of the adapter
     // If it determines that they are ignored, it removes them from the visible posts list if they are
     // Should be used for all posts which are not initially visible
-    public void checkIgnoredInBackground(int positionStart) {
+    private void checkIgnoredInBackground(int positionStart) {
         ListIterator<Post> iter = mVisiblePosts.listIterator(positionStart);
         // Generate all queries and store in map
         // Queries are stored as keys associated with their posts
@@ -172,12 +172,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
 
         // Send out all queries at the same time to avoid errors
-        for (ParseQuery ignoreQuery : queries.keySet()) {
-            Post post = queries.get(ignoreQuery);
+        for (ParseQuery ignoredQuery : queries.keySet()) {
+            Post post = queries.get(ignoredQuery);
             if (mIgnoredPosts.contains(post)) {
                 ignorePost(post);
             } else {
-                ignoreQuery.countInBackground(new IgnoredBackgroundCallback(post));
+                ignoredQuery.countInBackground(new IgnoredBackgroundCallback(post));
             }
         }
     }
