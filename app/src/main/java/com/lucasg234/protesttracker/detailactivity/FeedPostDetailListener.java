@@ -17,7 +17,7 @@ public class FeedPostDetailListener implements PostDetailActivity.PostDetailInte
 
     @Override
     public void onRecommendClicked(Post post) {
-        Log.i(TAG, "Feed listener found recommend ignore click");
+        Log.i(TAG, "Feed listener found detail recommend click");
     }
 
     // Normal constructor

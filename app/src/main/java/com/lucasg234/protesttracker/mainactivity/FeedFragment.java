@@ -18,6 +18,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
+import com.lucasg234.protesttracker.detailactivity.FeedPostDetailListener;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
@@ -175,6 +176,7 @@ public class FeedFragment extends Fragment {
         public void onPostClicked(Post post) {
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LISTENER, new FeedPostDetailListener());
             startActivity(detailIntent);
         }
 

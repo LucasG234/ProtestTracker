@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.databinding.ActivityPostDetailBinding;
 import com.lucasg234.protesttracker.models.Post;
-import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.DateUtils;
+import com.lucasg234.protesttracker.util.LocationUtils;
 
 /**
  * Fragment which displays additional details about a given post
@@ -20,6 +20,8 @@ import com.lucasg234.protesttracker.util.DateUtils;
 public class PostDetailActivity extends AppCompatActivity {
 
     public static final String KEY_INTENT_EXTRA_POST = "parcelable_post";
+    public static final String KEY_INTENT_EXTRA_LISTENER = "parcelable_listener";
+
     private static final String TAG = "PostDetailActivity";
     private ActivityPostDetailBinding mBinding;
 
@@ -37,8 +39,15 @@ public class PostDetailActivity extends AppCompatActivity {
         mBinding = ActivityPostDetailBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        Post post = getIntent().getExtras().getParcelable(KEY_INTENT_EXTRA_POST);
+        Bundle extras = getIntent().getExtras();
+        Post post = extras.getParcelable(KEY_INTENT_EXTRA_POST);
+        PostDetailInteractionListener listener = extras.getParcelable(KEY_INTENT_EXTRA_LISTENER);
 
+        configureVisualElements(post);
+        configureButtons(post, listener);
+    }
+
+    private void configureVisualElements(Post post) {
         mBinding.detailText.setText(post.getText());
         mBinding.detailUsername.setText(post.getAuthor().getUsername());
 
@@ -57,5 +66,21 @@ public class PostDetailActivity extends AppCompatActivity {
         } else {
             mBinding.detailImage.setVisibility(View.GONE);
         }
+    }
+
+    private void configureButtons(final Post post, final PostDetailInteractionListener listener) {
+        mBinding.detailRecommendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onRecommendClicked(post);
+            }
+        });
+
+        mBinding.detailIgnoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onIgnoreClicked(post);
+            }
+        });
     }
 }
