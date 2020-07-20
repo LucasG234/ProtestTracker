@@ -8,6 +8,8 @@ import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
 
+import java.util.Objects;
+
 /**
  * Parse object which stores user posts
  * All fields are represented by key constants
@@ -46,6 +48,11 @@ public class Post extends ParseObject implements Comparable<Post> {
         } else {
             return this.getCreatedAt().compareTo(post.getCreatedAt());
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getObjectId());
     }
 
     public User getAuthor() {

@@ -47,7 +47,7 @@ public class MapFragment extends Fragment {
     private static final int FASTEST_INTERVAL_MS = 5000;
 
     private static final String TAG = "MapFragment";
-    private Post post;
+    private MapListener mMapListener;
 
     public MapFragment() {
         // Required empty public constructor
@@ -103,13 +103,13 @@ public class MapFragment extends Fragment {
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
         // Adds our listener to add markers
-        MapListener mapListener = new MapListener(this, map);
-        map.setOnCameraMoveListener(mapListener);
-        map.setOnInfoWindowClickListener(mapListener);
+        mMapListener = new MapListener(this, map);
+        map.setOnCameraMoveListener(mMapListener);
+        map.setOnInfoWindowClickListener(mMapListener);
 
         // Call set location and call listener immediately to add markers before any user movement
         onLocationChange(LocationUtils.getCurrentLocation(getContext()), map);
-        mapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
+        mMapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
 
         // Map automatically handles movement
         // No need to subscribe to location changes unless handling specific actions
@@ -148,6 +148,8 @@ public class MapFragment extends Fragment {
     private void ignorePost(Post post) {
         post.addIgnoredBy((User) User.getCurrentUser());
         post.saveInBackground();
+
+        mMapListener.removeMarker(post.getObjectId());
     }
 
     private void recommendPost(final Post post) {

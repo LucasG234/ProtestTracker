@@ -21,9 +21,9 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * This listener is notified whenever the user moves the camera
@@ -35,14 +35,26 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private Context mContext;
     private Fragment mParent;
     private GoogleMap mMap;
-    // Set used to hold all posts found efficiently without order
-    private SearchablePostSet mPosts;
+    // Set used to hold objects efficiently without order
+    private SearchableSet<Post> mPosts;
+    private SearchableSet<Marker> mMarkers;
 
     public MapListener(Fragment parent, GoogleMap map) {
         this.mParent = parent;
         this.mContext = parent.getContext();
         this.mMap = map;
-        this.mPosts = new SearchablePostSet();
+        this.mPosts = new SearchableSet<>(new SearchableSet.Accessor<Post>() {
+            @Override
+            public String accessId(Post post) {
+                return post.getObjectId();
+            }
+        });
+        this.mMarkers = new SearchableSet<>(new SearchableSet.Accessor<Marker>() {
+            @Override
+            public String accessId(Marker marker) {
+                return (String) marker.getTag();
+            }
+        });
     }
 
     // Called on camera movement
@@ -56,7 +68,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // Launches a PostDetailActivity
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Post markerPost = mPosts.getPostById((String) marker.getTag());
+        Post markerPost = mPosts.getObjectById((String) marker.getTag());
 
         Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
@@ -108,16 +120,38 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             Marker marker = mMap.addMarker(markerOptions);
             // Tag is used to identify which post this marker represents
             marker.setTag(newPost.getObjectId());
+            mMarkers.add(marker);
         }
     }
 
-    private class SearchablePostSet extends TreeSet<Post> {
-        public Post getPostById(String objectId) {
-            Iterator<Post> iter = this.descendingIterator();
+    public void removeMarker(String objectId) {
+        Marker marker = mMarkers.getObjectById(objectId);
+        if (marker == null) {
+            Log.e(TAG, "Attempted to remove null marker");
+            return;
+        }
+
+        marker.remove();
+    }
+
+    static private class SearchableSet<K> extends HashSet<K> {
+
+        interface Accessor<K> {
+            String accessId(K object);
+        }
+
+        private Accessor<K> mAccessor;
+
+        public SearchableSet(Accessor<K> accessor) {
+            this.mAccessor = accessor;
+        }
+
+        public K getObjectById(String objectId) {
+            Iterator<K> iter = this.iterator();
             while (iter.hasNext()) {
-                Post post = iter.next();
-                if (post.getObjectId().equals(objectId))
-                    return post;
+                K object = iter.next();
+                if (mAccessor.accessId(object).equals(objectId))
+                    return object;
             }
             return null;
         }
