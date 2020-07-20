@@ -1,5 +1,6 @@
 package com.lucasg234.protesttracker.mainactivity;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentMapBinding;
+import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
+import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.LocationUtils;
 
@@ -39,6 +42,7 @@ public class MapFragment extends Fragment {
     private static final int FASTEST_INTERVAL_MS = 5000;
 
     private static final String TAG = "MapFragment";
+    private Post post;
 
     public MapFragment() {
         // Required empty public constructor
@@ -94,7 +98,7 @@ public class MapFragment extends Fragment {
         map.getUiSettings().setMyLocationButtonEnabled(true);
 
         // Adds our listener to add markers
-        MapListener mapListener = new MapListener(getContext(), map);
+        MapListener mapListener = new MapListener(this, map);
         map.setOnCameraMoveListener(mapListener);
         map.setOnInfoWindowClickListener(mapListener);
 
@@ -134,6 +138,27 @@ public class MapFragment extends Fragment {
     private void onLocationChange(Location lastLocation, GoogleMap map) {
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // No need to check resultCode because both RESULT_OK and RESULT_CANCELED are accepted
+
+        switch (requestCode) {
+            case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
+                Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_RECOMMENDED, false)) {
+                    Log.i(TAG, "Map received recommend on post: " + post.getText());
+                }
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
+                    Log.i(TAG, "Map received ignore on post: " + post.getText());
+                }
+                break;
+            default:
+                Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
+                return;
+        }
     }
 
     @Override

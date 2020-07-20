@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -33,13 +35,15 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private static final String TAG = "MapListener";
 
     private Context mContext;
+    private Fragment mParent;
     private GoogleMap mMap;
     // Set used to hold all posts found efficiently without order
     private SearchablePostSet mVisiblePosts;
     private Set mIgnoredPosts;
 
-    public MapListener(Context context, GoogleMap map) {
-        this.mContext = context;
+    public MapListener(Fragment parent, GoogleMap map) {
+        this.mParent = parent;
+        this.mContext = parent.getContext();
         this.mMap = map;
         this.mVisiblePosts = new SearchablePostSet();
         this.mIgnoredPosts = new TreeSet();
@@ -60,7 +64,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
 
         Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
-        mContext.startActivity(detailIntent);
+        mParent.startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
     }
 
     // Adds all new posts within current visible bounds to mStoredPosts and calls addMarkers

@@ -207,14 +207,12 @@ public class FeedFragment extends Fragment {
 
         switch (requestCode) {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
-                Log.i(TAG, "Received data from PostDetailActivity");
+                Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_RECOMMENDED, false)) {
-                    Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
                     int position = data.getIntExtra(PostDetailActivity.KEY_RESULT_POSITION, -1);
                     recommendPost(post, position);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
-                    Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
                     ignorePost(post);
                 }
                 break;
