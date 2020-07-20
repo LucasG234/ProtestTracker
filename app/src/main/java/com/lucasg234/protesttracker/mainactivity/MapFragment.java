@@ -152,7 +152,7 @@ public class MapFragment extends Fragment {
         mMapListener.removeMarker(post.getObjectId());
     }
 
-    private void recommendPost(final Post post) {
+    private void changePostLiked(final Post post) {
         final ParseRelation<User> likedBy = post.getLikedBy();
         ParseQuery<User> likedByQuery = likedBy.getQuery();
         likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
@@ -183,9 +183,9 @@ public class MapFragment extends Fragment {
         switch (requestCode) {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
                 Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
-                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_RECOMMENDED, false)) {
-                    Log.i(TAG, "Map received recommend on post: " + post.getText());
-                    recommendPost(post);
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED, false)) {
+                    Log.i(TAG, "Map received like on post: " + post.getText());
+                    changePostLiked(post);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
                     Log.i(TAG, "Map received ignore on post: " + post.getText());

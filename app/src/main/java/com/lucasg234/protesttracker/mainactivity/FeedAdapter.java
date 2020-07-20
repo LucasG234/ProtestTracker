@@ -51,7 +51,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         void onIgnoreClicked(Post post);
 
         // Requires the position of the post as a parameter to make visual changes
-        void onRecommendClicked(Post post, int position);
+        void onLikeClicked(Post post, int position);
     }
 
     @NonNull
@@ -159,10 +159,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 }
             });
 
-            mBinding.postRecommendButton.setOnClickListener(new View.OnClickListener() {
+            mBinding.postLikeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onRecommendClicked(mPosts.get(getAdapterPosition()), getAdapterPosition());
+                    mInteractionListener.onLikeClicked(mPosts.get(getAdapterPosition()), getAdapterPosition());
                 }
             });
 

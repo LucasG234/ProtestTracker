@@ -47,11 +47,11 @@
         tools:text="5 miles North" />
 
     <Button
-        android:id="@+id/detailRecommendButton"
+        android:id="@+id/detailLikeButton"
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
-        android:text="@string/post_recommend_button"
+        android:text="@string/post_like_button"
         app:layout_constraintEnd_toStartOf="@+id/detailIgnoreButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +65,7 @@
         android:text="@string/post_ignore_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/detailRecommendButton"
+        app:layout_constraintStart_toEndOf="@+id/detailLikeButton"
         app:layout_constraintTop_toBottomOf="@+id/detailLocation" />
         
     <ImageView
@@ -76,6 +76,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailRecommendButton"
+        app:layout_constraintTop_toBottomOf="@+id/detailLikeButton"
         tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>

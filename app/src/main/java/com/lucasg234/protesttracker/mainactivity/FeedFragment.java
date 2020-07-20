@@ -170,7 +170,7 @@ public class FeedFragment extends Fragment {
         mAdapter.ignorePost(post);
     }
 
-    public void recommendPost(final Post post, final int position) {
+    public void changePostLiked(final Post post, final int position) {
         final ParseRelation<User> likedBy = post.getLikedBy();
         ParseQuery<User> likedByQuery = likedBy.getQuery();
         likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
@@ -212,9 +212,9 @@ public class FeedFragment extends Fragment {
         switch (requestCode) {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
                 Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
-                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_RECOMMENDED, false)) {
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED, false)) {
                     int position = data.getIntExtra(PostDetailActivity.KEY_RESULT_POSITION, -1);
-                    recommendPost(post, position);
+                    changePostLiked(post, position);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
                     ignorePost(post);
@@ -259,8 +259,8 @@ public class FeedFragment extends Fragment {
         // First check whether the post is already liked by the User
         // Then like or unlike it through the adapter
         @Override
-        public void onRecommendClicked(final Post post, final int position) {
-            recommendPost(post, position);
+        public void onLikeClicked(final Post post, final int position) {
+            changePostLiked(post, position);
         }
     }
 }

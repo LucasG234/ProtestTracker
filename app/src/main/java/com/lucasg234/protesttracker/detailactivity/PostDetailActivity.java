@@ -21,7 +21,7 @@ public class PostDetailActivity extends AppCompatActivity {
 
     public static final String KEY_INTENT_EXTRA_POST = "input_post";
     public static final String KEY_INTENT_EXTRA_POSITION = "input_position";
-    public static final String KEY_RESULT_RECOMMENDED = "wasRecommended";
+    public static final String KEY_RESULT_LIKED = "likeChanged";
     public static final String KEY_RESULT_IGNORED = "wasIgnored";
     public static final String KEY_RESULT_POST = "output_post";
     public static final String KEY_RESULT_POSITION = "output_position";
@@ -32,7 +32,7 @@ public class PostDetailActivity extends AppCompatActivity {
     private ActivityPostDetailBinding mBinding;
     private Post mPost;
     private int mPosition;
-    private boolean mWasRecommended;
+    private boolean mLikedChanged;
     private boolean mWasIgnored;
 
     @Override
@@ -53,7 +53,7 @@ public class PostDetailActivity extends AppCompatActivity {
     @Override
     public void finish() {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra(KEY_RESULT_RECOMMENDED, mWasRecommended);
+        returnIntent.putExtra(KEY_RESULT_LIKED, mLikedChanged);
         returnIntent.putExtra(KEY_RESULT_IGNORED, mWasIgnored);
         returnIntent.putExtra(KEY_RESULT_POST, mPost);
         returnIntent.putExtra(KEY_RESULT_POSITION, mPosition);
@@ -83,10 +83,10 @@ public class PostDetailActivity extends AppCompatActivity {
     }
 
     private void configureButtons() {
-        mBinding.detailRecommendButton.setOnClickListener(new View.OnClickListener() {
+        mBinding.detailLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mWasRecommended = true;
+                mLikedChanged = true;
             }
         });
 
