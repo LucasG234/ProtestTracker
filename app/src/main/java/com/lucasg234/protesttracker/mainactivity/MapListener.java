@@ -16,7 +16,6 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.util.LocationUtils;
-import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -24,7 +23,6 @@ import com.parse.ParseQuery;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 /**
@@ -38,15 +36,13 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private Fragment mParent;
     private GoogleMap mMap;
     // Set used to hold all posts found efficiently without order
-    private SearchablePostSet mVisiblePosts;
-    private Set mIgnoredPosts;
+    private SearchablePostSet mPosts;
 
     public MapListener(Fragment parent, GoogleMap map) {
         this.mParent = parent;
         this.mContext = parent.getContext();
         this.mMap = map;
-        this.mVisiblePosts = new SearchablePostSet();
-        this.mIgnoredPosts = new TreeSet();
+        this.mPosts = new SearchablePostSet();
     }
 
     // Called on camera movement
@@ -60,7 +56,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // Launches a PostDetailActivity
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Post markerPost = mVisiblePosts.getPostById((String) marker.getTag());
+        Post markerPost = mPosts.getPostById((String) marker.getTag());
 
         Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
@@ -75,6 +71,9 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         ParseGeoPoint northeast = new ParseGeoPoint(visibleBounds.northeast.latitude, visibleBounds.northeast.longitude);
         query.whereWithinGeoBox(Post.KEY_LOCATION, southwest, northeast);
 
+        // Removes posts which are ignored
+        query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
+
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
         query.include(Post.KEY_AUTHOR);
@@ -85,53 +84,31 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
                     Log.e(TAG, "Error querying posts for markers");
                     Toast.makeText(mContext, mContext.getString(R.string.error_load), Toast.LENGTH_SHORT).show();
                 }
-                checkNewPosts(posts);
-                Log.i(TAG, "Total viewable posts collected: " + mVisiblePosts.size());
-                Log.i(TAG, "Total ignored posts collected: " + mIgnoredPosts.size());
+                // Remove all duplicates before adding markers
+                if (posts != null) {
+                    posts.removeAll(mPosts);
+                    Log.i(TAG, "new posts collected: " + posts.size());
+                    addPostMarkers(posts);
+
+                    mPosts.addAll(posts);
+                }
+                Log.i(TAG, "Total viewable posts collected: " + mPosts.size());
             }
         });
     }
 
-    // Separates only new posts from query, then adds them to mIgnoredPosts or mVisiblePosts
-    // All posts in mVisiblePosts will have a marker on the screen
-    private void checkNewPosts(List<Post> newPosts) {
-        // Remove all duplicated posts
-        newPosts.removeAll(mVisiblePosts);
-        newPosts.removeAll(mIgnoredPosts);
-
-        // Check whether new posts should be ignored
-        for (final Post post : newPosts) {
-            ParseQuery<User> ignoredQuery = post.getIgnoredBy().getQuery();
-            ignoredQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
-            ignoredQuery.countInBackground(new CountCallback() {
-                @Override
-                public void done(int count, ParseException e) {
-                    if (e != null) {
-                        // On an error case, we will assume the post is not ignored and allow the user to continue scrolling
-                        Log.e(TAG, "Error checking ignored status", e);
-                        return;
-                    }
-                    if (count > 0) {
-                        mIgnoredPosts.add(post);
-                    } else {
-                        mVisiblePosts.add(post);
-                        addPostMarker(post);
-                    }
-                }
-            });
-        }
-    }
-
     // Adds markers to map for each new post
-    private void addPostMarker(Post newPost) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(LocationUtils.toLatLng(newPost.getLocation()));
-        markerOptions.title(newPost.getAuthor().getUsername());
-        markerOptions.snippet(newPost.getText());
+    private void addPostMarkers(List<Post> newPosts) {
+        for (Post newPost : newPosts) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(LocationUtils.toLatLng(newPost.getLocation()));
+            markerOptions.title(newPost.getAuthor().getUsername());
+            markerOptions.snippet(newPost.getText());
 
-        Marker marker = mMap.addMarker(markerOptions);
-        // Tag is used to identify which post this marker represents
-        marker.setTag(newPost.getObjectId());
+            Marker marker = mMap.addMarker(markerOptions);
+            // Tag is used to identify which post this marker represents
+            marker.setTag(newPost.getObjectId());
+        }
     }
 
     private class SearchablePostSet extends TreeSet<Post> {
