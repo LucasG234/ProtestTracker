@@ -80,7 +80,7 @@ public class Post extends ParseObject implements Comparable<Post> {
         put(KEY_LOCATION, location);
     }
 
-    // Relations do not have separate setters because this operation is done on the returned object
+    // Return the entire relations to allow custom queries
     public ParseRelation<User> getLikedBy() {
         return getRelation(KEY_LIKED_BY);
     }
@@ -89,4 +89,9 @@ public class Post extends ParseObject implements Comparable<Post> {
         return getRelation(KEY_IGNORED_BY);
     }
 
+    // This helper method adds the given User to the ignoredBy of the post
+    public void addIgnoredBy(User user) {
+        ParseRelation<User> ignoredBy = getIgnoredBy();
+        ignoredBy.add(user);
+    }
 }

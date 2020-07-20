@@ -157,8 +157,7 @@ public class FeedFragment extends Fragment {
     }
 
     private void ignorePost(Post post) {
-        ParseRelation<User> ignoredBy = post.getIgnoredBy();
-        ignoredBy.add((User) User.getCurrentUser());
+        post.addIgnoredBy((User) User.getCurrentUser());
         post.saveInBackground();
 
         mAdapter.ignorePost(post);
@@ -166,23 +165,21 @@ public class FeedFragment extends Fragment {
 
     public void recommendPost(final Post post, final int position) {
         final ParseRelation<User> likedBy = post.getLikedBy();
-        ParseQuery likedByQuery = likedBy.getQuery();
+        ParseQuery<User> likedByQuery = likedBy.getQuery();
         likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
         likedByQuery.countInBackground(new CountCallback() {
             @Override
             public void done(int count, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Error in determining if post liked on recommend button clicked", e);
+                    Log.e(TAG, "Error in determining if post liked on like attempt", e);
                     Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
                     return;
                 }
                 final boolean liked = count > 0;
                 if (liked) {
                     likedBy.remove((User) User.getCurrentUser());
-                    post.saveInBackground();
                 } else {
                     likedBy.add((User) User.getCurrentUser());
-                    post.saveInBackground();
                 }
                 post.saveInBackground(new SaveCallback() {
                     @Override

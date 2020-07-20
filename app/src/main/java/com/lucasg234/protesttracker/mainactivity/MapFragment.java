@@ -22,8 +22,13 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentMapBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.LocationUtils;
+import com.parse.CountCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 /**
  * Fragment containing a Google MapView
@@ -140,6 +145,34 @@ public class MapFragment extends Fragment {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));
     }
 
+    private void ignorePost(Post post) {
+        post.addIgnoredBy((User) User.getCurrentUser());
+        post.saveInBackground();
+    }
+
+    private void recommendPost(final Post post) {
+        final ParseRelation<User> likedBy = post.getLikedBy();
+        ParseQuery<User> likedByQuery = likedBy.getQuery();
+        likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+        likedByQuery.countInBackground(new CountCallback() {
+            @Override
+            public void done(int count, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error in determining if post liked on like attempt", e);
+                    Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final boolean liked = count > 0;
+                if (liked) {
+                    likedBy.remove((User) User.getCurrentUser());
+                } else {
+                    likedBy.add((User) User.getCurrentUser());
+                }
+                post.saveInBackground();
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -150,9 +183,11 @@ public class MapFragment extends Fragment {
                 Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_RECOMMENDED, false)) {
                     Log.i(TAG, "Map received recommend on post: " + post.getText());
+                    recommendPost(post);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
                     Log.i(TAG, "Map received ignore on post: " + post.getText());
+                    ignorePost(post);
                 }
                 break;
             default:
