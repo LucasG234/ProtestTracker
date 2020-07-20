@@ -1,7 +1,7 @@
 package com.lucasg234.protesttracker.detailactivity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 
@@ -20,17 +20,12 @@ import com.lucasg234.protesttracker.util.LocationUtils;
 public class PostDetailActivity extends AppCompatActivity {
 
     public static final String KEY_INTENT_EXTRA_POST = "parcelable_post";
-    public static final String KEY_INTENT_EXTRA_LISTENER = "parcelable_listener";
+    public static final int REQUEST_CODE_POST_DETAIL = 406;
 
     private static final String TAG = "PostDetailActivity";
+
     private ActivityPostDetailBinding mBinding;
-
-    // This interface handles interaction with the FeedFragment and MapFragment
-    public interface PostDetailInteractionListener extends Parcelable {
-        void onIgnoreClicked(Post post);
-
-        void onRecommendClicked(Post post);
-    }
+    private Intent mReturnIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +36,15 @@ public class PostDetailActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         Post post = extras.getParcelable(KEY_INTENT_EXTRA_POST);
-        PostDetailInteractionListener listener = extras.getParcelable(KEY_INTENT_EXTRA_LISTENER);
 
         configureVisualElements(post);
-        configureButtons(post, listener);
+        configureButtons(post);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setResult(RESULT_OK, mReturnIntent);
     }
 
     private void configureVisualElements(Post post) {
@@ -68,19 +68,27 @@ public class PostDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void configureButtons(final Post post, final PostDetailInteractionListener listener) {
+    private void configureButtons(final Post post) {
         mBinding.detailRecommendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onRecommendClicked(post);
+                onRecommendClicked();
             }
         });
 
         mBinding.detailIgnoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onIgnoreClicked(post);
+                onIgnoreClicked();
             }
         });
+    }
+
+    private void onIgnoreClicked() {
+        Log.i(TAG, "DetailActivity found ignore click");
+    }
+
+    private void onRecommendClicked() {
+        Log.i(TAG, "DetailActivity found recommend click");
     }
 }

@@ -18,7 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
-import com.lucasg234.protesttracker.detailactivity.FeedPostDetailListener;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
@@ -158,6 +157,21 @@ public class FeedFragment extends Fragment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // No need to check resultCode because both RESULT_OK and RESULT_CANCELED are accepted
+
+        switch (requestCode) {
+            case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
+                Log.i(TAG, "Received data from PostDetailActivity");
+                break;
+            default:
+                Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
+                return;
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -176,8 +190,7 @@ public class FeedFragment extends Fragment {
         public void onPostClicked(Post post) {
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LISTENER, new FeedPostDetailListener());
-            startActivity(detailIntent);
+            startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
         }
 
         // Add the current user to the ignoredBy relation for the post
