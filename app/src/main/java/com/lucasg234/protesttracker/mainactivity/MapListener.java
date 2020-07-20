@@ -21,6 +21,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +31,8 @@ import java.util.List;
  * It handles the turning Parse posts into Markers on the map
  */
 public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.OnInfoWindowClickListener {
+
+    private static final int FASTEST_INTERVAL_MS = 100;
     private static final String TAG = "MapListener";
 
     private Context mContext;
@@ -38,6 +41,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // Set used to hold objects efficiently without order
     private SearchableSet<Post> mPosts;
     private SearchableSet<Marker> mMarkers;
+
+    private Date lastQuery;
 
     public MapListener(Fragment parent, GoogleMap map) {
         this.mParent = parent;
@@ -61,6 +66,11 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // Finds the current visibleBounds and query for posts within them
     @Override
     public void onCameraMove() {
+        // If the last query was within FASTEST_INTERVAL_MS, ignore this method call
+        if (lastQuery != null && new Date().getTime() - lastQuery.getTime() < FASTEST_INTERVAL_MS) {
+            return;
+        }
+        lastQuery = new Date();
         queryPostsInBounds(mMap.getProjection().getVisibleRegion().latLngBounds);
     }
 
