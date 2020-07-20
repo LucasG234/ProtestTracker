@@ -15,8 +15,8 @@ import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
-import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.DateUtils;
+import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.CountCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -57,7 +57,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // This interface handles interaction with the FeedFragment MainActivity on interactions
     // This can be extended to include double taps, long holds, swipes, etc.
     public interface PostInteractionListener {
-        void onPostClicked(Post post);
+        void onPostClicked(Post post, int position);
 
         void onIgnoreClicked(Post post);
 
@@ -256,7 +256,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postLayoutContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mInteractionListener.onPostClicked(mVisiblePosts.get(getAdapterPosition()));
+                    mInteractionListener.onPostClicked(mVisiblePosts.get(getAdapterPosition()), getAdapterPosition());
                 }
             });
 

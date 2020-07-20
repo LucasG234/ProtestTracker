@@ -156,6 +156,50 @@ public class FeedFragment extends Fragment {
         });
     }
 
+    private void ignorePost(Post post) {
+        ParseRelation<User> ignoredBy = post.getIgnoredBy();
+        ignoredBy.add((User) User.getCurrentUser());
+        post.saveInBackground();
+
+        mAdapter.ignorePost(post);
+    }
+
+    public void recommendPost(final Post post, final int position) {
+        final ParseRelation<User> likedBy = post.getLikedBy();
+        ParseQuery likedByQuery = likedBy.getQuery();
+        likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
+        likedByQuery.countInBackground(new CountCallback() {
+            @Override
+            public void done(int count, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error in determining if post liked on recommend button clicked", e);
+                    Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final boolean liked = count > 0;
+                if (liked) {
+                    likedBy.remove((User) User.getCurrentUser());
+                    post.saveInBackground();
+                } else {
+                    likedBy.add((User) User.getCurrentUser());
+                    post.saveInBackground();
+                }
+                post.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, "Error saving change to like status", e);
+                            Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                        }
+
+                        // Reverse liked due to change
+                        mAdapter.notifyItemChanged(position, !liked);
+                    }
+                });
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -164,6 +208,15 @@ public class FeedFragment extends Fragment {
         switch (requestCode) {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
                 Log.i(TAG, "Received data from PostDetailActivity");
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_RECOMMENDED, false)) {
+                    Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
+                    int position = data.getIntExtra(PostDetailActivity.KEY_RESULT_POSITION, -1);
+                    recommendPost(post, position);
+                }
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
+                    Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
+                    ignorePost(post);
+                }
                 break;
             default:
                 Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
@@ -187,9 +240,10 @@ public class FeedFragment extends Fragment {
 
         // Open a PostDetailActivity on the clicked post
         @Override
-        public void onPostClicked(Post post) {
+        public void onPostClicked(Post post, int position) {
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POSITION, position);
             startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
         }
 
@@ -197,50 +251,14 @@ public class FeedFragment extends Fragment {
         // Then remove it from the adapter
         @Override
         public void onIgnoreClicked(Post post) {
-            ParseRelation<User> ignoredBy = post.getIgnoredBy();
-            ignoredBy.add((User) User.getCurrentUser());
-            post.saveInBackground();
-
-            mAdapter.ignorePost(post);
+            ignorePost(post);
         }
 
         // First check whether the post is already liked by the User
         // Then like or unlike it through the adapter
         @Override
         public void onRecommendClicked(final Post post, final int position) {
-            final ParseRelation<User> likedBy = post.getLikedBy();
-            ParseQuery likedByQuery = likedBy.getQuery();
-            likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
-            likedByQuery.countInBackground(new CountCallback() {
-                @Override
-                public void done(int count, ParseException e) {
-                    if (e != null) {
-                        Log.e(TAG, "Error in determining if post liked on recommend button clicked", e);
-                        Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final boolean liked = count > 0;
-                    if (liked) {
-                        likedBy.remove((User) User.getCurrentUser());
-                        post.saveInBackground();
-                    } else {
-                        likedBy.add((User) User.getCurrentUser());
-                        post.saveInBackground();
-                    }
-                    post.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e != null) {
-                                Log.e(TAG, "Error saving change to like status", e);
-                                Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
-                            }
-
-                            // Reverse liked due to change
-                            mAdapter.notifyItemChanged(position, !liked);
-                        }
-                    });
-                }
-            });
+            recommendPost(post, position);
         }
     }
 }

@@ -19,13 +19,21 @@ import com.lucasg234.protesttracker.util.LocationUtils;
  */
 public class PostDetailActivity extends AppCompatActivity {
 
-    public static final String KEY_INTENT_EXTRA_POST = "parcelable_post";
+    public static final String KEY_INTENT_EXTRA_POST = "input_post";
+    public static final String KEY_INTENT_EXTRA_POSITION = "input_position";
+    public static final String KEY_RESULT_RECOMMENDED = "wasRecommended";
+    public static final String KEY_RESULT_IGNORED = "wasIgnored";
+    public static final String KEY_RESULT_POST = "output_post";
+    public static final String KEY_RESULT_POSITION = "output_position";
     public static final int REQUEST_CODE_POST_DETAIL = 406;
 
     private static final String TAG = "PostDetailActivity";
 
     private ActivityPostDetailBinding mBinding;
-    private Intent mReturnIntent;
+    private Post mPost;
+    private int mPosition;
+    private boolean mWasRecommended;
+    private boolean mWasIgnored;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,16 +43,22 @@ public class PostDetailActivity extends AppCompatActivity {
         setContentView(mBinding.getRoot());
 
         Bundle extras = getIntent().getExtras();
-        Post post = extras.getParcelable(KEY_INTENT_EXTRA_POST);
+        mPost = extras.getParcelable(KEY_INTENT_EXTRA_POST);
+        mPosition = extras.getInt(KEY_INTENT_EXTRA_POSITION);
 
-        configureVisualElements(post);
-        configureButtons(post);
+        configureVisualElements(mPost);
+        configureButtons();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        setResult(RESULT_OK, mReturnIntent);
+    public void finish() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(KEY_RESULT_RECOMMENDED, mWasRecommended);
+        returnIntent.putExtra(KEY_RESULT_IGNORED, mWasIgnored);
+        returnIntent.putExtra(KEY_RESULT_POST, mPost);
+        returnIntent.putExtra(KEY_RESULT_POSITION, mPosition);
+        setResult(RESULT_OK, returnIntent);
+        super.finish();
     }
 
     private void configureVisualElements(Post post) {
@@ -68,27 +82,21 @@ public class PostDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void configureButtons(final Post post) {
+    private void configureButtons() {
         mBinding.detailRecommendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onRecommendClicked();
+                mWasRecommended = true;
             }
         });
 
         mBinding.detailIgnoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onIgnoreClicked();
+                mWasIgnored = true;
+                // If a post is ignored, immediately close the DetailView
+                finish();
             }
         });
-    }
-
-    private void onIgnoreClicked() {
-        Log.i(TAG, "DetailActivity found ignore click");
-    }
-
-    private void onRecommendClicked() {
-        Log.i(TAG, "DetailActivity found recommend click");
     }
 }
