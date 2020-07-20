@@ -114,6 +114,10 @@ public class FeedFragment extends Fragment {
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
         query.include(Post.KEY_AUTHOR);
+
+        // Removes posts which are ignored
+        query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
+
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
@@ -137,6 +141,9 @@ public class FeedFragment extends Fragment {
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
         query.include(Post.KEY_AUTHOR);
+
+        // Removes posts which are ignored
+        query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
 
         // For new posts, only get posts older [with date less than] the last post
         Date oldestPostDate = mAdapter.getOldestPost().getCreatedAt();
