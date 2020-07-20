@@ -1,6 +1,7 @@
 package com.lucasg234.protesttracker.detailactivity;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 
@@ -21,6 +22,13 @@ public class PostDetailActivity extends AppCompatActivity {
     public static final String KEY_INTENT_EXTRA_POST = "parcelable_post";
     private static final String TAG = "PostDetailActivity";
     private ActivityPostDetailBinding mBinding;
+
+    // This interface handles interaction with the FeedFragment and MapFragment
+    public interface PostDetailInteractionListener extends Parcelable {
+        void onIgnoreClicked(Post post);
+
+        void onRecommendClicked(Post post);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
