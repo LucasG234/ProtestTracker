@@ -266,7 +266,12 @@ public class FeedFragment extends Fragment {
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-
+            int position = getEventPosition(e);
+            Post post = mAdapter.getPost(position);
+            Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POSITION, position);
+            startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
             return true;
         }
 
