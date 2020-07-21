@@ -21,7 +21,23 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+
     private ActivityMainBinding mBinding;
+    private Fragment mCurrentFragment;
+
+    private final FeedFragment mFeed;
+    private final ComposeFragment mCompose;
+    private final MapFragment mMap;
+    private final SettingsFragment mSettings;
+
+    public MainActivity() {
+        // Fragments constructed only once
+        mFeed = FeedFragment.newInstance();
+        mCompose = ComposeFragment.newInstance();
+        mMap = MapFragment.newInstance();
+        mSettings = SettingsFragment.newInstance();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,30 +51,37 @@ public class MainActivity extends AppCompatActivity {
         mBinding.mainBottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment fragment;
+                Fragment newCurrentFragment;
                 switch (item.getItemId()) {
                     case R.id.bottomNavigationFeed:
-                        fragment = FeedFragment.newInstance();
+                        newCurrentFragment = mFeed;
                         break;
                     case R.id.bottomNavigationCompose:
-                        fragment = ComposeFragment.newInstance();
+                        newCurrentFragment = mCompose;
                         break;
                     case R.id.bottomNavigationMap:
-                        fragment = MapFragment.newInstance();
+                        newCurrentFragment = mMap;
                         break;
                     case R.id.bottomNavigationSettings:
-                        fragment = SettingsFragment.newInstance();
+                        newCurrentFragment = mSettings;
                         break;
                     default:
                         Log.i(TAG, "Bottom Navigation View selected unknown icon : " + item.toString());
                         return false;
                 }
-                fragmentManager.beginTransaction().replace(R.id.fragmentHolder, fragment).commit();
+                fragmentManager.beginTransaction().hide(mCurrentFragment).show(newCurrentFragment).commit();
+                mCurrentFragment = newCurrentFragment;
                 return true;
             }
         });
 
-        // Set default selection
-        mBinding.mainBottomNavigation.setSelectedItemId(R.id.bottomNavigationFeed);
+        // Add all initial fragments
+        fragmentManager.beginTransaction().add(R.id.fragmentHolder, mCompose, ComposeFragment.class.getSimpleName()).hide(mCompose).commit();
+        fragmentManager.beginTransaction().add(R.id.fragmentHolder, mMap, MapFragment.class.getSimpleName()).hide(mMap).commit();
+        fragmentManager.beginTransaction().add(R.id.fragmentHolder, mSettings, SettingsFragment.class.getSimpleName()).hide(mSettings).commit();
+        // Feed fragment not hidden because it is the default
+        fragmentManager.beginTransaction().add(R.id.fragmentHolder, mFeed, FeedFragment.class.getSimpleName()).commit();
+
+        mCurrentFragment = mFeed;
     }
 }
