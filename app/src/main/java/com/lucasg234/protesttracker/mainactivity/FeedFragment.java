@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -85,8 +86,7 @@ public class FeedFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        FeedAdapter.PostInteractionListener interactionListener = new FeedInteractionListener();
-        mAdapter = new FeedAdapter(getContext(), interactionListener);
+        mAdapter = new FeedAdapter(getContext());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mEndlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -96,9 +96,12 @@ public class FeedFragment extends Fragment {
             }
         };
 
+        RecyclerView.OnItemTouchListener itemTouchListener = createItemTouchListener();
+
         mBinding.feedRecyclerView.setAdapter(mAdapter);
         mBinding.feedRecyclerView.setLayoutManager(layoutManager);
         mBinding.feedRecyclerView.addOnScrollListener(mEndlessScrollListener);
+        mBinding.feedRecyclerView.addOnItemTouchListener(itemTouchListener);
 
         // Setup refresh listener which triggers new data loading
         mBinding.feedSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -107,6 +110,19 @@ public class FeedFragment extends Fragment {
                 queryInitialPosts();
             }
         });
+    }
+
+    private RecyclerView.OnItemTouchListener createItemTouchListener() {
+        final GestureDetector gestureDetector = new GestureDetector(new FeedGestureListener());
+
+        RecyclerView.OnItemTouchListener touchListener = new RecyclerView.SimpleOnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                return gestureDetector.onTouchEvent(e);
+            }
+        };
+
+        return touchListener;
     }
 
     // Removes all posts within the FeedAdapter and replaces them with the result of a new query
@@ -239,33 +255,30 @@ public class FeedFragment extends Fragment {
         }
     }
 
-    private class FeedInteractionListener implements FeedAdapter.PostInteractionListener {
-
-        // Open a PostDetailActivity on the clicked post
-        @Override
-        public void onPostClicked(Post post, int position) {
-            Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POSITION, position);
-            startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
-        }
-
-        // Add the current user to the ignoredBy relation for the post
-        // Then remove it from the adapter
-        @Override
-        public void onIgnoreClicked(Post post) {
-            ignorePost(post);
-        }
-
-        // First check whether the post is already liked by the User
-        // Then like or unlike it through the adapter
-        @Override
-        public void onLikeClicked(final Post post, final int position) {
-            changePostLiked(post, position);
-        }
-    }
-
     private class FeedGestureListener extends GestureDetector.SimpleOnGestureListener {
-        
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            int position = getEventPosition(e);
+            changePostLiked(mAdapter.getPost(position), position);
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+
+            return true;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            Log.i(TAG, "Detected fling");
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+
+        private int getEventPosition(MotionEvent e) {
+            View childView = mBinding.feedRecyclerView.findChildViewUnder(e.getX(), e.getY());
+            return mBinding.feedRecyclerView.getChildLayoutPosition(childView);
+        }
     }
 }

@@ -34,25 +34,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private static final String TAG = "FeedAdapter";
 
     private Context mContext;
-    private PostInteractionListener mInteractionListener;
     private List<Post> mPosts;
 
-    public FeedAdapter(Context context, PostInteractionListener interactionListener) {
+    public FeedAdapter(Context context) {
         this.mContext = context;
-        this.mInteractionListener = interactionListener;
         this.mPosts = new ArrayList<>();
     }
 
-    // This interface handles interaction with the FeedFragment MainActivity on interactions
-    // This can be extended to include double taps, long holds, swipes, etc.
-    public interface PostInteractionListener {
-        void onPostClicked(Post post, int position);
-
-        void onIgnoreClicked(Post post);
-
-        // Requires the position of the post as a parameter to make visual changes
-        void onLikeClicked(Post post, int position);
-    }
 
     @NonNull
     @Override
@@ -94,6 +82,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         // Clears only visible posts. Ignored posts are retained to speed up repeat loading
         mPosts.clear();
         notifyDataSetChanged();
+    }
+
+    public Post getPost(int position) {
+        return mPosts.get(position);
     }
 
     // Returns the oldest post known, considering visible and ignored list
