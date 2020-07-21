@@ -145,27 +145,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 mBinding.postImage.setVisibility(View.GONE);
             }
 
-            mBinding.postLayoutContainer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mInteractionListener.onPostClicked(mPosts.get(getAdapterPosition()), getAdapterPosition());
-                }
-            });
-
-            mBinding.postIgnoreButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mInteractionListener.onIgnoreClicked(mPosts.get(getAdapterPosition()));
-                }
-            });
-
-            mBinding.postLikeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mInteractionListener.onLikeClicked(mPosts.get(getAdapterPosition()), getAdapterPosition());
-                }
-            });
-
             checkLiked(post);
         }
 

@@ -56,27 +56,4 @@
         app:layout_constraintTop_toBottomOf="@+id/postImage"
         tools:text="5 miles North" />
 
-    <Button
-        android:id="@+id/postLikeButton"
-        android:layout_width="@dimen/match_constraint"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_margin"
-        android:text="@string/post_like_button"
-        app:layout_constraintEnd_toStartOf="@+id/postIgnoreButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postLocation" />
-
-    <Button
-        android:id="@+id/postIgnoreButton"
-        android:layout_width="@dimen/match_constraint"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_margin"
-        android:text="@string/post_ignore_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/postLikeButton"
-        app:layout_constraintTop_toBottomOf="@+id/postLocation" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
