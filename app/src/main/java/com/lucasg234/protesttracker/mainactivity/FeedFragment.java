@@ -256,6 +256,11 @@ public class FeedFragment extends Fragment {
     }
 
     private class FeedGestureListener extends GestureDetector.SimpleOnGestureListener {
+        // Measurements made in pixels and pixels / second
+        private static final int SWIPE_MIN_HORIZONTAL_DISTANCE = 200;
+        private static final int SWIPE_MAX_VERTICAL_DISTANCE = 100;
+        private static final int SWIPE_MAX_VERTICAL_VELOCITY = 1000;
+        private static final int SWIPE_MIN_HORIZONTAL_VELOCITY = 2000;
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
@@ -277,8 +282,16 @@ public class FeedFragment extends Fragment {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.i(TAG, "Detected fling");
-            return super.onFling(e1, e2, velocityX, velocityY);
+            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_VERTICAL_DISTANCE || Math.abs(velocityY) > SWIPE_MAX_VERTICAL_VELOCITY) {
+                return false;
+            } else if (e2.getX() - e1.getX() > SWIPE_MIN_HORIZONTAL_DISTANCE && velocityX > SWIPE_MIN_HORIZONTAL_VELOCITY) {
+                // This condition met on left to right swipes
+                int position = getEventPosition(e1);
+                ignorePost(mAdapter.getPost(position));
+                return true;
+            } else {
+                return super.onFling(e1, e2, velocityX, velocityY);
+            }
         }
 
         private int getEventPosition(MotionEvent e) {
