@@ -251,9 +251,17 @@ public class FeedFragment extends Fragment {
         Pair<View, String> pair1 = Pair.create((View) postBinding.postUsername, getString(R.string.transition_username));
         Pair<View, String> pair2 = Pair.create((View) postBinding.postCreatedAt, getString(R.string.transition_created_at));
         Pair<View, String> pair3 = Pair.create((View) postBinding.postText, getString(R.string.transition_text));
-        Pair<View, String> pair4 = Pair.create((View)postBinding.postImage, getString(R.string.transition_image));
 
-        ActivityOptionsCompat transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3, pair4);
+        ActivityOptionsCompat transitionOptions;
+
+        // Only include the image in the transition if it is visible
+        if (postBinding.postImage.getVisibility() == View.VISIBLE) {
+            Pair<View, String> pair4 = Pair.create((View) postBinding.postImage, getString(R.string.transition_image));
+            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3, pair4);
+        } else {
+            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3);
+        }
+
         return transitionOptions.toBundle();
     }
 
