@@ -24,8 +24,8 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
-import com.parse.CountCallback;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
@@ -189,22 +189,20 @@ public class FeedFragment extends Fragment {
 
     public void changePostLiked(final Post post, final int position) {
         final ParseRelation<User> likedBy = post.getLikedBy();
-        ParseQuery<User> likedByQuery = likedBy.getQuery();
-        likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
-        likedByQuery.countInBackground(new CountCallback() {
+        FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
-            public void done(int count, ParseException e) {
+            public void done(final Boolean liked, ParseException e) {
                 if (e != null) {
-                    Log.e(TAG, "Error in determining if post liked on like attempt", e);
-                    Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
                     return;
                 }
-                final boolean liked = count > 0;
+                
                 if (liked) {
                     likedBy.remove((User) User.getCurrentUser());
                 } else {
                     likedBy.add((User) User.getCurrentUser());
                 }
+
                 post.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -218,7 +216,9 @@ public class FeedFragment extends Fragment {
                     }
                 });
             }
-        });
+        };
+
+        post.getUserLikes((User) User.getCurrentUser(), likedCallback);
     }
 
     @Override

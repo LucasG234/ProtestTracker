@@ -17,10 +17,8 @@ import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.DateUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
-import com.parse.CountCallback;
+import com.parse.FunctionCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,19 +139,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
 
         private void checkLiked(final Post post) {
-            final ParseRelation<User> likedBy = post.getLikedBy();
-            ParseQuery likedByQuery = likedBy.getQuery();
-            likedByQuery.whereEqualTo(User.KEY_OBJECT_ID, User.getCurrentUser().getObjectId());
-            likedByQuery.countInBackground(new CountCallback() {
+            FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
                 @Override
-                public void done(int count, ParseException e) {
+                public void done(Boolean liked, ParseException e) {
                     if (e != null) {
                         Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
                         return;
                     }
-                    switchLiked(count > 0);
+                    switchLiked(liked);
                 }
-            });
+            };
+            post.getUserLikes((User) User.getCurrentUser(), likedCallback);
         }
 
         public void switchLiked(boolean liked) {
