@@ -80,7 +80,7 @@ public class PostDetailActivity extends AppCompatActivity {
         mBinding.detailLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mLikedChanged = true;
+                mLikedChanged = !mLikedChanged;
             }
         });
 

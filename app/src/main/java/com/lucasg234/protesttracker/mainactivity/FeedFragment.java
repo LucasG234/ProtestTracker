@@ -181,7 +181,7 @@ public class FeedFragment extends Fragment {
         });
     }
 
-    private void ignorePost(Post post) {
+    public void ignorePost(Post post) {
         post.addIgnoredBy((User) User.getCurrentUser());
         post.saveInBackground();
 
@@ -226,27 +226,6 @@ public class FeedFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // No need to check resultCode because both RESULT_OK and RESULT_CANCELED are accepted
-
-        switch (requestCode) {
-            case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
-                Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
-                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED, false)) {
-                    changePostLiked(post);
-                }
-                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
-                    ignorePost(post);
-                }
-                break;
-            default:
-                Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
-                return;
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -278,7 +257,7 @@ public class FeedFragment extends Fragment {
             Post post = mAdapter.getPost(position);
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-            startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+            getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
             return true;
         }
 

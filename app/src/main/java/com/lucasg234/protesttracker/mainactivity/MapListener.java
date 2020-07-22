@@ -82,7 +82,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
 
         Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
-        mParent.startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+        mParent.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
     }
 
     // Adds all new posts within current visible bounds to mStoredPosts and calls addMarkers
