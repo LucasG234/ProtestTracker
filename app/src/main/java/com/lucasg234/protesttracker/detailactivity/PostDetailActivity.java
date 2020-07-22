@@ -20,18 +20,15 @@ import com.lucasg234.protesttracker.util.LocationUtils;
 public class PostDetailActivity extends AppCompatActivity {
 
     public static final String KEY_INTENT_EXTRA_POST = "input_post";
-    public static final String KEY_INTENT_EXTRA_POSITION = "input_position";
     public static final String KEY_RESULT_LIKED = "likeChanged";
     public static final String KEY_RESULT_IGNORED = "wasIgnored";
     public static final String KEY_RESULT_POST = "output_post";
-    public static final String KEY_RESULT_POSITION = "output_position";
     public static final int REQUEST_CODE_POST_DETAIL = 406;
 
     private static final String TAG = "PostDetailActivity";
 
     private ActivityPostDetailBinding mBinding;
     private Post mPost;
-    private int mPosition;
     private boolean mLikedChanged;
     private boolean mWasIgnored;
 
@@ -42,9 +39,7 @@ public class PostDetailActivity extends AppCompatActivity {
         mBinding = ActivityPostDetailBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        Bundle extras = getIntent().getExtras();
-        mPost = extras.getParcelable(KEY_INTENT_EXTRA_POST);
-        mPosition = extras.getInt(KEY_INTENT_EXTRA_POSITION);
+        mPost = getIntent().getExtras().getParcelable(KEY_INTENT_EXTRA_POST);
 
         configureVisualElements(mPost);
         configureButtons();
@@ -56,7 +51,6 @@ public class PostDetailActivity extends AppCompatActivity {
         returnIntent.putExtra(KEY_RESULT_LIKED, mLikedChanged);
         returnIntent.putExtra(KEY_RESULT_IGNORED, mWasIgnored);
         returnIntent.putExtra(KEY_RESULT_POST, mPost);
-        returnIntent.putExtra(KEY_RESULT_POSITION, mPosition);
         setResult(RESULT_OK, returnIntent);
         super.finish();
     }

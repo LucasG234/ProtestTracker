@@ -188,7 +188,7 @@ public class FeedFragment extends Fragment {
         mAdapter.ignorePost(post);
     }
 
-    public void changePostLiked(final Post post, final int position) {
+    public void changePostLiked(final Post post) {
         final ParseRelation<User> likedBy = post.getLikedBy();
         FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
@@ -234,8 +234,7 @@ public class FeedFragment extends Fragment {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
                 Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED, false)) {
-                    int position = data.getIntExtra(PostDetailActivity.KEY_RESULT_POSITION, -1);
-                    changePostLiked(post, position);
+                    changePostLiked(post);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
                     ignorePost(post);
@@ -269,7 +268,7 @@ public class FeedFragment extends Fragment {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             int position = getEventPosition(e);
-            changePostLiked(mAdapter.getPost(position), position);
+            changePostLiked(mAdapter.getPost(position));
             return true;
         }
 
@@ -279,7 +278,6 @@ public class FeedFragment extends Fragment {
             Post post = mAdapter.getPost(position);
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POSITION, position);
             startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
             return true;
         }
