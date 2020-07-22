@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/bottomNavigationFeed"
-        android:icon="@drawable/selector_feed_icon"
-        android:title="@string/bottom_navigation_feed"
+        android:id="@+id/bottomNavigationMap"
+        android:icon="@drawable/selector_map_icon"
+        android:title="@string/bottom_navigation_map"
         app:showAsAction="ifRoom" />
 
     <item
@@ -15,9 +15,9 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/bottomNavigationMap"
-        android:icon="@drawable/selector_map_icon"
-        android:title="@string/bottom_navigation_map"
+        android:id="@+id/bottomNavigationFeed"
+        android:icon="@drawable/selector_feed_icon"
+        android:title="@string/bottom_navigation_feed"
         app:showAsAction="ifRoom" />
 
     <item
