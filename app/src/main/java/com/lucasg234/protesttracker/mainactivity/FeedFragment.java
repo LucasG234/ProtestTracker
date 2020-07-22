@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +23,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
+import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
@@ -241,6 +244,19 @@ public class FeedFragment extends Fragment {
         }
     }
 
+
+    private Bundle getTransitionToDetailView(FeedAdapter.FeedViewHolder postViewHolder) {
+        ItemFeedPostBinding postBinding = postViewHolder.getBinding();
+
+        Pair<View, String> pair1 = Pair.create((View) postBinding.postUsername, getString(R.string.transition_username));
+        Pair<View, String> pair2 = Pair.create((View) postBinding.postCreatedAt, getString(R.string.transition_created_at));
+        Pair<View, String> pair3 = Pair.create((View) postBinding.postText, getString(R.string.transition_text));
+        Pair<View, String> pair4 = Pair.create((View)postBinding.postImage, getString(R.string.transition_image));
+
+        ActivityOptionsCompat transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3, pair4);
+        return transitionOptions.toBundle();
+    }
+
     /**
      * Class which listens to all gestures made on the RecyclerView
      * Responds only to double taps and confirmed single taps
@@ -265,7 +281,11 @@ public class FeedFragment extends Fragment {
             Post post = mAdapter.getPost(position);
             Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-            getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+
+            FeedAdapter.FeedViewHolder postViewHolder = (FeedAdapter.FeedViewHolder) mBinding.feedRecyclerView.findViewHolderForAdapterPosition(position);
+            Bundle transitionBundle = getTransitionToDetailView(postViewHolder);
+
+            getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL, transitionBundle);
             return true;
         }
 

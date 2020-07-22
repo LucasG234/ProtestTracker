@@ -29,6 +29,12 @@
     <string name="compose_camera_button">Take picture from camera</string>
     <string name="compose_gallery_button">Take picture from gallery</string>
 
+    <!-- Transition names -->
+    <string name="transition_username">username</string>
+    <string name="transition_created_at">createdAt</string>
+    <string name="transition_text">text</string>
+    <string name="transition_image">image</string>
+
     <!-- Toast error text -->
     <string name="error_login">Error with login. Check username and password and try again.</string>
     <string name="error_registration">Error with registration. That username may already be taken.</string>

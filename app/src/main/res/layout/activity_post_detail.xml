@@ -6,12 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".detailactivity.PostDetailActivity">
 
+    <!-- Transitions given to username, createdAt, text, and image -->
+
     <TextView
         android:id="@+id/detailUsername"
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:transitionName="@string/transition_username"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="lucas" />
@@ -21,6 +24,7 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
+        android:transitionName="@string/transition_created_at"
         app:layout_constraintBottom_toBottomOf="@+id/detailUsername"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/detailUsername"
@@ -31,6 +35,7 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
+        android:transitionName="@string/transition_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailUsername"
@@ -67,12 +72,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/detailLikeButton"
         app:layout_constraintTop_toBottomOf="@+id/detailLocation" />
-        
+
     <ImageView
         android:id="@+id/detailImage"
         android:layout_width="@dimen/match_constraint"
         android:layout_height="@dimen/match_constraint"
         android:layout_margin="@dimen/small_margin"
+        android:transitionName="@string/transition_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -131,7 +131,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 Log.i(TAG, post.getImage().getUrl());
                 Glide.with(mContext)
                         .load(post.getImage().getUrl())
-                        .centerCrop()
+                        //.centerCrop()
                         .into(mBinding.postImage);
             } else {
                 mBinding.postImage.setVisibility(View.GONE);
@@ -163,6 +163,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             int backgroundColorCode = mLiked ? mContext.getResources().getColor(R.color.colorPrimary)
                     : mContext.getResources().getColor(R.color.colorNone);
             mBinding.getRoot().setBackgroundColor(backgroundColorCode);
+        }
+
+        public ItemFeedPostBinding getBinding() {
+            return mBinding;
         }
     }
 }

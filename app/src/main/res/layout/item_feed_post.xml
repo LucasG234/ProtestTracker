@@ -6,12 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Transitions given to username, createdAt, text, and image -->
+
     <TextView
         android:id="@+id/postUsername"
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:transitionName="@string/transition_username"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="lucas" />
@@ -21,6 +24,7 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
+        android:transitionName="@string/transition_created_at"
         app:layout_constraintBottom_toBottomOf="@+id/postUsername"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/postUsername"
@@ -31,6 +35,7 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/small_margin"
+        android:transitionName="@string/transition_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postUsername"
@@ -41,6 +46,7 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="@dimen/standard_image_height"
         android:layout_margin="@dimen/small_margin"
+        android:transitionName="@string/transition_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postText"
