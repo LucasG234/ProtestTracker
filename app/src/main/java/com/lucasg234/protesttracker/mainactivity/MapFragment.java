@@ -3,6 +3,7 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +14,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentMapBinding;
 import com.lucasg234.protesttracker.models.Post;
@@ -33,7 +39,7 @@ public class MapFragment extends Fragment {
     private static final int DEFAULT_ZOOM_LEVEL = 17;
     // Minimum distance change between locations. Set to 10 meters
     // If user does not move this distance, no updates will be created.
-    public static final float MINIMUM_DISPLACEMENT = 10;
+    public static final float MINIMUM_DISPLACEMENT_METERS = 10;
     // Maximum time to wait for a LocationUpdate. Set to 60 seconds
     private static final int UPDATE_INTERVAL_MS = 60000;
     // Minimum time to wait for a locationUpdate. Set to 5 seconds
@@ -94,48 +100,52 @@ public class MapFragment extends Fragment {
         map.setMyLocationEnabled(true);
         // Adds a button that zooms the camera to the user
         map.getUiSettings().setMyLocationButtonEnabled(true);
+        // Adds zoom in and out buttons
+        map.getUiSettings().setZoomControlsEnabled(true);
 
         // Adds our listener to add markers
         mMapListener = new MapListener(this, map);
         map.setOnCameraMoveListener(mMapListener);
         map.setOnInfoWindowClickListener(mMapListener);
 
-        // Call set location and call listener immediately to add markers before any user movement
-        onLocationChange(LocationUtils.getCurrentLocation(getContext()), map);
+        LatLng currentLocation = LocationUtils.toLatLng(LocationUtils.getCurrentLocation(getContext()));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM_LEVEL));
+
         mMapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
 
-        // Map automatically handles movement
-        // No need to subscribe to location changes unless handling specific actions
-//        subscribeToLocationRequests(map);
+        subscribeToLocationRequests(map);
     }
-//
-//    private void subscribeToLocationRequests(final GoogleMap map) {
-//        // Create a LocationRequest
-//        LocationRequest locationRequest = new LocationRequest();
-//        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//        locationRequest.setInterval(UPDATE_INTERVAL_MS);
-//        locationRequest.setFastestInterval(FASTEST_INTERVAL_MS);
-//        locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT);
-//
-//        if (!LocationPermissions.checkLocationPermission(getContext())) {
-//            LocationPermissions.requestLocationPermission(this);
-//            return;
-//        }
-//        // Call onLocationChange method when new Location is found
-//        LocationServices.getFusedLocationProviderClient(getContext())
-//                .requestLocationUpdates(locationRequest, new LocationCallback() {
-//                            @Override
-//                            public void onLocationResult(LocationResult locationResult) {
-//                                onLocationChange(locationResult.getLastLocation(), map);
-//                            }
-//                        },
-//                        Looper.myLooper());
-//    }
+
+    // Enables automatic location requests as the user moves
+    private void subscribeToLocationRequests(final GoogleMap map) {
+        // Create a LocationRequest
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setInterval(UPDATE_INTERVAL_MS);
+        locationRequest.setFastestInterval(FASTEST_INTERVAL_MS);
+        locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT_METERS);
+
+        if (!LocationPermissions.checkLocationPermission(getContext())) {
+            LocationPermissions.requestLocationPermission(this);
+            return;
+        }
+        // Call onLocationChange method when new Location is found
+        LocationServices.getFusedLocationProviderClient(getContext())
+                .requestLocationUpdates(locationRequest, new LocationCallback() {
+                            @Override
+                            public void onLocationResult(LocationResult locationResult) {
+                                onLocationChange(locationResult.getLastLocation(), map);
+                            }
+                        },
+                        Looper.myLooper());
+    }
 
     // Method called every FASTEST_INTERVAL_MS milliseconds as long as user has moved at least MINIMUM_DISPLACEMENT
+    // Enables the camera to track the user, calling the onCameraMove() method on each change
     private void onLocationChange(Location lastLocation, GoogleMap map) {
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationUtils.toLatLng(lastLocation), DEFAULT_ZOOM_LEVEL));
+        // Change the camera position to follow the user on movement
+        map.animateCamera(CameraUpdateFactory.newLatLng(LocationUtils.toLatLng(lastLocation)));
     }
 
     public void ignorePost(Post post) {
