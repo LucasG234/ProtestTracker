@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -30,13 +28,14 @@ import java.util.List;
  * This listener is notified whenever the user moves the camera
  * It handles the turning Parse posts into Markers on the map
  */
-public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.OnInfoWindowClickListener {
+public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMyLocationButtonClickListener {
 
     private static final int FASTEST_INTERVAL_MS = 100;
     private static final String TAG = "MapListener";
 
     private Context mContext;
-    private Fragment mParent;
+    private MapFragment mParent;
     private GoogleMap mMap;
     // Set used to hold objects efficiently without order
     private SearchableSet<Post> mPosts;
@@ -44,7 +43,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
 
     private Date lastQuery;
 
-    public MapListener(Fragment parent, GoogleMap map) {
+    public MapListener(MapFragment parent, GoogleMap map) {
         this.mParent = parent;
         this.mContext = parent.getContext();
         this.mMap = map;
@@ -83,6 +82,23 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
         mParent.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+    }
+
+    // Call when a camera movement is started
+    // If the movement was started by gesture, turn off automatic camera movements
+    @Override
+    public void onCameraMoveStarted(int reason) {
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+            mParent.setFollowUser(false);
+        }
+    }
+
+    // Called when the my-location button is clicked
+    // When user focuses back to their location, turn on the automatic camera movements
+    @Override
+    public boolean onMyLocationButtonClick() {
+        mParent.setFollowUser(true);
+        return false;
     }
 
     // Adds all new posts within current visible bounds to mStoredPosts and calls addMarkers
@@ -167,3 +183,4 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         }
     }
 }
+

@@ -47,6 +47,8 @@ public class MapFragment extends Fragment {
 
     private static final String TAG = "MapFragment";
     private MapListener mMapListener;
+    // Represents whether the camera is currently follow the user's current position
+    private boolean mFollowUser;
 
     public MapFragment() {
         // Required empty public constructor
@@ -98,15 +100,20 @@ public class MapFragment extends Fragment {
         }
         // Map follows current user's location
         map.setMyLocationEnabled(true);
-        // Adds a button that zooms the camera to the user
-        map.getUiSettings().setMyLocationButtonEnabled(true);
         // Adds zoom in and out buttons
         map.getUiSettings().setZoomControlsEnabled(true);
+        // Adds a button that zooms the camera to the user
+        map.getUiSettings().setMyLocationButtonEnabled(true);
+
+        // Map follows user location until disabled with gestures
+        setFollowUser(true);
 
         // Adds our listener to add markers
         mMapListener = new MapListener(this, map);
         map.setOnCameraMoveListener(mMapListener);
         map.setOnInfoWindowClickListener(mMapListener);
+        map.setOnCameraMoveStartedListener(mMapListener);
+        map.setOnMyLocationButtonClickListener(mMapListener);
 
         LatLng currentLocation = LocationUtils.toLatLng(LocationUtils.getCurrentLocation(getContext()));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM_LEVEL));
@@ -144,8 +151,13 @@ public class MapFragment extends Fragment {
     // Enables the camera to track the user, calling the onCameraMove() method on each change
     private void onLocationChange(Location lastLocation, GoogleMap map) {
         Log.i(TAG, "Location changed to: " + lastLocation.toString());
-        // Change the camera position to follow the user on movement
-        map.animateCamera(CameraUpdateFactory.newLatLng(LocationUtils.toLatLng(lastLocation)));
+        if (mFollowUser) {
+            map.animateCamera(CameraUpdateFactory.newLatLng(LocationUtils.toLatLng(lastLocation)));
+        }
+    }
+
+    public void setFollowUser(boolean followUser) {
+        this.mFollowUser = followUser;
     }
 
     public void ignorePost(Post post) {
