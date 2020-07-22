@@ -261,20 +261,6 @@ public class FeedFragment extends Fragment {
             return true;
         }
 
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_VERTICAL_DISTANCE || Math.abs(velocityY) > SWIPE_MAX_VERTICAL_VELOCITY) {
-                return false;
-            } else if (e2.getX() - e1.getX() > SWIPE_MIN_HORIZONTAL_DISTANCE && velocityX > SWIPE_MIN_HORIZONTAL_VELOCITY) {
-                // This condition met on left to right swipes
-                int position = getEventPosition(e1);
-                ignorePost(mAdapter.getPost(position));
-                return true;
-            } else {
-                return super.onFling(e1, e2, velocityX, velocityY);
-            }
-        }
-
         private int getEventPosition(MotionEvent e) {
             View childView = mBinding.feedRecyclerView.findChildViewUnder(e.getX(), e.getY());
             return mBinding.feedRecyclerView.getChildLayoutPosition(childView);
