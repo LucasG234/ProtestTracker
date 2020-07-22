@@ -102,6 +102,7 @@ public class FeedFragment extends Fragment {
         mBinding.feedRecyclerView.setLayoutManager(layoutManager);
         mBinding.feedRecyclerView.addOnScrollListener(mEndlessScrollListener);
         mBinding.feedRecyclerView.addOnItemTouchListener(itemTouchListener);
+        mAdapter.setParentRecyclerView(mBinding.feedRecyclerView);
 
         // Setup refresh listener which triggers new data loading
         mBinding.feedSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -194,14 +195,18 @@ public class FeedFragment extends Fragment {
             public void done(final Boolean liked, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
+                    Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                
+
                 if (liked) {
                     likedBy.remove((User) User.getCurrentUser());
                 } else {
                     likedBy.add((User) User.getCurrentUser());
                 }
+
+                // Reverse visual liked state immediately
+                mAdapter.switchPostLiked(post);
 
                 post.saveInBackground(new SaveCallback() {
                     @Override
@@ -209,10 +214,9 @@ public class FeedFragment extends Fragment {
                         if (e != null) {
                             Log.e(TAG, "Error saving change to like status", e);
                             Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                            // Change liked state back in rare case of failure
+                            mAdapter.switchPostLiked(post);
                         }
-
-                        // Reverse liked due to change
-                        mAdapter.notifyItemChanged(position, !liked);
                     }
                 });
             }

@@ -33,12 +33,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private Context mContext;
     private List<Post> mPosts;
+    private RecyclerView mParentRecyclerView;
 
     public FeedAdapter(Context context) {
         this.mContext = context;
         this.mPosts = new ArrayList<>();
     }
 
+    public void setParentRecyclerView(RecyclerView parent) {
+        this.mParentRecyclerView = parent;
+    }
 
     @NonNull
     @Override
@@ -51,17 +55,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
         holder.bind(mPosts.get(position));
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull FeedViewHolder holder, int position, @NonNull List<Object> payloads) {
-        // Custom payloads made in this format
-        // All other calls to this method have empty payloads
-        if (payloads.size() == 1 && payloads.get(0) instanceof Boolean) {
-            holder.switchLiked((boolean) payloads.get(0));
-        } else {
-            super.onBindViewHolder(holder, position, payloads);
-        }
     }
 
     @Override
@@ -100,9 +93,18 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
     }
 
+    public void switchPostLiked(Post post) {
+        int position = mPosts.indexOf(post);
+        if (position != -1) {
+            FeedViewHolder viewHolder = (FeedViewHolder) mParentRecyclerView.findViewHolderForAdapterPosition(position);
+            viewHolder.switchLiked();
+        }
+    }
+
     class FeedViewHolder extends RecyclerView.ViewHolder {
 
         private ItemFeedPostBinding mBinding;
+        private boolean mLiked;
 
         public FeedViewHolder(@NonNull ItemFeedPostBinding binding) {
             super(binding.getRoot());
@@ -135,6 +137,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 mBinding.postImage.setVisibility(View.GONE);
             }
 
+            // Liked state defaults to false and may switched after it is checked
+            mLiked = false;
             checkLiked(post);
         }
 
@@ -146,14 +150,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                         Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
                         return;
                     }
-                    switchLiked(liked);
+                    if (liked) {
+                        switchLiked();
+                    }
                 }
             };
             post.getUserLikes((User) User.getCurrentUser(), likedCallback);
         }
 
-        public void switchLiked(boolean liked) {
-            int backgroundColorCode = liked ? mContext.getResources().getColor(R.color.colorPrimary)
+        public void switchLiked() {
+            mLiked = !mLiked;
+            int backgroundColorCode = mLiked ? mContext.getResources().getColor(R.color.colorPrimary)
                     : mContext.getResources().getColor(R.color.colorNone);
             mBinding.getRoot().setBackgroundColor(backgroundColorCode);
         }
