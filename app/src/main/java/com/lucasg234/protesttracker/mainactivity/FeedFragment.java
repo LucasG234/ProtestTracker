@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -102,6 +103,9 @@ public class FeedFragment extends Fragment {
         mBinding.feedRecyclerView.setLayoutManager(layoutManager);
         mBinding.feedRecyclerView.addOnScrollListener(mEndlessScrollListener);
         mBinding.feedRecyclerView.addOnItemTouchListener(itemTouchListener);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(mAdapter));
+        itemTouchHelper.attachToRecyclerView(mBinding.feedRecyclerView);
         mAdapter.setParentRecyclerView(mBinding.feedRecyclerView);
 
         // Setup refresh listener which triggers new data loading
@@ -237,6 +241,10 @@ public class FeedFragment extends Fragment {
         }
     }
 
+    /**
+     * Class which listens to all gestures made on the RecyclerView
+     * Responds only to double taps and confirmed single taps
+     */
     private class FeedGestureListener extends GestureDetector.SimpleOnGestureListener {
         // Measurements made in pixels and pixels / second
         private static final int SWIPE_MIN_HORIZONTAL_DISTANCE = 200;
@@ -264,6 +272,32 @@ public class FeedFragment extends Fragment {
         private int getEventPosition(MotionEvent e) {
             View childView = mBinding.feedRecyclerView.findChildViewUnder(e.getX(), e.getY());
             return mBinding.feedRecyclerView.getChildLayoutPosition(childView);
+        }
+    }
+
+    /**
+     * Class which handles RecyclerView items being swiped to the sides
+     */
+    public class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
+        private FeedAdapter mAdapter;
+
+        public SwipeToDeleteCallback(FeedAdapter adapter) {
+            // 0 value indicates no support for dragging items up and down
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+            this.mAdapter = adapter;
+        }
+
+        // No additional functionality when items are moved
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        // Whenever a post is swiped off of the screen, ignore it
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            mAdapter.ignorePost(mAdapter.getPost(position));
         }
     }
 }
