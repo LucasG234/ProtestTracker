@@ -14,7 +14,7 @@ import java.util.Date;
  */
 public class FeedComparator implements Comparator<Post> {
 
-    private static final int milliSecondsToMinutes = 60000;
+    private static final double milliSecondsToMinutes = 1.66667e-5;
 
     private final Context mContext;
 
@@ -27,15 +27,14 @@ public class FeedComparator implements Comparator<Post> {
     @Override
     public int compare(Post post1, Post post2) {
         Location currentLocation = LocationUtils.getCurrentLocation(mContext);
-        Float metersTo1 = currentLocation.distanceTo(LocationUtils.toLocation(post1.getLocation()));
-        Float metersTo2 = currentLocation.distanceTo(LocationUtils.toLocation(post2.getLocation()));
+        double metersTo1 = currentLocation.distanceTo(LocationUtils.toLocation(post1.getLocation()));
+        double metersTo2 = currentLocation.distanceTo(LocationUtils.toLocation(post2.getLocation()));
 
         Date currentTime = new Date();
-        long minutesSince1 = (currentTime.getTime() - post1.getCreatedAt().getTime()) * milliSecondsToMinutes;
-        long minutesSince2 = (currentTime.getTime() - post2.getCreatedAt().getTime()) * milliSecondsToMinutes;
+        double minutesSince1 = (currentTime.getTime() - post1.getCreatedAt().getTime()) * milliSecondsToMinutes;
+        double minutesSince2 = (currentTime.getTime() - post2.getCreatedAt().getTime()) * milliSecondsToMinutes;
 
-        // Current comparison = one meter is equivalent to one minute
-        return Long.compare(metersTo1.longValue() + minutesSince1, metersTo2.longValue() + minutesSince2);
+        return Double.compare(metersTo1 + minutesSince1, metersTo2 + minutesSince2);
     }
 
 }
