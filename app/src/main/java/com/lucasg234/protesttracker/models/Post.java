@@ -2,15 +2,12 @@ package com.lucasg234.protesttracker.models;
 
 import androidx.annotation.Nullable;
 
-import com.parse.FunctionCallback;
 import com.parse.ParseClassName;
-import com.parse.ParseCloud;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
 
-import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -98,20 +95,5 @@ public class Post extends ParseObject implements Comparable<Post> {
 
     public ParseRelation<User> getIgnoredBy() {
         return getRelation(KEY_IGNORED_BY);
-    }
-
-    // This helper method adds the given User to the ignoredBy of the post
-    public void addIgnoredBy(User user) {
-        ParseRelation<User> ignoredBy = getIgnoredBy();
-        ignoredBy.add(user);
-    }
-
-    // This helper method determines if a User has liked this post object
-    // Uses the callback after querying in the background
-    public void getUserLikes(User user, FunctionCallback<Boolean> callback) {
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put(Post.class.getSimpleName(), this.getObjectId());
-        params.put(User.class.getSimpleName(), user.getObjectId());
-        ParseCloud.callFunctionInBackground(KEY_FUNCTION_USER_LIKES, params, callback);
     }
 }

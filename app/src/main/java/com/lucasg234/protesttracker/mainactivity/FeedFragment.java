@@ -28,6 +28,7 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.util.PostUtils;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
@@ -189,7 +190,7 @@ public class FeedFragment extends Fragment {
     }
 
     public void ignorePost(Post post) {
-        post.addIgnoredBy((User) User.getCurrentUser());
+        PostUtils.addIgnoredBy((User) User.getCurrentUser(), post);
         post.saveInBackground();
 
         mAdapter.ignorePost(post);
@@ -229,7 +230,7 @@ public class FeedFragment extends Fragment {
             }
         };
 
-        post.getUserLikes((User) User.getCurrentUser(), likedCallback);
+        PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.DateUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
+import com.lucasg234.protesttracker.util.PostUtils;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
 
@@ -155,7 +156,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     }
                 }
             };
-            post.getUserLikes((User) User.getCurrentUser(), likedCallback);
+            PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
         }
 
         public void switchLiked() {
