@@ -202,7 +202,7 @@ public class ComposeFragment extends Fragment {
 
     // Constructs Post object and saves it to the Parse server
     private void savePost() {
-        Post post = new Post();
+        Post.Builder postBuilder = new Post.Builder();
 
         // Ensure location permissions before attempting to make post
         if (!LocationPermissions.checkLocationPermission(getContext())) {
@@ -214,23 +214,23 @@ public class ComposeFragment extends Fragment {
         // Next ensure current location can be found
         Location currentLocation = LocationUtils.getCurrentLocation(getContext());
         if (currentLocation != null) {
-            post.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
+            postBuilder.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
         } else {
             Log.e(TAG, "Couldn't find a location");
             Toast.makeText(getContext(), getString(R.string.error_location), Toast.LENGTH_SHORT).show();
             return;
         }
 
-        post.setText(mBinding.composeEditText.getText().toString());
-        post.setAuthor((User) User.getCurrentUser());
+        postBuilder.setText(mBinding.composeEditText.getText().toString());
+        postBuilder.setAuthor((User) User.getCurrentUser());
 
         // Check if there is currently a previewed image
         if (mBinding.composeImagePreview.getDrawable() != null) {
             // If there is, the current image will be stored within the the temp image storage
-            post.setImage(new ParseFile(mInternalImageStorage));
+            postBuilder.setImage(new ParseFile(mInternalImageStorage));
         }
 
-        post.saveInBackground(new SaveCallback() {
+        postBuilder.createModel().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null) {

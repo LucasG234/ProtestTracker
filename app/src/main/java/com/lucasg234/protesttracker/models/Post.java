@@ -31,6 +31,20 @@ public class Post extends ParseObject implements Comparable<Post> {
     public static final int QUERY_LIMIT = 20;
     public static final int MAXIMUM_LENGTH = 300;
 
+    // Constructor accepts null values for all fields
+    public Post(User author, String text, ParseFile image, ParseGeoPoint location) {
+        super();
+        setAuthor(author);
+        setText(text);
+        setImage(image);
+        setLocation(location);
+    }
+
+    // Required empty constructor
+    public Post() {
+
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         return obj instanceof Post && this.getObjectId().equals(((Post) obj).getObjectId());
@@ -95,5 +109,36 @@ public class Post extends ParseObject implements Comparable<Post> {
 
     public ParseRelation<User> getIgnoredBy() {
         return getRelation(KEY_IGNORED_BY);
+    }
+
+    public static class Builder {
+        private User mAuthor;
+        private String mText;
+        private ParseFile mImage;
+        private ParseGeoPoint mLocation;
+
+        public Builder setAuthor(User author) {
+            mAuthor = author;
+            return this;
+        }
+
+        public Builder setText(String text) {
+            mText = text;
+            return this;
+        }
+
+        public Builder setImage(ParseFile image) {
+            this.mImage = image;
+            return this;
+        }
+
+        public Builder setLocation(ParseGeoPoint location) {
+            this.mLocation = location;
+            return this;
+        }
+
+        public Post createModel() {
+            return new Post(mAuthor, mText, mImage, mLocation);
+        }
     }
 }
