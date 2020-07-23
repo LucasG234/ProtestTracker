@@ -117,7 +117,7 @@ public class ComposeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
-            Toast.makeText(getContext(), getString(R.string.error_receive_image), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_receive_image, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -167,7 +167,7 @@ public class ComposeFragment extends Fragment {
         }
 
         // Generate photo name based upon current time
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat(getString(R.string.image_storage_date_format)).format(new Date());
         try {
             mInternalImageStorage = File.createTempFile(
                     timeStamp,  /* prefix */
@@ -176,7 +176,7 @@ public class ComposeFragment extends Fragment {
             );
         } catch (IOException e) {
             Log.e(TAG, "Could not generate internal image storage", e);
-            Toast.makeText(getContext(), getString(R.string.error_file_generation), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -188,12 +188,12 @@ public class ComposeFragment extends Fragment {
 
         // Ensure text is not empty or only whitespace
         if (text.trim().isEmpty()) {
-            Toast.makeText(getContext(), getString(R.string.error_post_no_text), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_post_no_text, Toast.LENGTH_SHORT).show();
             return false;
         }
         // Impose maximum text length
         else if (text.length() > Post.MAXIMUM_LENGTH) {
-            Toast.makeText(getContext(), getString(R.string.error_post_over_maximum), Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), R.string.error_post_over_maximum, Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -217,7 +217,7 @@ public class ComposeFragment extends Fragment {
             postBuilder.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
         } else {
             Log.e(TAG, "Couldn't find a location");
-            Toast.makeText(getContext(), getString(R.string.error_location), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_location, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -235,7 +235,7 @@ public class ComposeFragment extends Fragment {
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error saving post", e);
-                    Toast.makeText(getContext(), getString(R.string.error_save), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_save, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -264,7 +264,7 @@ public class ComposeFragment extends Fragment {
         if (cameraIntent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE_CAMERA);
         } else {
-            Toast.makeText(getContext(), getString(R.string.error_camera_missing), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_camera_missing, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -276,7 +276,7 @@ public class ComposeFragment extends Fragment {
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(intent, ACTIVITY_REQUEST_CODE_GALLERY);
         } else {
-            Toast.makeText(getContext(), getString(R.string.error_gallery_missing), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_gallery_missing, Toast.LENGTH_SHORT).show();
         }
     }
 }

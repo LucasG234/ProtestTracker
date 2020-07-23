@@ -57,7 +57,7 @@ public class RegistrationActivity extends AppCompatActivity {
     // Ensure username and password meet all rules
     private boolean validateRegistration(String username, String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
-            Toast.makeText(this, getString(R.string.error_password_match), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_password_match, Toast.LENGTH_SHORT).show();
             return false;
         } else {
             return true;
@@ -75,11 +75,11 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (e != null) {
                     Log.e(TAG, "Error with login", e);
                     //TODO: possibly improve to be more specific
-                    Toast.makeText(RegistrationActivity.this, getString(R.string.error_registration), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegistrationActivity.this, R.string.error_registration, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 navigateToActivity(MainActivity.class);
-                Toast.makeText(RegistrationActivity.this, getString(R.string.account_created), Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegistrationActivity.this, R.string.account_created, Toast.LENGTH_SHORT).show();
             }
         });
     }

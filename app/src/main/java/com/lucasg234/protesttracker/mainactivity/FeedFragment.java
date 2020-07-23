@@ -149,7 +149,7 @@ public class FeedFragment extends Fragment {
             public void done(List<Post> posts, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error querying initial posts", e);
-                    Toast.makeText(getContext(), getString(R.string.error_load), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_load, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Clear any existing posts and add new ones
@@ -180,7 +180,7 @@ public class FeedFragment extends Fragment {
             public void done(List<Post> posts, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error querying additional posts", e);
-                    Toast.makeText(getContext(), getString(R.string.error_load), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_load, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Add new posts, but do not clear old ones
@@ -203,7 +203,7 @@ public class FeedFragment extends Fragment {
             public void done(final Boolean liked, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
-                    Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.error_liking, Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -221,7 +221,7 @@ public class FeedFragment extends Fragment {
                     public void done(ParseException e) {
                         if (e != null) {
                             Log.e(TAG, "Error saving change to like status", e);
-                            Toast.makeText(getContext(), getString(R.string.error_liking), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.error_liking, Toast.LENGTH_SHORT).show();
                             // Change liked state back in rare case of failure
                             mAdapter.switchPostLiked(post);
                         }

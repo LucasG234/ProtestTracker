@@ -88,7 +88,7 @@ public class MapFragment extends Fragment {
             });
         } else {
             Log.e(TAG, "mapFragment was null on onViewCreated");
-            Toast.makeText(getContext(), getString(R.string.error_map_load), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_map_load, Toast.LENGTH_SHORT).show();
         }
     }
 

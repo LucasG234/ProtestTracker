@@ -35,6 +35,10 @@
     <string name="transition_text">text</string>
     <string name="transition_image">image</string>
 
+    <!-- Formatting strings -->
+    <string name="distance_format">%s away</string>
+    <string name="image_storage_date_format">yyyyMMdd_HHmmss</string>
+
     <!-- Toast error text -->
     <string name="error_login">Error with login. Check username and password and try again.</string>
     <string name="error_registration">Error with registration. That username may already be taken.</string>

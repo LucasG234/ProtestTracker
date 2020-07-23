@@ -120,7 +120,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             public void done(List<Post> posts, ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error querying posts for markers");
-                    Toast.makeText(mContext, mContext.getString(R.string.error_load), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, R.string.error_load, Toast.LENGTH_SHORT).show();
                 }
                 // Remove all duplicates before adding markers
                 if (posts != null) {

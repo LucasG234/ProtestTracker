@@ -52,7 +52,7 @@ public class LocationUtils {
 
         float metersBetween = currentLocation.distanceTo(targetLocation);
 
-        return metersToImperialString(metersBetween) + " away";
+        return String.format(context.getString(R.string.distance_format), metersToImperialString(metersBetween));
     }
 
     // Converts the ParseGeoPoint given into a String representing its address
