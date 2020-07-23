@@ -34,12 +34,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private static final String TAG = "FeedAdapter";
 
     private Context mContext;
-    private List<Post> mPosts;
     private RecyclerView mParentRecyclerView;
+    // This list holds posts in their chronological order
+    private List<Post> mChronologicalPosts;
+    // This list holds posts in their custom sorted order
+    private List<Post> mOrderedPosts;
 
     public FeedAdapter(Context context) {
         this.mContext = context;
-        this.mPosts = new ArrayList<>();
+        this.mChronologicalPosts = new ArrayList<>();
+        this.mOrderedPosts = new ArrayList<>();
     }
 
     public void setParentRecyclerView(RecyclerView parent) {
@@ -56,51 +60,54 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
-        holder.bind(mPosts.get(position));
+        holder.bind(mOrderedPosts.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mPosts.size();
+        return mOrderedPosts.size();
     }
 
     // Helper method to add new posts to RecyclerView
     public void addAll(List<Post> newPosts) {
-        mPosts.addAll(newPosts);
+        // Add all new posts to the unordered list in the chronological order they are given
+        mChronologicalPosts.addAll(newPosts);
 
-        // Sort posts after they are added
-        Collections.sort(mPosts, new FeedComparator(mContext));
+        // Sort the new posts before adding them to the end of the sorted list
+        // This ensures the order of the existing posts will not be changed
+        Collections.sort(newPosts, new FeedComparator(mContext));
+        mOrderedPosts.addAll(newPosts);
 
         notifyDataSetChanged();
     }
 
     // Helper method to clear the RecyclerView
     public void clear() {
-        // Clears only visible posts. Ignored posts are retained to speed up repeat loading
-        mPosts.clear();
+        mChronologicalPosts.clear();
+        mOrderedPosts.clear();
         notifyDataSetChanged();
     }
 
     public Post getPost(int position) {
-        return mPosts.get(position);
+        return mChronologicalPosts.get(position);
     }
 
-    // Returns the oldest post known, considering visible and ignored list
+    // Returns the oldest post known
     public Post getOldestPost() {
-        return mPosts.get(mPosts.size() - 1);
+        return mChronologicalPosts.get(mChronologicalPosts.size() - 1);
     }
 
     public void ignorePost(Post post) {
-        int position = mPosts.indexOf(post);
+        int position = mChronologicalPosts.indexOf(post);
         // indexOf returns -1 if the object was not found in the list
         if (position != -1) {
-            mPosts.remove(post);
+            mChronologicalPosts.remove(post);
             notifyItemRemoved(position);
         }
     }
 
     public void switchPostLiked(Post post) {
-        int position = mPosts.indexOf(post);
+        int position = mChronologicalPosts.indexOf(post);
         if (position != -1) {
             FeedViewHolder viewHolder = (FeedViewHolder) mParentRecyclerView.findViewHolderForAdapterPosition(position);
             viewHolder.switchLiked();
