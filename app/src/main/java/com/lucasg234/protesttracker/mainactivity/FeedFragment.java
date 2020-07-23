@@ -28,13 +28,9 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
-import com.lucasg234.protesttracker.util.PostUtils;
 import com.parse.FindCallback;
-import com.parse.FunctionCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
-import com.parse.SaveCallback;
 
 import java.util.Date;
 import java.util.List;
@@ -190,47 +186,11 @@ public class FeedFragment extends Fragment {
     }
 
     public void ignorePost(Post post) {
-        PostUtils.addIgnoredBy((User) User.getCurrentUser(), post);
-        post.saveInBackground();
-
         mAdapter.ignorePost(post);
     }
 
     public void changePostLiked(final Post post) {
-        final ParseRelation<User> likedBy = post.getLikedBy();
-        FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
-            @Override
-            public void done(final Boolean liked, ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
-                    Toast.makeText(getContext(), R.string.error_liking, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (liked) {
-                    likedBy.remove((User) User.getCurrentUser());
-                } else {
-                    likedBy.add((User) User.getCurrentUser());
-                }
-
-                // Reverse visual liked state immediately
-                mAdapter.switchPostLiked(post);
-
-                post.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Log.e(TAG, "Error saving change to like status", e);
-                            Toast.makeText(getContext(), R.string.error_liking, Toast.LENGTH_SHORT).show();
-                            // Change liked state back in rare case of failure
-                            mAdapter.switchPostLiked(post);
-                        }
-                    }
-                });
-            }
-        };
-
-        PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
+        mAdapter.switchPostLiked(post);
     }
 
     @Override
@@ -280,7 +240,8 @@ public class FeedFragment extends Fragment {
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             int position = getEventPosition(e);
-            changePostLiked(mAdapter.getPost(position));
+            MainActivity parent = (MainActivity) getActivity();
+            parent.saveLikeChange(mAdapter.getPost(position));
             return true;
         }
 
@@ -326,7 +287,8 @@ public class FeedFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
-            mAdapter.ignorePost(mAdapter.getPost(position));
+            MainActivity parent = (MainActivity) getActivity();
+            parent.saveIgnore(mAdapter.getPost(position));
         }
     }
 }

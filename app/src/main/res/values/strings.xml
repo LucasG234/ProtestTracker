@@ -55,5 +55,6 @@
     <string name="error_post_over_maximum">Cannot create a post over the maximum length.</string>
     <string name="error_password_match">Please ensure the passwords match.</string>
     <string name="error_liking">Error while recommending this post. Please check your connection and try again.</string>
+    <string name="error_ignoring">Error while ignoring this post. Please check your connection and try again.</string>
 
 </resources>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,12 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityMainBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
+import com.lucasg234.protesttracker.models.User;
+import com.lucasg234.protesttracker.util.PostUtils;
+import com.parse.FunctionCallback;
+import com.parse.ParseException;
+import com.parse.ParseRelation;
+import com.parse.SaveCallback;
 
 /**
  * Central activity which holds the FeedFragment, MapFragment, ComposeFragment, and SettingsFragment
@@ -86,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         // Map fragment not hidden because it is the default
         fragmentManager.beginTransaction().add(R.id.fragmentHolder, mMap, MapFragment.class.getSimpleName()).commit();
 
-        mCurrentFragment = mFeed;
+        mCurrentFragment = mMap;
     }
 
     @Override
@@ -97,12 +104,10 @@ public class MainActivity extends AppCompatActivity {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
                 Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED, false)) {
-                    mFeed.changePostLiked(post);
-                    mMap.changePostLiked(post);
+                    saveLikeChange(post);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
-                    mFeed.ignorePost(post);
-                    mMap.ignorePost(post);
+                    saveIgnore(post);
                 }
                 break;
             default:
@@ -113,4 +118,50 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+
+    public void saveLikeChange(final Post post) {
+        final ParseRelation<User> likedBy = post.getLikedBy();
+        FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
+            @Override
+            public void done(final Boolean liked, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error in liking post", e);
+                    Toast.makeText(MainActivity.this, R.string.error_liking, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                mFeed.changePostLiked(post);
+                mMap.changePostLiked(post);
+
+                post.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, "Error saving change to like status", e);
+                            Toast.makeText(MainActivity.this, R.string.error_liking, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        };
+
+        PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
+    }
+
+    public void saveIgnore(final Post post) {
+        PostUtils.addIgnoredBy((User) User.getCurrentUser(), post);
+        post.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Error in ignoring post", e);
+                    Toast.makeText(MainActivity.this, R.string.error_ignoring, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                mFeed.ignorePost(post);
+                mMap.ignorePost(post);
+            }
+        });
+    }
 }

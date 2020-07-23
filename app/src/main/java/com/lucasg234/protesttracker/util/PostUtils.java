@@ -9,6 +9,9 @@ import com.parse.ParseRelation;
 import java.util.HashMap;
 
 public class PostUtils {
+
+    private static final String TAG = "PostUtils";
+
     // This helper method adds the given User to the ignoredBy of the given post
     public static void addIgnoredBy(User user, Post post) {
         ParseRelation<User> ignoredBy = post.getIgnoredBy();
