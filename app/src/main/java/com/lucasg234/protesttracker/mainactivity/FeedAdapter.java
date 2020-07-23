@@ -22,6 +22,7 @@ import com.parse.FunctionCallback;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,6 +67,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // Helper method to add new posts to RecyclerView
     public void addAll(List<Post> newPosts) {
         mPosts.addAll(newPosts);
+
+        // Sort posts after they are added
+        Collections.sort(mPosts, new FeedComparator(mContext));
+
         notifyDataSetChanged();
     }
 

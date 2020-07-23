@@ -31,13 +31,14 @@ public class Post extends ParseObject implements Comparable<Post> {
     public static final int QUERY_LIMIT = 20;
     public static final int MAXIMUM_LENGTH = 300;
 
-    // Constructor accepts null values for all fields
     public Post(User author, String text, ParseFile image, ParseGeoPoint location) {
         super();
         setAuthor(author);
         setText(text);
-        setImage(image);
         setLocation(location);
+        if (image != null) {
+            setImage(image);
+        }
     }
 
     // Required empty constructor

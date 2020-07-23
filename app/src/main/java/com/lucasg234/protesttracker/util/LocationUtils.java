@@ -24,12 +24,21 @@ public class LocationUtils {
 
     // Converts a Location object to the equivalent LatLng object
     public static LatLng toLatLng(Location location) {
-        return new LatLng(location.getLatitude(), location.getLongitude());
+        return location == null ? null : new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     // Converts a ParseGeoPoint object to the equivalent LatLng object
     public static LatLng toLatLng(ParseGeoPoint location) {
         return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
+    // Converts a ParseGeoPoint object to the equivalent Location object
+    public static Location toLocation(ParseGeoPoint geoPoint) {
+        // Null means that this location has no provider
+        Location location = new Location("");
+        location.setLatitude(geoPoint.getLatitude());
+        location.setLongitude(geoPoint.getLongitude());
+        return location;
     }
 
     // Returns the last known location of the user

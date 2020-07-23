@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         // No need to check resultCode because both RESULT_OK and RESULT_CANCELED are accepted
 
         switch (requestCode) {
@@ -114,8 +115,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "Received onActivityResult with unused request code: " + requestCode);
                 return;
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
