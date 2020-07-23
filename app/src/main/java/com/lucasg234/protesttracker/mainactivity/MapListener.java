@@ -56,7 +56,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         this.mMarkers = new SearchableSet<>(new SearchableSet.Accessor<Marker>() {
             @Override
             public String accessId(Marker marker) {
-                return (String) marker.getTag();
+                return marker == null ? null : (String) marker.getTag();
             }
         });
     }
@@ -176,7 +176,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             Iterator<K> iter = this.iterator();
             while (iter.hasNext()) {
                 K object = iter.next();
-                if (mAccessor.accessId(object).equals(objectId))
+                String id = mAccessor.accessId(object);
+                if (id != null && id.equals(objectId))
                     return object;
             }
             return null;
