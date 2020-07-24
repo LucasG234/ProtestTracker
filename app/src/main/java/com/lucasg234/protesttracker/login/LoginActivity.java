@@ -80,6 +80,11 @@ public class LoginActivity extends AppCompatActivity {
                 ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, permissions, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
+                        if(e != null) {
+                            Log.e(TAG, "Error in ParseFacebookUtils.logIn", e);
+                            Toast.makeText(LoginActivity.this, R.string.error_login_facebook, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         navigateToActivity(MainActivity.class);
                     }
                 });
@@ -88,11 +93,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCancel() {
                 Log.i(TAG, "User canceled Facebook login");
+                Toast.makeText(LoginActivity.this, R.string.error_receive_facebook, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.e(TAG, "Error on Facebook login");
+                Toast.makeText(LoginActivity.this, R.string.error_login_facebook, Toast.LENGTH_SHORT).show();
             }
         });
     }
