@@ -40,14 +40,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     // This list holds posts in their custom sorted order
     private List<Post> mOrderedPosts;
 
-    public FeedAdapter(Context context) {
+    public FeedAdapter(Context context, RecyclerView parent) {
         this.mContext = context;
+        this.mParentRecyclerView = parent;
         this.mChronologicalPosts = new ArrayList<>();
         this.mOrderedPosts = new ArrayList<>();
-    }
-
-    public void setParentRecyclerView(RecyclerView parent) {
-        this.mParentRecyclerView = parent;
     }
 
     @NonNull

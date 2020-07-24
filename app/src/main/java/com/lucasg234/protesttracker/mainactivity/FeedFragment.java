@@ -87,7 +87,7 @@ public class FeedFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        mAdapter = new FeedAdapter(getContext());
+        mAdapter = new FeedAdapter(getContext(), mBinding.feedRecyclerView);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mEndlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -106,7 +106,6 @@ public class FeedFragment extends Fragment {
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(mAdapter));
         itemTouchHelper.attachToRecyclerView(mBinding.feedRecyclerView);
-        mAdapter.setParentRecyclerView(mBinding.feedRecyclerView);
 
         // Setup refresh listener which triggers new data loading
         mBinding.feedSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
