@@ -9,9 +9,12 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityLoginBinding;
@@ -21,6 +24,9 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.facebook.ParseFacebookUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -72,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         mCallbackManager = CallbackManager.Factory.create();
         mBinding.loginFacebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onSuccess(final LoginResult loginResult) {
                 Log.i(TAG, "Success");
                 // Currently not requesting any permissions from Facebook
                 ArrayList<String> permissions = new ArrayList<>();
@@ -80,10 +86,14 @@ public class LoginActivity extends AppCompatActivity {
                 ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, permissions, new LogInCallback() {
                     @Override
                     public void done(ParseUser user, ParseException e) {
-                        if(e != null) {
+                        if (e != null) {
                             Log.e(TAG, "Error in ParseFacebookUtils.logIn", e);
                             Toast.makeText(LoginActivity.this, R.string.error_login_facebook, Toast.LENGTH_SHORT).show();
                             return;
+                        }
+                        if (user.isNew()) {
+                            Log.i(TAG, "New lol");
+                            setFacebookUsername(loginResult.getAccessToken(), (User) user);
                         }
                         navigateToActivity(MainActivity.class);
                     }
@@ -119,6 +129,31 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, R.string.login_completed, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void setFacebookUsername(AccessToken accessToken, final User user) {
+        GraphRequest request = GraphRequest.newMeRequest(
+                accessToken,
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        if (response.getError() != null) {
+                            Log.e(TAG, "Error with GraphRequest for username", response.getError().getException());
+                        }
+                        try {
+                            String name = object.getString("name");
+                            user.setUsername(name);
+                            user.saveInBackground();
+                        } catch (JSONException e) {
+                            Log.i(TAG, "Error setting username from GraphRequest JSON", e);
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "name");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     private void navigateToActivity(Class activityClass) {
