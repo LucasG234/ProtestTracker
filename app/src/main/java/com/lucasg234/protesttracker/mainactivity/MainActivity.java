@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mBinding;
     private Fragment mCurrentFragment;
+    private boolean mNavigationEnabled;
 
     private FeedFragment mFeed;
     private ComposeFragment mCompose;
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,13 +54,28 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        // If no location permissions, enable NoPermissionsFragment
+
         if (!LocationPermissions.checkLocationPermission(this)) {
             Log.i(TAG, "Found no location permissions");
-            NoPermissionsFragment noPermissionsFragment = NoPermissionsFragment.newInstance();
-            getSupportFragmentManager().beginTransaction().add(R.id.fragmentHolder, noPermissionsFragment, NoPermissionsFragment.class.getSimpleName()).commit();
-            mCurrentFragment = noPermissionsFragment;
+            mNavigationEnabled = false;
+            disableFragmentNavigation();
         } else {
+            mNavigationEnabled = true;
+            enableFragmentNavigation();
+        }
+    }
+
+    // Method called when Activity is reopened from another program
+    // Respond here in case user has changed their permission settings from another location
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        boolean locationPermissions = LocationPermissions.checkLocationPermission(this);
+
+        if (mNavigationEnabled && !locationPermissions) {
+            disableFragmentNavigation();
+        } else if (!mNavigationEnabled && locationPermissions) {
             enableFragmentNavigation();
         }
     }
@@ -105,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Remove the NoPermissionsFragment if it was used
-        if (mCurrentFragment != null) {
+        // If navigation was previously disabled, removed the NoPermissionsFragment
+        if (!mNavigationEnabled) {
             fragmentManager.beginTransaction().remove(mCurrentFragment).commit();
         }
 
@@ -118,6 +133,24 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager.beginTransaction().add(R.id.fragmentHolder, mMap, MapFragment.class.getSimpleName()).commit();
 
         mCurrentFragment = mMap;
+        mNavigationEnabled = true;
+    }
+
+    // Disable the BottomNavigationView and change the fragment to NoPermissionsFragment
+    public void disableFragmentNavigation() {
+        // If navigation was previously disabled, hide the current fragment
+        if (mNavigationEnabled) {
+            getSupportFragmentManager().beginTransaction().hide(mCurrentFragment).commit();
+        }
+        // Create a NoPermissionsFragment as the current fragment
+        NoPermissionsFragment noPermissionsFragment = NoPermissionsFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentHolder, noPermissionsFragment, NoPermissionsFragment.class.getSimpleName()).commit();
+        mCurrentFragment = noPermissionsFragment;
+
+        // Disable the onClickListener for the BottomNavigationView
+        mBinding.mainBottomNavigation.setOnClickListener(null);
+
+        mNavigationEnabled = false;
     }
 
     @Override
