@@ -2,6 +2,7 @@ package com.lucasg234.protesttracker.login;
 
 import android.app.Application;
 
+import com.facebook.FacebookSdk;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
@@ -45,5 +46,8 @@ public class ParseApplication extends Application {
                 .clientKey(getString(R.string.master_key))  // set explicitly unless clientKey is explicitly configured on Parse server
                 .clientBuilder(builder)
                 .server(getString(R.string.server_url)).build());
+
+        // Initialize Facebook SDK
+        FacebookSdk.fullyInitialize();
     }
 }
