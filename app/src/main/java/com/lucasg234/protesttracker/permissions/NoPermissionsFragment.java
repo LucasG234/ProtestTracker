@@ -49,5 +49,12 @@ public class NoPermissionsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mBinding = FragmentNoPermissionBinding.bind(view);
+
+        mBinding.permissionsRequestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LocationPermissions.requestLocationPermission(NoPermissionsFragment.this);
+            }
+        });
     }
 }

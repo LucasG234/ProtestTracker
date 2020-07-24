@@ -18,6 +18,8 @@ import com.lucasg234.protesttracker.databinding.ActivityMainBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
+import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.NoPermissionsFragment;
 import com.lucasg234.protesttracker.util.PostUtils;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
@@ -36,17 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding mBinding;
     private Fragment mCurrentFragment;
 
-    private final FeedFragment mFeed;
-    private final ComposeFragment mCompose;
-    private final MapFragment mMap;
-    private final SettingsFragment mSettings;
+    private FeedFragment mFeed;
+    private ComposeFragment mCompose;
+    private MapFragment mMap;
+    private SettingsFragment mSettings;
 
     public MainActivity() {
-        // Fragments constructed only once
-        mFeed = FeedFragment.newInstance();
-        mCompose = ComposeFragment.newInstance();
-        mMap = MapFragment.newInstance();
-        mSettings = SettingsFragment.newInstance();
     }
 
 
@@ -56,6 +53,27 @@ public class MainActivity extends AppCompatActivity {
 
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+
+        // If no location permissions, enable NoPermissionsFragment
+        if (!LocationPermissions.checkLocationPermission(this)) {
+            Log.i(TAG, "Found no location permissions");
+            NoPermissionsFragment noPermissionsFragment = NoPermissionsFragment.newInstance();
+            getSupportFragmentManager().beginTransaction().add(R.id.fragmentHolder, noPermissionsFragment, NoPermissionsFragment.class.getSimpleName()).commit();
+            mCurrentFragment = noPermissionsFragment;
+        } else {
+            enableFragmentNavigation();
+        }
+    }
+
+    // Enables the bottom navigation and all fragments connected to it
+    public void enableFragmentNavigation() {
+        // All fragments constructed only once when BottomNavigation enabled
+        if (mFeed == null || mCompose == null || mMap == null || mSettings == null) {
+            mFeed = FeedFragment.newInstance();
+            mCompose = ComposeFragment.newInstance();
+            mMap = MapFragment.newInstance();
+            mSettings = SettingsFragment.newInstance();
+        }
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -80,11 +98,17 @@ public class MainActivity extends AppCompatActivity {
                         Log.i(TAG, "Bottom Navigation View selected unknown icon : " + item.toString());
                         return false;
                 }
+
                 fragmentManager.beginTransaction().hide(mCurrentFragment).show(newCurrentFragment).commit();
                 mCurrentFragment = newCurrentFragment;
                 return true;
             }
         });
+
+        // Remove the NoPermissionsFragment if it was used
+        if (mCurrentFragment != null) {
+            fragmentManager.beginTransaction().remove(mCurrentFragment).commit();
+        }
 
         // Add all initial fragments
         fragmentManager.beginTransaction().add(R.id.fragmentHolder, mCompose, ComposeFragment.class.getSimpleName()).hide(mCompose).commit();
@@ -117,6 +141,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (LocationPermissions.checkLocationPermission(this)) {
+            enableFragmentNavigation();
+        }
+    }
 
     public void saveLikeChange(final Post post) {
         final ParseRelation<User> likedBy = post.getLikedBy();
