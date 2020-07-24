@@ -6,8 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityLoginBinding;
 import com.lucasg234.protesttracker.mainactivity.MainActivity;
@@ -15,6 +20,9 @@ import com.lucasg234.protesttracker.models.User;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.facebook.ParseFacebookUtils;
+
+import java.util.ArrayList;
 
 /**
  * Launcher activity which allows users to log into existing accounts
@@ -25,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
     private ActivityLoginBinding mBinding;
+    private CallbackManager mCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,37 @@ public class LoginActivity extends AppCompatActivity {
                 navigateToActivity(RegistrationActivity.class);
             }
         });
+
+        configureFacebookLogin();
+    }
+
+    private void configureFacebookLogin() {
+        mCallbackManager = CallbackManager.Factory.create();
+        mBinding.loginFacebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.i(TAG, "Success");
+                // Currently not requesting any permissions from Facebook
+                ArrayList<String> permissions = new ArrayList<>();
+
+                ParseFacebookUtils.logInWithReadPermissionsInBackground(LoginActivity.this, permissions, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException e) {
+                        navigateToActivity(MainActivity.class);
+                    }
+                });
+            }
+
+            @Override
+            public void onCancel() {
+                Log.i(TAG, "User canceled Facebook login");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.e(TAG, "Error on Facebook login");
+            }
+        });
     }
 
     // Attempts to login to a Parse account with the given credentials
@@ -69,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
                 navigateToActivity(MainActivity.class);
-                Toast.makeText(LoginActivity.this,R.string.login_completed, Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, R.string.login_completed, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -78,5 +118,12 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, activityClass);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

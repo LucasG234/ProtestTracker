@@ -9,6 +9,7 @@ import com.lucasg234.protesttracker.models.User;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.facebook.ParseFacebookUtils;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -49,5 +50,6 @@ public class ParseApplication extends Application {
 
         // Initialize Facebook SDK
         FacebookSdk.fullyInitialize();
+        ParseFacebookUtils.initialize(this);
     }
 }

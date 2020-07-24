@@ -35,7 +35,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'com.github.parse-community.Parse-SDK-Android:parse:1.24.2'
+    implementation 'com.github.parse-community.Parse-SDK-Android:parse:1.25.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.1.0' // for logging API calls to LogCat
 
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
@@ -48,4 +48,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     implementation 'com.facebook.android:facebook-android-sdk:5.15.3'
+    implementation "com.github.parse-community.Parse-SDK-Android:facebook:1.25.0"
 }
