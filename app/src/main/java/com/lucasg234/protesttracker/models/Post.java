@@ -6,6 +6,7 @@ import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 
 import java.util.Objects;
@@ -105,6 +106,7 @@ public class Post extends ParseObject implements Comparable<Post> {
 
     // Return the entire relations to allow custom queries
     public ParseRelation<User> getLikedBy() {
+        ParseQuery query = getRelation("").getQuery();
         return getRelation(KEY_LIKED_BY);
     }
 
