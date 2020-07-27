@@ -1,20 +1,15 @@
 package com.lucasg234.protesttracker.mainactivity;
 
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,8 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
-import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
-import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
@@ -97,12 +90,9 @@ public class FeedFragment extends Fragment {
             }
         };
 
-        RecyclerView.OnItemTouchListener itemTouchListener = createItemTouchListener();
-
         mBinding.feedRecyclerView.setAdapter(mAdapter);
         mBinding.feedRecyclerView.setLayoutManager(layoutManager);
         mBinding.feedRecyclerView.addOnScrollListener(mEndlessScrollListener);
-        mBinding.feedRecyclerView.addOnItemTouchListener(itemTouchListener);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(mAdapter));
         itemTouchHelper.attachToRecyclerView(mBinding.feedRecyclerView);
@@ -114,19 +104,6 @@ public class FeedFragment extends Fragment {
                 queryInitialPosts();
             }
         });
-    }
-
-    private RecyclerView.OnItemTouchListener createItemTouchListener() {
-        final GestureDetector gestureDetector = new GestureDetector(new FeedGestureListener());
-
-        RecyclerView.OnItemTouchListener touchListener = new RecyclerView.SimpleOnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                return gestureDetector.onTouchEvent(e);
-            }
-        };
-
-        return touchListener;
     }
 
     // Removes all posts within the FeedAdapter and replaces them with the result of a new query
@@ -204,64 +181,8 @@ public class FeedFragment extends Fragment {
         }
     }
 
-
-    private Bundle getTransitionToDetailView(FeedAdapter.FeedViewHolder postViewHolder) {
-        ItemFeedPostBinding postBinding = postViewHolder.getBinding();
-
-        Pair<View, String> pair1 = Pair.create((View) postBinding.postUsername, getString(R.string.transition_username));
-        Pair<View, String> pair2 = Pair.create((View) postBinding.postCreatedAt, getString(R.string.transition_created_at));
-        Pair<View, String> pair3 = Pair.create((View) postBinding.postText, getString(R.string.transition_text));
-
-        ActivityOptionsCompat transitionOptions;
-
-        // Only include the image in the transition if it is visible
-        if (postBinding.postImage.getVisibility() == View.VISIBLE) {
-            Pair<View, String> pair4 = Pair.create((View) postBinding.postImage, getString(R.string.transition_image));
-            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3, pair4);
-        } else {
-            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), pair1, pair2, pair3);
-        }
-
-        return transitionOptions.toBundle();
-    }
-
-    /**
-     * Class which listens to all gestures made on the RecyclerView
-     * Responds only to double taps and confirmed single taps
-     */
-    private class FeedGestureListener extends GestureDetector.SimpleOnGestureListener {
-        // Measurements made in pixels and pixels / second
-        private static final int SWIPE_MIN_HORIZONTAL_DISTANCE = 200;
-        private static final int SWIPE_MAX_VERTICAL_DISTANCE = 100;
-        private static final int SWIPE_MAX_VERTICAL_VELOCITY = 1000;
-        private static final int SWIPE_MIN_HORIZONTAL_VELOCITY = 2000;
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            int position = getEventPosition(e);
-            MainActivity parent = (MainActivity) getActivity();
-            parent.saveLikeChange(mAdapter.getPost(position));
-            return true;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            int position = getEventPosition(e);
-            Post post = mAdapter.getPost(position);
-            Intent detailIntent = new Intent(getContext(), PostDetailActivity.class);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
-
-            FeedAdapter.FeedViewHolder postViewHolder = (FeedAdapter.FeedViewHolder) mBinding.feedRecyclerView.findViewHolderForAdapterPosition(position);
-            Bundle transitionBundle = getTransitionToDetailView(postViewHolder);
-
-            getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL, transitionBundle);
-            return true;
-        }
-
-        private int getEventPosition(MotionEvent e) {
-            View childView = mBinding.feedRecyclerView.findChildViewUnder(e.getX(), e.getY());
-            return mBinding.feedRecyclerView.getChildLayoutPosition(childView);
-        }
+    public FragmentFeedBinding getBinding() {
+        return mBinding;
     }
 
     /**
