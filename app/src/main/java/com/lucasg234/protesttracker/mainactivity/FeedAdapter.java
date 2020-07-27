@@ -176,15 +176,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             }
 
             // Set a listener for single and double clicks
-            mBinding.postTouchHolder.setOnTouchListener(createItemTouchListener());
+            mBinding.postTouchHolder.setOnTouchListener(createItemTouchListener(post, this));
 
             // Liked state defaults to false and may switched after it is checked
             mLiked = false;
             checkLiked(post);
         }
 
-        private View.OnTouchListener createItemTouchListener() {
-            final GestureDetector gestureDetector = new GestureDetector(mContext, new FeedGestureListener());
+        private View.OnTouchListener createItemTouchListener(Post post, FeedViewHolder viewHolder) {
+            final GestureDetector gestureDetector = new GestureDetector(mContext, new FeedGestureListener(post, viewHolder));
 
             View.OnTouchListener touchListener = new View.OnTouchListener() {
                 @Override
@@ -231,32 +231,31 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
      */
     private class FeedGestureListener extends GestureDetector.SimpleOnGestureListener {
 
+        private Post mPost;
+        private FeedViewHolder mViewHolder;
+
+        public FeedGestureListener(Post post, FeedViewHolder viewHolder) {
+            this.mPost = post;
+            this.mViewHolder = viewHolder;
+        }
+
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            int position = getEventPosition(e);
             MainActivity parent = (MainActivity) mContext;
-            parent.saveLikeChange(getPost(position));
+            parent.saveLikeChange(mPost);
             return true;
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            int position = getEventPosition(e);
-            Post post = getPost(position);
             Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
-            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, post);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mPost);
 
-            FeedAdapter.FeedViewHolder postViewHolder = (FeedAdapter.FeedViewHolder) mParentRecyclerView.findViewHolderForAdapterPosition(position);
-            Bundle transitionBundle = getTransitionToDetailView(postViewHolder);
+            Bundle transitionBundle = getTransitionToDetailView(mViewHolder);
 
             Activity parent = (Activity) mContext;
             parent.startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL, transitionBundle);
             return true;
-        }
-
-        private int getEventPosition(MotionEvent e) {
-            View childView = mParentRecyclerView.findChildViewUnder(e.getX(), e.getY());
-            return mParentRecyclerView.getChildLayoutPosition(childView);
         }
     }
 }
