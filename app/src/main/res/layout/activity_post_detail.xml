@@ -51,27 +51,23 @@
         app:layout_constraintTop_toBottomOf="@+id/detailText"
         tools:text="5 miles North" />
 
-    <Button
-        android:id="@+id/detailLikeButton"
-        android:layout_width="@dimen/match_constraint"
+    <ImageView
+        android:id="@+id/detailLike"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_margin"
-        android:text="@string/post_like_button"
-        app:layout_constraintEnd_toStartOf="@+id/detailIgnoreButton"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_margin="@dimen/standard_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailLocation" />
+        app:layout_constraintTop_toBottomOf="@+id/detailText"
+        app:srcCompat="@drawable/outline_star_24" />
 
-    <Button
-        android:id="@+id/detailIgnoreButton"
-        android:layout_width="@dimen/match_constraint"
+    <ImageView
+        android:id="@+id/detailIgnore"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/small_margin"
-        android:text="@string/post_ignore_button"
+        android:layout_margin="@dimen/standard_margin"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/detailLikeButton"
-        app:layout_constraintTop_toBottomOf="@+id/detailLocation" />
+        app:layout_constraintTop_toBottomOf="@+id/detailText"
+        app:srcCompat="@drawable/outline_flag_24" />
 
     <ImageView
         android:id="@+id/detailImage"
@@ -82,6 +78,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detailLikeButton"
+        app:layout_constraintTop_toBottomOf="@+id/detailLocation"
         tools:srcCompat="@tools:sample/avatars" />
 </androidx.constraintlayout.widget.ConstraintLayout>
