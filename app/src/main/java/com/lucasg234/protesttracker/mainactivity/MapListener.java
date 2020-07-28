@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -25,10 +27,12 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This listener is notified whenever the user moves the camera
@@ -56,11 +60,21 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         this.mMap = map;
         this.mPosts = new SearchableSet<>(new SearchableSet.Accessor<Post>() {
             @Override
+            public int compare(Post post1, Post post2) {
+                return post1.compareTo(post2);
+            }
+
+            @Override
             public String accessId(Post post) {
                 return post.getObjectId();
             }
         });
         this.mMarkers = new SearchableSet<>(new SearchableSet.Accessor<Marker>() {
+            @Override
+            public int compare(Marker m1, Marker m2) {
+                return Integer.compare(m1.hashCode(), m2.hashCode());
+            }
+
             @Override
             public String accessId(Marker marker) {
                 return marker == null ? null : (String) marker.getTag();
@@ -231,28 +245,163 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 
-    static private class SearchableSet<K> extends HashSet<K> {
+    /**
+     * Custom TreeSet which stores objects so they can be efficiently retrieved by Object Id
+     */
+    static private class SearchableSet<K> implements Set<K> {
 
-        interface Accessor<K> {
+        public interface Accessor<K> extends Comparator<K> {
             String accessId(K object);
         }
 
+        // Nodes used within Tree structure
+        private class Node {
+            K object;
+            Node left;
+            Node right;
+            Node parent;
+
+            Node(K object) {
+                this.object = object;
+            }
+        }
+
         private Accessor<K> mAccessor;
+        private Node mHead;
+        private int mSize;
 
         public SearchableSet(Accessor<K> accessor) {
             this.mAccessor = accessor;
+            this.mHead = null;
+            this.mSize = 0;
         }
 
         public K getObjectById(String objectId) {
-            Iterator<K> iter = this.iterator();
-            while (iter.hasNext()) {
-                K object = iter.next();
-                String id = mAccessor.accessId(object);
-                if (id != null && id.equals(objectId))
-                    return object;
-            }
+//            Iterator<K> iter = this.iterator();
+//            while (iter.hasNext()) {
+//                K object = iter.next();
+//                String id = mAccessor.accessId(object);
+//                if (id != null && id.equals(objectId))
+//                    return object;
+//            }
             return null;
+        }
+
+        @Override
+        public int size() {
+            return mSize;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return mSize == 0;
+        }
+
+        // Currently unimplemented
+        @Override
+        public boolean contains(@Nullable Object o) {
+            return false;
+        }
+
+        // Currently unimplemented
+        @NonNull
+        @Override
+        public Iterator<K> iterator() {
+            return null;
+        }
+
+        // Currently unimplemented
+        @NonNull
+        @Override
+        public Object[] toArray() {
+            return new Object[0];
+        }
+
+        // Currently unimplemented
+        @NonNull
+        @Override
+        public <T> T[] toArray(@NonNull T[] ts) {
+            return null;
+        }
+
+        @Override
+        public boolean add(K object) {
+            if (mHead == null) {
+                mHead = new Node(object);
+                mSize++;
+                return true;
+            }
+            Node currNode = mHead;
+            do {
+                // Do not add duplicates into the set
+                if (object.equals(currNode.object)) {
+                    return false;
+                } else if (mAccessor.compare(object, currNode.object) < 0) {
+                    // Left case
+                    if (currNode.left == null) {
+                        Node newLeft = new Node(object);
+                        newLeft.parent = currNode;
+                        currNode.left = newLeft;
+                        mSize++;
+                        return true;
+                    }
+                    currNode = currNode.left;
+                } else {
+                    // Right case
+                    if (currNode.right == null) {
+                        Node newRight = new Node(object);
+                        newRight.parent = currNode;
+                        currNode.right = newRight;
+                        mSize++;
+                        return true;
+                    }
+                    currNode = currNode.right;
+                }
+            } while (currNode != null);
+            // Loop exited only in error cases
+            return false;
+        }
+
+        // Currently unimplemented
+        @Override
+        public boolean remove(@Nullable Object o) {
+            return false;
+        }
+
+        // Currently unimplemented
+        @Override
+        public boolean containsAll(@NonNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public boolean addAll(@NonNull Collection<? extends K> collection) {
+            boolean changed = false;
+            for (K k : collection) {
+                changed = changed || add(k);
+            }
+            return changed;
+        }
+
+        // Currently unimplemented
+        @Override
+        public boolean retainAll(@NonNull Collection<?> collection) {
+            return false;
+        }
+
+        // Currently unimplemented
+        @Override
+        public boolean removeAll(@NonNull Collection<?> collection) {
+            return false;
+        }
+
+        @Override
+        public void clear() {
+            mHead = null;
+            mSize = 0;
         }
     }
 }
+
+
 
