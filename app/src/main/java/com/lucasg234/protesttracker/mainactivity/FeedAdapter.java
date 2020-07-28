@@ -3,6 +3,7 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -195,9 +196,20 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 }
             });
 
-            // Liked state defaults to false and may switched after it is checked
+            // Liked state defaults to false but may switch after it is checked
             mLiked = false;
-            checkLiked(post);
+            setLikeVisuals();
+            initialLikeCheck(post);
+        }
+
+        // This method is public so that other classes can affect the like status of the view holder to reflect the Parse server
+        public void switchLiked() {
+            mLiked = !mLiked;
+            setLikeVisuals();
+        }
+
+        public ItemFeedPostBinding getBinding() {
+            return mBinding;
         }
 
         private View.OnTouchListener createItemTouchListener(Post post, FeedViewHolder viewHolder) {
@@ -214,7 +226,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             return touchListener;
         }
 
-        private void checkLiked(final Post post) {
+        private void initialLikeCheck(final Post post) {
             FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
                 @Override
                 public void done(Boolean liked, ParseException e) {
@@ -222,6 +234,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                         Log.e(TAG, "Error in determining if post liked on ViewHolder bind", e);
                         return;
                     }
+
+                    // Assumed state is false before the initial check
                     if (liked) {
                         switchLiked();
                     }
@@ -230,15 +244,16 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
         }
 
-        public void switchLiked() {
-            mLiked = !mLiked;
-            int backgroundColorCode = mLiked ? mContext.getResources().getColor(R.color.colorPrimary)
-                    : mContext.getResources().getColor(R.color.colorNone);
-            mBinding.getRoot().setBackgroundColor(backgroundColorCode);
-        }
-
-        public ItemFeedPostBinding getBinding() {
-            return mBinding;
+        // Private helper method used to set the visuals depending on current liked status
+        private void setLikeVisuals() {
+            Drawable toReplace;
+            if(mLiked) {
+                toReplace = mContext.getDrawable(R.drawable.baseline_star_accent_24);
+            }
+            else {
+                toReplace = mContext.getDrawable(R.drawable.outline_star_24);
+            }
+            mBinding.postLike.setImageDrawable(toReplace);
         }
     }
 

@@ -194,6 +194,13 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                if(liked) {
+                    likedBy.remove((User) User.getCurrentUser());
+                }
+                else {
+                    likedBy.add((User) User.getCurrentUser());
+                }
+
                 mFeed.changePostLiked(post);
                 mMap.changePostLiked(post);
 
