@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * This listener is notified whenever the user moves the camera
@@ -277,13 +278,13 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         }
 
         public K getObjectById(String objectId) {
-//            Iterator<K> iter = this.iterator();
-//            while (iter.hasNext()) {
-//                K object = iter.next();
-//                String id = mAccessor.accessId(object);
-//                if (id != null && id.equals(objectId))
-//                    return object;
-//            }
+            Iterator<K> iter = this.iterator();
+            while (iter.hasNext()) {
+                K object = iter.next();
+                String id = mAccessor.accessId(object);
+                if (id != null && id.equals(objectId))
+                    return object;
+            }
             return null;
         }
 
@@ -307,7 +308,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         @NonNull
         @Override
         public Iterator<K> iterator() {
-            return null;
+            return new SearchIterator();
         }
 
         // Currently unimplemented
@@ -400,6 +401,40 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             mHead = null;
             mSize = 0;
         }
+
+        private class SearchIterator implements Iterator<K> {
+            private Stack<Node> mStack;
+
+            public SearchIterator() {
+                mStack = new Stack<>();
+                Node currNode = mHead;
+
+                while (currNode != null) {
+                    mStack.push(currNode);
+                    currNode = currNode.left;
+                }
+            }
+
+            @Override
+            public boolean hasNext() {
+                return !mStack.isEmpty();
+            }
+
+            @Override
+            public K next() {
+                Node currNode = mStack.pop();
+                K object = currNode.object;
+                if (currNode.right != null) {
+                    currNode = currNode.right;
+                    while (currNode != null) {
+                        mStack.push(currNode);
+                        currNode = currNode.left;
+                    }
+                }
+                return object;
+            }
+        }
+
     }
 }
 
