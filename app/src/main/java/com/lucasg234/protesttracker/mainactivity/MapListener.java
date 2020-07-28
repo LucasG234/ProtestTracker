@@ -2,10 +2,14 @@ package com.lucasg234.protesttracker.mainactivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -14,7 +18,9 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.util.LocationUtils;
+import com.lucasg234.protesttracker.util.PostUtils;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
@@ -147,7 +153,34 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             // Tag is used to identify which post this marker represents
             marker.setTag(newPost.getObjectId());
             mMarkers.add(marker);
+            setVisualLikeStatus(newPost, marker);
         }
+    }
+
+    // Checks if a post is liked, and changes its marker visually if it is
+    private void setVisualLikeStatus(final Post post, final Marker marker) {
+        FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
+            @Override
+            public void done(Boolean liked, ParseException e) {
+                if (e != null) {
+                    // Silent error here, otherwise many error messages will appear at once
+                    Log.e(TAG, "Error when querying post like status from map");
+                    return;
+                }
+
+                if (liked) {
+                    // Calculate hue value for the marker color
+                    float[] hsvHolder = new float[3];
+                    int fullColor = ContextCompat.getColor(mContext, R.color.colorPrimary);
+                    Color.RGBToHSV(Color.red(fullColor), Color.green(fullColor), Color.blue(fullColor), hsvHolder);
+                    float hue = hsvHolder[0];
+
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(hue));
+                }
+            }
+        };
+
+        PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 
     public void removeMarker(String objectId) {
