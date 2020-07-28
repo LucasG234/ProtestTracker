@@ -298,13 +298,25 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             return mSize == 0;
         }
 
-        // Currently unimplemented
         @Override
         public boolean contains(@Nullable Object o) {
+            K object = (K) o;
+            Node currNode = mHead;
+            while (currNode != null) {
+                if(object.equals(currNode.object)) {
+                    return true;
+                }
+                else if(mAccessor.compare(object, currNode.object) < 0) {
+                    currNode = currNode.left;
+                }
+                else {
+                    currNode = currNode.right;
+                }
+            }
+            // Exit means that null was found where the node would be
             return false;
         }
 
-        // Currently unimplemented
         @NonNull
         @Override
         public Iterator<K> iterator() {
