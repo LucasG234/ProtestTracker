@@ -46,8 +46,9 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // Set used to hold objects efficiently without order
     private SearchableSet<Post> mPosts;
     private SearchableSet<Marker> mMarkers;
-
     private Date lastQuery;
+    private float mLikedHue;
+    private float mUnlikedHue;
 
     public MapListener(MapFragment parent, GoogleMap map) {
         this.mParent = parent;
@@ -65,6 +66,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
                 return marker == null ? null : (String) marker.getTag();
             }
         });
+
+        calculateMapHues();
     }
 
     // Called on camera movement
@@ -141,6 +144,19 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         });
     }
 
+    // Calculates the hues for map colors on initialization
+    private void calculateMapHues() {
+        float[] hsvHolder = new float[3];
+
+        int likedColor = ContextCompat.getColor(mContext, R.color.colorAccent);
+        Color.RGBToHSV(Color.red(likedColor), Color.green(likedColor), Color.blue(likedColor), hsvHolder);
+        mLikedHue = hsvHolder[0];
+
+        int unlikedColor = ContextCompat.getColor(mContext, R.color.colorComplementary);
+        Color.RGBToHSV(Color.red(unlikedColor), Color.green(unlikedColor), Color.blue(unlikedColor), hsvHolder);
+        mUnlikedHue = hsvHolder[0];
+    }
+
     // Adds markers to map for each new post
     private void addPostMarkers(List<Post> newPosts) {
         for (Post newPost : newPosts) {
@@ -152,7 +168,10 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             Marker marker = mMap.addMarker(markerOptions);
             // Tag is used to identify which post this marker represents
             marker.setTag(newPost.getObjectId());
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(mUnlikedHue));
             mMarkers.add(marker);
+
+            // Query for liked status after adding the marker
             setVisualLikeStatus(newPost, marker);
         }
     }
@@ -169,13 +188,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
                 }
 
                 if (liked) {
-                    // Calculate hue value for the marker color
-                    float[] hsvHolder = new float[3];
-                    int fullColor = ContextCompat.getColor(mContext, R.color.colorPrimary);
-                    Color.RGBToHSV(Color.red(fullColor), Color.green(fullColor), Color.blue(fullColor), hsvHolder);
-                    float hue = hsvHolder[0];
-
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(hue));
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(mLikedHue));
                 }
             }
         };
