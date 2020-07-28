@@ -197,7 +197,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             });
 
             // Liked state defaults to false but may switch after it is checked
-            mLiked = false;
             setLikeVisuals();
             initialLikeCheck(post);
         }
@@ -236,7 +235,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     }
 
                     // Assumed state is false before the initial check
-                    if (liked) {
+                    if (liked != mLiked) {
                         switchLiked();
                     }
                 }
@@ -247,10 +246,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         // Private helper method used to set the visuals depending on current liked status
         private void setLikeVisuals() {
             Drawable toReplace;
-            if(mLiked) {
+            if (mLiked) {
                 toReplace = mContext.getDrawable(R.drawable.baseline_star_accent_24);
-            }
-            else {
+            } else {
                 toReplace = mContext.getDrawable(R.drawable.outline_star_24);
             }
             mBinding.postLike.setImageDrawable(toReplace);

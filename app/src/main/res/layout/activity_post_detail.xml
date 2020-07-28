@@ -43,11 +43,12 @@
 
     <TextView
         android:id="@+id/detailLocation"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/match_constraint"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="@+id/detailIgnore"
+        app:layout_constraintStart_toStartOf="@+id/detailLike"
         app:layout_constraintTop_toBottomOf="@+id/detailText"
         tools:text="5 miles North" />
 
@@ -55,7 +56,8 @@
         android:id="@+id/detailLike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginBottom="@dimen/standard_margin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailText"
         app:srcCompat="@drawable/outline_star_24" />
@@ -64,7 +66,8 @@
         android:id="@+id/detailIgnore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:layout_marginBottom="@dimen/standard_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailText"
         app:srcCompat="@drawable/outline_flag_24" />
