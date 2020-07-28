@@ -112,7 +112,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
     public void switchPostLiked(Post post) {
-        int position = mChronologicalPosts.indexOf(post);
+        int position = mOrderedPosts.indexOf(post);
         if (position != -1) {
             FeedViewHolder viewHolder = (FeedViewHolder) mParentRecyclerView.findViewHolderForAdapterPosition(position);
             viewHolder.switchLiked();
@@ -150,7 +150,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             this.mBinding = binding;
         }
 
-        public void bind(Post post) {
+        public void bind(final Post post) {
             mBinding.postText.setText(post.getText());
             mBinding.postUsername.setText(post.getAuthor().getUsername());
 
@@ -177,6 +177,23 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
             // Set a listener for single and double clicks
             mBinding.postTouchHolder.setOnTouchListener(createItemTouchListener(post, this));
+
+            // Set alternate listeners on the like and ignore buttons
+            mBinding.postLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity parent = (MainActivity) mContext;
+                    parent.saveLikeChange(post);
+                }
+            });
+
+            mBinding.postIgnore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MainActivity parent = (MainActivity) mContext;
+                    parent.saveIgnore(post);
+                }
+            });
 
             // Liked state defaults to false and may switched after it is checked
             mLiked = false;
