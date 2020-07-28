@@ -1,93 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/postLayoutContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/small_margin"
+    card_view:cardCornerRadius="@dimen/small_margin"
+    card_view:cardElevation="@dimen/small_margin">
 
     <!-- Transitions given to username, createdAt, text, and image -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/postTouchHolder"
+        android:id="@+id/postContentHolder"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/postUsername"
-            android:layout_width="@dimen/match_constraint"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/postTouchHolder"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/small_margin"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:transitionName="@string/transition_username"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="lucas" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/postUsername"
+                android:layout_width="@dimen/match_constraint"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_margin"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:transitionName="@string/transition_username"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="lucas" />
+
+            <TextView
+                android:id="@+id/postCreatedAt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_margin"
+                android:transitionName="@string/transition_created_at"
+                app:layout_constraintBottom_toBottomOf="@+id/postUsername"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/postUsername"
+                tools:text="1 day ago" />
+
+            <TextView
+                android:id="@+id/postText"
+                android:layout_width="@dimen/match_constraint"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/small_margin"
+                android:transitionName="@string/transition_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/postUsername"
+                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut porttitor condimentum enim at interdum. Aenean bibendum, tortor sit amet cursus ultricies, turpis risus laoreet tortor, et tristique orci nibh in elit. Nullam sit amet lectus rhoncus nisi dictum mattis quis sit amet mi. Morbi vel lorem eros." />
+
+            <ImageView
+                android:id="@+id/postImage"
+                android:layout_width="@dimen/match_constraint"
+                android:layout_height="@dimen/standard_image_height"
+                android:layout_margin="@dimen/small_margin"
+                android:transitionName="@string/transition_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/postText"
+                tools:srcCompat="@tools:sample/avatars" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/postCreatedAt"
+            android:id="@+id/postLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/small_margin"
-            android:transitionName="@string/transition_created_at"
-            app:layout_constraintBottom_toBottomOf="@+id/postUsername"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/postUsername"
-            tools:text="1 day ago" />
-
-        <TextView
-            android:id="@+id/postText"
-            android:layout_width="@dimen/match_constraint"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/small_margin"
-            android:transitionName="@string/transition_text"
+            android:layout_marginBottom="@dimen/large_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/postUsername"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut porttitor condimentum enim at interdum. Aenean bibendum, tortor sit amet cursus ultricies, turpis risus laoreet tortor, et tristique orci nibh in elit. Nullam sit amet lectus rhoncus nisi dictum mattis quis sit amet mi. Morbi vel lorem eros." />
+            app:layout_constraintTop_toBottomOf="@+id/postTouchHolder"
+            tools:text="5 miles North" />
 
         <ImageView
-            android:id="@+id/postImage"
-            android:layout_width="@dimen/match_constraint"
-            android:layout_height="@dimen/standard_image_height"
-            android:layout_margin="@dimen/small_margin"
-            android:transitionName="@string/transition_image"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/postLike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/postText"
-            tools:srcCompat="@tools:sample/avatars" />
+            app:layout_constraintTop_toBottomOf="@+id/postTouchHolder"
+            app:srcCompat="@drawable/outline_star_24" />
+
+        <ImageView
+            android:id="@+id/postIgnore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/small_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/postTouchHolder"
+            app:srcCompat="@drawable/outline_flag_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/postLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/large_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postTouchHolder"
-        tools:text="5 miles North" />
-
-    <ImageView
-        android:id="@+id/postLike"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/small_margin"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postTouchHolder"
-        app:srcCompat="@drawable/outline_star_24" />
-
-    <ImageView
-        android:id="@+id/postIgnore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/small_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postTouchHolder"
-        app:srcCompat="@drawable/outline_flag_24" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
