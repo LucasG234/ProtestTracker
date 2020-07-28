@@ -95,7 +95,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
     public Post getPost(int position) {
-        return mChronologicalPosts.get(position);
+        return mOrderedPosts.get(position);
     }
 
     // Returns the oldest post known
@@ -104,10 +104,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     }
 
     public void ignorePost(Post post) {
-        int position = mChronologicalPosts.indexOf(post);
+        int position = mOrderedPosts.indexOf(post);
         // indexOf returns -1 if the object was not found in the list
         if (position != -1) {
-            mChronologicalPosts.remove(post);
+            mOrderedPosts.remove(post);
             notifyItemRemoved(position);
         }
     }

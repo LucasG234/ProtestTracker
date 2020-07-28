@@ -300,21 +300,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
 
         @Override
         public boolean contains(@Nullable Object o) {
-            K object = (K) o;
-            Node currNode = mHead;
-            while (currNode != null) {
-                if(object.equals(currNode.object)) {
-                    return true;
-                }
-                else if(mAccessor.compare(object, currNode.object) < 0) {
-                    currNode = currNode.left;
-                }
-                else {
-                    currNode = currNode.right;
-                }
-            }
-            // Exit means that null was found where the node would be
-            return false;
+            return traverseToNode((K) o) != null;
         }
 
         @NonNull
@@ -375,10 +361,45 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             return false;
         }
 
-        // Currently unimplemented
         @Override
         public boolean remove(@Nullable Object o) {
-            return false;
+            Node node = traverseToNode((K) o);
+            if (node == null) {
+                // Case where the object is not in the Tree
+                return false;
+            } else {
+                Node toReplace;
+
+                if (node.left == null && node.right == null) {
+                    // In case with no children, simply delete the node
+                    toReplace = null;
+                } else if (node.left == null || node.right == null) {
+                    // In case with one child, replace this node with that the child
+                    toReplace = node.left == null ? node.right : node.left;
+                    toReplace.parent = node.parent;
+                } else {
+                    // In case with two children, replace this node with the largest node in the left subtree
+                    toReplace = node.left;
+                    while (toReplace.right != null) {
+                        toReplace = toReplace.right;
+                    }
+                    toReplace.parent.right = toReplace.left;
+                    toReplace.left = node.left;
+                    toReplace.right = node.right;
+                    toReplace.parent = node.parent;
+                }
+
+                if (node.parent == null) {
+                    mHead = toReplace;
+                } else {
+                    if (node == node.parent.left) {
+                        node.parent.left = toReplace;
+                    } else {
+                        node.parent.right = toReplace;
+                    }
+                }
+                return true;
+            }
         }
 
         // Currently unimplemented
@@ -412,6 +433,27 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         public void clear() {
             mHead = null;
             mSize = 0;
+        }
+
+        // Helper method which traverse to the node containing the given object
+        // Returns null if it does not exist
+        private Node traverseToNode(K object) {
+            if (object == null) {
+                return null;
+            }
+
+            Node currNode = mHead;
+            while (currNode != null) {
+                if (object.equals(currNode.object)) {
+                    return currNode;
+                } else if (mAccessor.compare(object, currNode.object) < 0) {
+                    currNode = currNode.left;
+                } else {
+                    currNode = currNode.right;
+                }
+            }
+            // Exit means that null was found where the node would be
+            return null;
         }
 
         private class SearchIterator implements Iterator<K> {
