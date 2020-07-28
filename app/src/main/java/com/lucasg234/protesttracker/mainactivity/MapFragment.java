@@ -161,11 +161,11 @@ public class MapFragment extends Fragment {
     }
 
     public void ignorePost(Post post) {
-        mMapListener.removeMarker(post.getObjectId());
+        mMapListener.removeMarker(post);
     }
 
-    public void changePostLiked(final Post post) {
-        // Currently no changes occur here
+    public void changePostLiked(Post post) {
+        mMapListener.changeMarkerLikeStatus(post);
     }
 
     @Override

@@ -144,6 +144,29 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         });
     }
 
+    // Public method used by MapFragment when a post is ignored
+    public void removeMarker(Post post) {
+        Marker marker = mMarkers.getObjectById(post.getObjectId());
+        if (marker == null) {
+            Log.e(TAG, "Attempted to remove null marker");
+            return;
+        }
+
+        marker.remove();
+        mMarkers.remove(marker);
+    }
+
+    // Public method used by MapFragment when the like status of a post changes
+    public void changeMarkerLikeStatus(Post post) {
+        Marker marker = mMarkers.getObjectById(post.getObjectId());
+        if (marker == null) {
+            Log.e(TAG, "Attempted to remove change like status of a null marker");
+            return;
+        }
+
+        setVisualLikeStatus(post, marker);
+    }
+
     // Calculates the hues for map colors on initialization
     private void calculateMapHues() {
         float[] hsvHolder = new float[3];
@@ -176,7 +199,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         }
     }
 
-    // Checks if a post is liked, and changes its marker visually if it is
+    // Checks a post's like status and changes its visuals to match
     private void setVisualLikeStatus(final Post post, final Marker marker) {
         FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
@@ -189,21 +212,13 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
 
                 if (liked) {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(mLikedHue));
+                } else {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(mUnlikedHue));
                 }
             }
         };
 
         PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
-    }
-
-    public void removeMarker(String objectId) {
-        Marker marker = mMarkers.getObjectById(objectId);
-        if (marker == null) {
-            Log.e(TAG, "Attempted to remove null marker");
-            return;
-        }
-
-        marker.remove();
     }
 
     static private class SearchableSet<K> extends HashSet<K> {
