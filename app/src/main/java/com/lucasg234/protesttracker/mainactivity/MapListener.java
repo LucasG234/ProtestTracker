@@ -402,10 +402,14 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             }
         }
 
-        // Currently unimplemented
         @Override
         public boolean containsAll(@NonNull Collection<?> collection) {
-            return false;
+            for(Object o : collection) {
+                if(!contains(o)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         @Override
@@ -417,16 +421,21 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             return changed;
         }
 
-        // Currently unimplemented
+        // Naive implementation
         @Override
         public boolean retainAll(@NonNull Collection<?> collection) {
+            clear();
+            addAll((Collection<? extends K>) collection);
             return false;
         }
 
-        // Currently unimplemented
         @Override
         public boolean removeAll(@NonNull Collection<?> collection) {
-            return false;
+            boolean changed = false;
+            for (Object o : collection) {
+                changed = changed || remove(o);
+            }
+            return changed;
         }
 
         @Override
