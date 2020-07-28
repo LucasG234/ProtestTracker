@@ -116,7 +116,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         int position = mOrderedPosts.indexOf(post);
         if (position != -1) {
             FeedViewHolder viewHolder = (FeedViewHolder) mParentRecyclerView.findViewHolderForAdapterPosition(position);
-            viewHolder.switchLiked();
+            if (viewHolder != null) {
+                viewHolder.switchLiked();
+            }
         }
     }
 
@@ -280,6 +282,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mPost);
+            detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LIKED, mViewHolder.mLiked);
 
             Bundle transitionBundle = getTransitionToDetailView(mViewHolder);
 

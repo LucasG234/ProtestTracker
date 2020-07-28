@@ -88,9 +88,19 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     public void onInfoWindowClick(Marker marker) {
         Post markerPost = mPosts.getObjectById((String) marker.getTag());
 
-        Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
+        final Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
-        mParent.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+
+        FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
+            @Override
+            public void done(Boolean liked, ParseException e) {
+                Log.i(TAG, "" + liked);
+                detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LIKED, liked);
+                mParent.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+            }
+        };
+
+        PostUtils.getUserLikes((User) User.getCurrentUser(), markerPost, likedCallback);
     }
 
     // Call when a camera movement is started

@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case PostDetailActivity.REQUEST_CODE_POST_DETAIL:
                 Post post = data.getParcelableExtra(PostDetailActivity.KEY_RESULT_POST);
-                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED, false)) {
+                if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_LIKED_CHANGED, false)) {
                     saveLikeChange(post);
                 }
                 if (data.getBooleanExtra(PostDetailActivity.KEY_RESULT_IGNORED, false)) {
@@ -194,10 +194,9 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(liked) {
+                if (liked) {
                     likedBy.remove((User) User.getCurrentUser());
-                }
-                else {
+                } else {
                     likedBy.add((User) User.getCurrentUser());
                 }
 
