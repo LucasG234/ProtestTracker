@@ -3,6 +3,7 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,13 @@ public class SettingsFragment extends Fragment {
                 Intent loginIntent = new Intent(currentParent, LoginActivity.class);
                 currentParent.startActivity(loginIntent);
                 currentParent.finish();
+            }
+        });
+
+        mBinding.settingProfilePictureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "Changing profile picture");
             }
         });
     }

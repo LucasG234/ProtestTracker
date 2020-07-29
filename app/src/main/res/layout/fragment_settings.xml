@@ -7,6 +7,16 @@
     tools:context=".mainactivity.SettingsFragment">
 
     <Button
+        android:id="@+id/settingProfilePictureButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/standard_margin"
+        android:text="@string/profile_picture_button"
+        app:layout_constraintBottom_toTopOf="@id/settingsLogoutButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/settingsLogoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

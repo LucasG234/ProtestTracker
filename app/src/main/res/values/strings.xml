@@ -7,13 +7,16 @@
     <string name="password_confirm_hint">Confirm Password</string>
     <string name="login_button_resting">Login</string>
     <string name="login_button_in_progress">Logging in</string>
-    <string name="logout_button">Logout</string>
     <string name="register_button_resting">Register a new account</string>
     <string name="register_button_in_progress">Registering new account</string>
     <string name="login_to_registration_button">No account? Register here.</string>
     <string name="registration_to_login_button">Already have an account? Login here.</string>
     <string name="login_completed">Successfully logged in!</string>
     <string name="account_created">New account created!</string>
+
+    <!-- Text for settings screen -->
+    <string name="logout_button">Logout</string>
+    <string name="profile_picture_button">Change your profile picture</string>
 
     <!-- Text for items in the Post Feed -->
     <string name="feed_filter_text">Distance shown:</string>
