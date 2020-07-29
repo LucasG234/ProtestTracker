@@ -31,7 +31,6 @@ import com.parse.FunctionCallback;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,16 +43,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private Context mContext;
     private RecyclerView mParentRecyclerView;
-    // This list holds posts in their chronological order
-    private List<Post> mChronologicalPosts;
-    // This list holds posts in their custom sorted order
-    private List<Post> mOrderedPosts;
+    // This list holds posts as they are sorted in the view
+    private List<Post> mPosts;
 
     public FeedAdapter(Context context, RecyclerView parent) {
         this.mContext = context;
         this.mParentRecyclerView = parent;
-        this.mChronologicalPosts = new ArrayList<>();
-        this.mOrderedPosts = new ArrayList<>();
+        this.mPosts = new ArrayList<>();
     }
 
     @NonNull
@@ -66,54 +62,47 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FeedViewHolder holder, int position) {
-        holder.bind(mOrderedPosts.get(position));
+        holder.bind(mPosts.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return mOrderedPosts.size();
+        return mPosts.size();
     }
 
     // Helper method to add new posts to RecyclerView
     public void addAll(List<Post> newPosts) {
-        // Add all new posts to the unordered list in the chronological order they are given
-        mChronologicalPosts.addAll(newPosts);
-
-        // Sort the new posts before adding them to the end of the sorted list
-        // This ensures the order of the existing posts will not be changed
-        Collections.sort(newPosts, new FeedComparator(mContext));
-        mOrderedPosts.addAll(newPosts);
-
+        // Add all new posts in the sorting order they were given
+        mPosts.addAll(newPosts);
         notifyDataSetChanged();
     }
 
     // Helper method to clear the RecyclerView
     public void clear() {
-        mChronologicalPosts.clear();
-        mOrderedPosts.clear();
+        mPosts.clear();
         notifyDataSetChanged();
     }
 
     public Post getPost(int position) {
-        return mOrderedPosts.get(position);
+        return mPosts.get(position);
     }
 
-    // Returns the oldest post known
-    public Post getOldestPost() {
-        return mChronologicalPosts.get(mChronologicalPosts.size() - 1);
+    // Returns the last post in the adapter, according to its current sorting
+    public Post getLastPost() {
+        return mPosts.get(mPosts.size() - 1);
     }
 
     public void ignorePost(Post post) {
-        int position = mOrderedPosts.indexOf(post);
+        int position = mPosts.indexOf(post);
         // indexOf returns -1 if the object was not found in the list
         if (position != -1) {
-            mOrderedPosts.remove(post);
+            mPosts.remove(post);
             notifyItemRemoved(position);
         }
     }
 
     public void switchPostLiked(Post post) {
-        int position = mOrderedPosts.indexOf(post);
+        int position = mPosts.indexOf(post);
         if (position != -1) {
             FeedViewHolder viewHolder = (FeedViewHolder) mParentRecyclerView.findViewHolderForAdapterPosition(position);
             if (viewHolder != null) {
@@ -220,6 +209,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     Log.i(TAG, "Touched");
+                    mBinding.postTouchHolder.performClick();
                     return gestureDetector.onTouchEvent(motionEvent);
                 }
             };

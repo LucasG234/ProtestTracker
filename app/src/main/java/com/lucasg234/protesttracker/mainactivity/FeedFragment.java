@@ -144,7 +144,7 @@ public class FeedFragment extends Fragment {
         query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
 
         // For new posts, only get posts older [with date less than] the last post
-        Date oldestPostDate = mAdapter.getOldestPost().getCreatedAt();
+        Date oldestPostDate = mAdapter.getLastPost().getCreatedAt();
         query.whereLessThan(Post.KEY_CREATED_AT, oldestPostDate);
 
         query.findInBackground(new FindCallback<Post>() {
