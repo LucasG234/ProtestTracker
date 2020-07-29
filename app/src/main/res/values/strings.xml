@@ -16,6 +16,7 @@
     <string name="account_created">New account created!</string>
 
     <!-- Text for items in the Post Feed -->
+    <string name="feed_filter_text">Distance shown:</string>
     <string name="post_like_button">Recommend</string>
     <string name="post_ignore_button">Ignore</string>
 

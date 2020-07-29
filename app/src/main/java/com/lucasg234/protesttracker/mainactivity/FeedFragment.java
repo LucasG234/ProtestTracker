@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -76,6 +77,12 @@ public class FeedFragment extends Fragment {
         if (!LocationPermissions.checkLocationPermission(getContext())) {
             LocationPermissions.requestLocationPermission(this);
         }
+
+        // Set up spinner for distance selection
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.spinner_options, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mBinding.feedFilterSpinner.setAdapter(spinnerAdapter);
+
         queryInitialPosts();
     }
 

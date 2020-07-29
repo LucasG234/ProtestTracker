@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinner_options">
+        <item>Within 500 feet</item>
+        <item>Within 1 mile</item>
+        <item>Within 5 miles</item>
+        <item>Within 100 miles</item>
+        <item>Anywhere</item>
+    </string-array>
+</resources>
