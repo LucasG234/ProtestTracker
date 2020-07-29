@@ -7,4 +7,11 @@
         <item>Within 100 miles</item>
         <item>Anywhere</item>
     </string-array>
+    <integer-array name="spinner_options_feet">
+        <item>500</item>
+        <item>5280</item>
+        <item>26400</item>
+        <item>528000</item>
+        <item>-1</item>
+    </integer-array>
 </resources>

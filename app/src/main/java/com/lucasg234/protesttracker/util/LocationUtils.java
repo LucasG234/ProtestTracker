@@ -20,7 +20,9 @@ import java.util.Locale;
  * Utility class which deals with Location, ParseGeoPoint, and LatLng objects
  */
 public class LocationUtils {
+
     private static final String TAG = "LocationUtils";
+    public static final double MILES_TO_FEET = 5280;
 
     // Converts a Location object to the equivalent LatLng object
     public static LatLng toLatLng(Location location) {
@@ -39,6 +41,10 @@ public class LocationUtils {
         location.setLatitude(geoPoint.getLatitude());
         location.setLongitude(geoPoint.getLongitude());
         return location;
+    }
+
+    public static ParseGeoPoint toParseGeoPoint(Location location) {
+        return new ParseGeoPoint(location.getLatitude(), location.getLongitude());
     }
 
     // Returns the last known location of the user
@@ -91,7 +97,7 @@ public class LocationUtils {
         String out;
         if (miles < 0.1) {
             // If less than .1 miles use feet instead
-            int feet = Math.round(miles * 5280f);
+            int feet = (int) Math.round(miles * MILES_TO_FEET);
             out = String.format(Locale.getDefault(), "%d feet", feet);
         } else if (miles < 100) {
             // If under 100 miles, add one decimal place

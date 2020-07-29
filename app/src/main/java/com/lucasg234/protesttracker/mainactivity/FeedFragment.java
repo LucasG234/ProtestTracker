@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -22,8 +23,10 @@ import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 
 import java.util.Date;
@@ -40,6 +43,7 @@ public class FeedFragment extends Fragment {
     private FragmentFeedBinding mBinding;
     private FeedAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScrollListener;
+    private int mFeetFilter;
 
     public FeedFragment() {
         // Required empty public constructor
@@ -83,7 +87,19 @@ public class FeedFragment extends Fragment {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBinding.feedFilterSpinner.setAdapter(spinnerAdapter);
 
-        queryInitialPosts();
+        // Spinner's onItemSelected will be called immediately when feed first opens
+        mBinding.feedFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                mFeetFilter = getResources().getIntArray(R.array.spinner_options_feet)[position];
+                queryClearPosts();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // No work done here
+            }
+        });
     }
 
     private void configureRecyclerView() {
@@ -108,13 +124,13 @@ public class FeedFragment extends Fragment {
         mBinding.feedSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                queryInitialPosts();
+                queryClearPosts();
             }
         });
     }
 
     // Removes all posts within the FeedAdapter and replaces them with the result of a new query
-    private void queryInitialPosts() {
+    private void queryClearPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
@@ -122,6 +138,13 @@ public class FeedFragment extends Fragment {
 
         // Removes posts which are ignored
         query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
+
+        // Only include posts with distance filter if one exists
+        if(mFeetFilter > 0) {
+            double miles = mFeetFilter / LocationUtils.MILES_TO_FEET;
+            ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(getContext()));
+            query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, miles);
+        }
 
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -136,6 +159,7 @@ public class FeedFragment extends Fragment {
                 mAdapter.addAll(posts);
                 mBinding.feedSwipeContainer.setRefreshing(false);
                 mEndlessScrollListener.resetState();
+                mBinding.feedRecyclerView.scrollToPosition(0);
             }
         });
     }
@@ -149,6 +173,13 @@ public class FeedFragment extends Fragment {
 
         // Removes posts which are ignored
         query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
+
+        // Only include posts with distance filter if one exists
+        if(mFeetFilter > 0) {
+            double miles = mFeetFilter / LocationUtils.MILES_TO_FEET;
+            ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(getContext()));
+            query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, miles);
+        }
 
         // For new posts, only get posts older [with date less than] the last post
         Date oldestPostDate = mAdapter.getLastPost().getCreatedAt();
