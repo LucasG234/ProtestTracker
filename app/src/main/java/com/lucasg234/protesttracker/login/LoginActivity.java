@@ -37,6 +37,8 @@ import java.util.ArrayList;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
+    private static final String FACEBOOK_PARAM_KEY = "fields";
+    private static final String FACEBOOK_PARAM_VALUE = "name";
 
     private ActivityLoginBinding mBinding;
     private CallbackManager mCallbackManager;
@@ -57,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "Login button clicked");
+                mBinding.loginSubmitButton.setText(R.string.login_button_in_progress);
                 String username = mBinding.loginUsernameText.getText().toString();
                 String password = mBinding.loginPasswordText.getText().toString();
                 loginUser(username, password);
@@ -123,6 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e(TAG, "Error with login", e);
                     //TODO: possibly improve to be more specific
                     Toast.makeText(LoginActivity.this, R.string.error_login, Toast.LENGTH_SHORT).show();
+                    mBinding.loginSubmitButton.setText(R.string.login_button_resting);
                     return;
                 }
                 navigateToActivity(MainActivity.class);
@@ -151,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "name");
+        parameters.putString(FACEBOOK_PARAM_KEY, FACEBOOK_PARAM_VALUE);
         request.setParameters(parameters);
         request.executeAsync();
     }

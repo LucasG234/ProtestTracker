@@ -40,6 +40,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String password = mBinding.registrationPasswordText.getText().toString();
                 String confirmPassword = mBinding.registrationPasswordConfirmText.getText().toString();
                 if (validateRegistration(username, password, confirmPassword)) {
+                    mBinding.registrationSubmitButton.setText(R.string.register_button_in_progress);
                     registerUser(username, password);
                 }
             }
@@ -76,6 +77,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     Log.e(TAG, "Error with login", e);
                     //TODO: possibly improve to be more specific
                     Toast.makeText(RegistrationActivity.this, R.string.error_registration, Toast.LENGTH_SHORT).show();
+                    mBinding.registrationSubmitButton.setText(R.string.register_button_resting);
                     return;
                 }
                 navigateToActivity(MainActivity.class);
