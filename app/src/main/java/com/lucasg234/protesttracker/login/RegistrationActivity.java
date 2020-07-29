@@ -67,10 +67,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
     // Attempts to create new Parse user (and log into it)
     private void registerUser(String username, String password) {
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(password);
-        newUser.signUpInBackground(new SignUpCallback() {
+        User.Builder userBuilder = new User.Builder();
+        userBuilder.setUsername(username);
+        userBuilder.setPassword(password);
+        userBuilder.createModel().signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null) {
