@@ -45,6 +45,7 @@
     <string name="transition_created_at">createdAt</string>
     <string name="transition_text">text</string>
     <string name="transition_image">image</string>
+    <string name="transition_profile_picture">profilePic</string>
 
     <!-- Formatting strings -->
     <string name="distance_format">%s away</string>

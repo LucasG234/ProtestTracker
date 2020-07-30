@@ -114,18 +114,22 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private Bundle getTransitionToDetailView(FeedAdapter.FeedViewHolder postViewHolder) {
         ItemFeedPostBinding postBinding = postViewHolder.getBinding();
 
-        Pair<View, String> pair1 = Pair.create((View) postBinding.postUsername, mContext.getString(R.string.transition_username));
-        Pair<View, String> pair2 = Pair.create((View) postBinding.postCreatedAt, mContext.getString(R.string.transition_created_at));
-        Pair<View, String> pair3 = Pair.create((View) postBinding.postText, mContext.getString(R.string.transition_text));
+        Pair<View, String> pairUsername = Pair.create((View) postBinding.postUsername, mContext.getString(R.string.transition_username));
+        Pair<View, String> pairCreatedAt = Pair.create((View) postBinding.postCreatedAt, mContext.getString(R.string.transition_created_at));
+        Pair<View, String> pairText = Pair.create((View) postBinding.postText, mContext.getString(R.string.transition_text));
+        Pair<View, String> pairProfilePicture = Pair.create((View) postBinding.postProfilePicture,
+                mContext.getString(R.string.transition_profile_picture));
 
         ActivityOptionsCompat transitionOptions;
 
         // Only include the image in the transition if it is visible
         if (postBinding.postImage.getVisibility() == View.VISIBLE) {
-            Pair<View, String> pair4 = Pair.create((View) postBinding.postImage, mContext.getString(R.string.transition_image));
-            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, pair1, pair2, pair3, pair4);
+            Pair<View, String> pairImage = Pair.create((View) postBinding.postImage, mContext.getString(R.string.transition_image));
+            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
+                    pairUsername, pairCreatedAt, pairText, pairProfilePicture, pairImage);
         } else {
-            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext, pair1, pair2, pair3);
+            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
+                    pairUsername, pairCreatedAt, pairText, pairProfilePicture);
         }
 
         return transitionOptions.toBundle();
@@ -287,3 +291,4 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
     }
 }
+
