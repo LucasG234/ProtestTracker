@@ -7,14 +7,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentSettingsBinding;
 import com.lucasg234.protesttracker.login.LoginActivity;
 import com.lucasg234.protesttracker.models.User;
+import com.lucasg234.protesttracker.util.ImageUtils;
+import com.parse.ParseFile;
+
+import java.io.File;
+import java.io.IOException;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Fragment containing settings user can control
@@ -25,6 +34,7 @@ public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
 
     private FragmentSettingsBinding mBinding;
+    private File mInternalImageStorage;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -70,7 +80,37 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "Changing profile picture");
+                if(mInternalImageStorage == null) {
+                    try {
+                        mInternalImageStorage = ImageUtils.configureTempImageStorage(SettingsFragment.this);
+                    } catch (IOException e) {
+                        Log.e(TAG, "Could not generate internal image storage", e);
+                        Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                ImageUtils.openCameraForResult(SettingsFragment.this, mInternalImageStorage);
             }
         });
+    }
+
+    // Used to receive photos after camera or gallery usage
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            Toast.makeText(getContext(), R.string.error_receive_image, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        switch (requestCode) {
+            case ImageUtils.ACTIVITY_REQUEST_CODE_CAMERA:
+                Log.i(TAG, "received photo from camera");
+                User currentUser = (User)User.getCurrentUser();
+                currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
+                currentUser.saveInBackground();
+                break;
+            default:
+                Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
+                return;
+        }
     }
 }
