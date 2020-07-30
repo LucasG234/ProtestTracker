@@ -223,4 +223,14 @@ public class ComposeFragment extends Fragment {
             }
         });
     }
+
+    // Ensure no floating storage left on fragment deletion
+    @Override
+    public void onDestroy() {
+        if(mInternalImageStorage != null) {
+            mInternalImageStorage.delete();
+            mInternalImageStorage = null;
+        }
+        super.onDestroy();
+    }
 }

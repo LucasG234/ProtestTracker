@@ -23,7 +23,9 @@ import com.lucasg234.protesttracker.databinding.FragmentSettingsBinding;
 import com.lucasg234.protesttracker.login.LoginActivity;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.util.ImageUtils;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -164,8 +166,31 @@ public class SettingsFragment extends Fragment {
         }
 
         currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
-        currentUser.saveInBackground();
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e != null) {
+                    Log.e(TAG, "ParseException for currentUser save", e);
+                    Toast.makeText(getContext(), R.string.error_save, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // After the save, reset the storage
+                mInternalImageStorage.delete();
+                mInternalImageStorage = null;
+            }
+        });
 
         mBinding.settingsProfileImage.setImageBitmap(takenImage);
+    }
+
+    // Ensure no floating storage left on fragment deletion
+    @Override
+    public void onDestroy() {
+        if(mInternalImageStorage != null) {
+            mInternalImageStorage.delete();
+            mInternalImageStorage = null;
+        }
+        super.onDestroy();
     }
 }
