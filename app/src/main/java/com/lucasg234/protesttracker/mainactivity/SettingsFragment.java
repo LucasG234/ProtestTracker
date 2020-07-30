@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentSettingsBinding;
 import com.lucasg234.protesttracker.login.LoginActivity;
@@ -71,7 +73,12 @@ public class SettingsFragment extends Fragment {
         mBinding.settingsLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Parse logout
                 User.logOut();
+                // Facebook logout
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    LoginManager.getInstance().logOut();
+                }
                 Activity currentParent = getActivity();
                 Intent loginIntent = new Intent(currentParent, LoginActivity.class);
                 currentParent.startActivity(loginIntent);
@@ -97,15 +104,27 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        ParseFile profilePicture = ((User) User.getCurrentUser()).getProfilePicture();
+        User currentUser = ((User) User.getCurrentUser());
 
-        Glide.with(getContext())
-                .load(profilePicture.getUrl())
-                .into(mBinding.settingsProfileImage);
+        // Use the user chosen photo if available
+        ParseFile chosenPhoto = currentUser.getProfilePicture();
+        String photoUrl = chosenPhoto == null ? null : chosenPhoto.getUrl();
+
+        // Otherwise, try to use a Facebook provided photo
+        if (photoUrl == null) {
+            photoUrl = currentUser.getFacebookPictureUrl();
+        }
+
+        // If still null, load nothing and leave the placeholder
+        if (photoUrl != null) {
+            Glide.with(getContext())
+                    .load(photoUrl)
+                    .into(mBinding.settingsProfileImage);
+        }
     }
 
     private void configureInternalStorage() {
-        if(mInternalImageStorage == null) {
+        if (mInternalImageStorage == null) {
             try {
                 mInternalImageStorage = ImageUtils.configureTempImageStorage(SettingsFragment.this);
             } catch (IOException e) {

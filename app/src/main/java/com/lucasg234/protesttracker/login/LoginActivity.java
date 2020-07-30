@@ -38,7 +38,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     private static final String FACEBOOK_PARAM_KEY = "fields";
-    private static final String FACEBOOK_PARAM_VALUE = "name";
+    private static final String FACEBOOK_PARAM_VALUE = "name,picture.type(large)";
+    private static final String FACEBOOK_NAME_FIELD = "name";
+    private static final String FACEBOOK_PICTURE_FIELD = "picture";
+    private static final String FACEBOOK_PICTURE_DATA_FIELD = "data";
+    private static final String FACEBOOK_PICTURE_DATA_URL_FIELD = "url";
 
     private ActivityLoginBinding mBinding;
     private CallbackManager mCallbackManager;
@@ -94,10 +98,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, R.string.error_login_facebook, Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (user.isNew()) {
-                            Log.i(TAG, "New lol");
-                            setFacebookUsername(loginResult.getAccessToken(), (User) user);
-                        }
+                        updateFacebookInformation(loginResult.getAccessToken(), (User) user);
                         navigateToActivity(MainActivity.class);
                     }
                 });
@@ -135,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void setFacebookUsername(AccessToken accessToken, final User user) {
+    private void updateFacebookInformation(AccessToken accessToken, final User user) {
         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken,
                 new GraphRequest.GraphJSONObjectCallback() {
@@ -144,9 +145,17 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.getError() != null) {
                             Log.e(TAG, "Error with GraphRequest for username", response.getError().getException());
                         }
+
                         try {
-                            String name = object.getString("name");
+                            String name = object.getString(FACEBOOK_NAME_FIELD);
                             user.setUsername(name);
+
+                            String profilePictureUrl = object.getJSONObject(FACEBOOK_PICTURE_FIELD)
+                                    .getJSONObject(FACEBOOK_PICTURE_DATA_FIELD)
+                                    .getString(FACEBOOK_PICTURE_DATA_URL_FIELD);
+
+                            user.setFacebookPictureUrl(profilePictureUrl);
+
                             user.saveInBackground();
                         } catch (JSONException e) {
                             Log.i(TAG, "Error setting username from GraphRequest JSON", e);
