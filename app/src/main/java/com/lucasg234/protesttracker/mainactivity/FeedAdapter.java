@@ -156,6 +156,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 mBinding.postLocation.setText(null);
             }
 
+            // Load post image
             if (post.getImage() != null) {
                 mBinding.postImage.setVisibility(View.VISIBLE);
                 Log.i(TAG, post.getImage().getUrl());
@@ -165,6 +166,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                         .into(mBinding.postImage);
             } else {
                 mBinding.postImage.setVisibility(View.GONE);
+            }
+
+            // Load profile picutre
+            if (post.getAuthor().getProfilePicture() != null) {
+                Glide.with(mContext)
+                        .load(post.getAuthor().getProfilePicture().getUrl())
+                        .circleCrop()
+                        .into(mBinding.postProfilePicture);
+            } else if (post.getAuthor().getFacebookPictureUrl() != null) {
+                Glide.with(mContext)
+                        .load(post.getAuthor().getFacebookPictureUrl())
+                        .circleCrop()
+                        .into(mBinding.postProfilePicture);
+            } else {
+                mBinding.postProfilePicture.setImageResource(R.drawable.default_user);
             }
 
             // Set a listener for single and double clicks

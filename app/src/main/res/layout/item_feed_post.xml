@@ -26,6 +26,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageView
+                android:id="@+id/postProfilePicture"
+                android:layout_width="@dimen/profile_icon_size"
+                android:layout_height="@dimen/profile_icon_size"
+                android:src="@drawable/default_user"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/postUsername"
                 android:layout_width="@dimen/match_constraint"
@@ -33,7 +41,7 @@
                 android:layout_margin="@dimen/small_margin"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:transitionName="@string/transition_username"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/postProfilePicture"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="lucas" />
 
