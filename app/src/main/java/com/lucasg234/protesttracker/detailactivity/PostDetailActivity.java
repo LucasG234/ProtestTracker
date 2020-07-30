@@ -82,6 +82,21 @@ public class PostDetailActivity extends AppCompatActivity {
             mBinding.detailImage.setVisibility(View.GONE);
         }
 
+        // Load profile picutre
+        if (post.getAuthor().getProfilePicture() != null) {
+            Glide.with(this)
+                    .load(post.getAuthor().getProfilePicture().getUrl())
+                    .circleCrop()
+                    .into(mBinding.detailProfilePicture);
+        } else if (post.getAuthor().getFacebookPictureUrl() != null) {
+            Glide.with(this)
+                    .load(post.getAuthor().getFacebookPictureUrl())
+                    .circleCrop()
+                    .into(mBinding.detailProfilePicture);
+        } else {
+            mBinding.detailProfilePicture.setImageResource(R.drawable.default_user);
+        }
+
         changeLikeVisually();
     }
 

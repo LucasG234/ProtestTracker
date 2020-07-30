@@ -8,6 +8,14 @@
 
     <!-- Transitions given to username, createdAt, text, and image -->
 
+    <ImageView
+        android:id="@+id/detailProfilePicture"
+        android:layout_width="@dimen/profile_icon_size"
+        android:layout_height="@dimen/profile_icon_size"
+        android:src="@drawable/default_user"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/detailUsername"
         android:layout_width="@dimen/match_constraint"
@@ -15,7 +23,7 @@
         android:layout_margin="@dimen/small_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:transitionName="@string/transition_username"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/detailProfilePicture"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="lucas" />
 
