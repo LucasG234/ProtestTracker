@@ -6,15 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".mainactivity.SettingsFragment">
 
+    <ImageView
+        android:id="@+id/settingsProfileImage"
+        android:layout_width="@dimen/match_constraint"
+        android:layout_height="@dimen/standard_image_height"
+        android:layout_margin="@dimen/standard_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/default_user" />
+
     <Button
         android:id="@+id/settingsProfilePictureGalleryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
         android:text="@string/profile_picture_gallery_button"
-        app:layout_constraintBottom_toTopOf="@+id/settingsProfilePictureCameraButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsProfileImage" />
 
     <Button
         android:id="@+id/settingsProfilePictureCameraButton"
@@ -22,10 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
         android:text="@string/profile_picture_camera_button"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/settingsProfilePictureGalleryButton" />
 
     <Button
         android:id="@+id/settingsLogoutButton"

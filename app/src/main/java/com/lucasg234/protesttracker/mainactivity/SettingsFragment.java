@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentSettingsBinding;
 import com.lucasg234.protesttracker.login.LoginActivity;
@@ -95,6 +96,12 @@ public class SettingsFragment extends Fragment {
                 ImageUtils.openGalleryForResult(SettingsFragment.this);
             }
         });
+
+        ParseFile profilePicture = ((User) User.getCurrentUser()).getProfilePicture();
+
+        Glide.with(getContext())
+                .load(profilePicture.getUrl())
+                .into(mBinding.settingsProfileImage);
     }
 
     private void configureInternalStorage() {
@@ -116,29 +123,30 @@ public class SettingsFragment extends Fragment {
             return;
         }
 
-        User currentUser = (User)User.getCurrentUser();
+        User currentUser = (User) User.getCurrentUser();
+        Bitmap takenImage;
 
         switch (requestCode) {
             case ImageUtils.ACTIVITY_REQUEST_CODE_CAMERA:
                 Log.i(TAG, "received photo from camera");
-                currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
-                currentUser.saveInBackground();
+                // Take the bitmap out of internal storage to display immediately
+                takenImage = ImageUtils.decodeInternalImage(Uri.fromFile(mInternalImageStorage));
                 break;
             case ImageUtils.ACTIVITY_REQUEST_CODE_GALLERY:
                 Log.i(TAG, "received photo from gallery");
-
-                // Save image to internal storage first
+                // Save the bitmap we already have into internal storage
                 Uri photoUri = data.getData();
-                Bitmap takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
+                takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
                 ImageUtils.saveImageToInternalStorage(takenImage, mInternalImageStorage);
-
-                // Then save it into parse
-                currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
-                currentUser.saveInBackground();
                 break;
             default:
                 Log.e(TAG, "Received onActivityResult with unknown request code:" + requestCode);
                 return;
         }
+
+        currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
+        currentUser.saveInBackground();
+
+        mBinding.settingsProfileImage.setImageBitmap(takenImage);
     }
 }
