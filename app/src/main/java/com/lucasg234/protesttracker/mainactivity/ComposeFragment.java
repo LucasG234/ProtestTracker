@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.lucasg234.protesttracker.R;
@@ -33,8 +30,6 @@ import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -43,10 +38,6 @@ import static android.app.Activity.RESULT_OK;
  * Saves posts to Parse
  */
 public class ComposeFragment extends Fragment {
-
-    public static final int ACTIVITY_REQUEST_CODE_CAMERA = 635;
-    public static final int ACTIVITY_REQUEST_CODE_GALLERY = 321;
-
     private static final String TAG = "ComposeFragment";
 
     private FragmentComposeBinding mBinding;
@@ -97,7 +88,7 @@ public class ComposeFragment extends Fragment {
                 if (mInternalImageStorage == null) {
                     configureTempImageStorage();
                 }
-                openCamera();
+                ImageUtils.openCameraForResult(ComposeFragment.this, mInternalImageStorage);
             }
         });
 
@@ -108,7 +99,7 @@ public class ComposeFragment extends Fragment {
                 if (mInternalImageStorage == null) {
                     configureTempImageStorage();
                 }
-                openGallery();
+                ImageUtils.openGalleryForResult(ComposeFragment.this);
             }
         });
     }
@@ -124,11 +115,11 @@ public class ComposeFragment extends Fragment {
         Bitmap takenImage;
 
         switch (requestCode) {
-            case ACTIVITY_REQUEST_CODE_CAMERA:
+            case ImageUtils.ACTIVITY_REQUEST_CODE_CAMERA:
                 Log.i(TAG, "received photo from camera");
                 takenImage = ImageUtils.decodeInternalImage(Uri.fromFile(mInternalImageStorage));
                 break;
-            case ACTIVITY_REQUEST_CODE_GALLERY:
+            case ImageUtils.ACTIVITY_REQUEST_CODE_GALLERY:
                 Log.i(TAG, "received photo from gallery");
                 Uri photoUri = data.getData();
                 takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
@@ -153,32 +144,14 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    // Method which generates a File object for the camera to store images into
-    // Called only whenever the user opens
+    // Configures file object to store taken image into whenever user open the camera or gallery
     private void configureTempImageStorage() {
-        // Get safe storage directory for photos
-        // Use `getExternalFilesDir` on Context to access package-specific directories.
-        // This way, we don't need to request external read/write runtime permissions.
-        File mediaStorageDir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-            Log.d(TAG, "failed to create directory");
-        }
-
-        // Generate photo name based upon current time
-        String timeStamp = new SimpleDateFormat(getString(R.string.image_storage_date_format)).format(new Date());
         try {
-            mInternalImageStorage = File.createTempFile(
-                    timeStamp,  /* prefix */
-                    ".jpg",         /* suffix */
-                    mediaStorageDir      /* directory */
-            );
+            mInternalImageStorage = ImageUtils.configureTempImageStorage(ComposeFragment.this);
         } catch (IOException e) {
             Log.e(TAG, "Could not generate internal image storage", e);
             Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
         }
-
     }
 
     // Determines whether the current composeEditText and composeImagePreview represent a valid post
@@ -249,34 +222,5 @@ public class ComposeFragment extends Fragment {
                 mInternalImageStorage = null;
             }
         });
-    }
-
-    private void openCamera() {
-        // create Intent to take a picture and return control to the calling application
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        // wrap this our target File object into a content provider
-        // required for API >= 24
-        Uri fileProvider = FileProvider.getUriForFile(getContext(), "com.lucas.fileprovider", mInternalImageStorage);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
-
-        // Ensure there is an app which can handle the intent before calling it
-        if (cameraIntent.resolveActivity(getContext().getPackageManager()) != null) {
-            startActivityForResult(cameraIntent, ACTIVITY_REQUEST_CODE_CAMERA);
-        } else {
-            Toast.makeText(getContext(), R.string.error_camera_missing, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void openGallery() {
-        // Create intent for picking a photo from the gallery
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-        // Ensure there is an app which can handle the intent before calling it
-        if (intent.resolveActivity(getContext().getPackageManager()) != null) {
-            startActivityForResult(intent, ACTIVITY_REQUEST_CODE_GALLERY);
-        } else {
-            Toast.makeText(getContext(), R.string.error_gallery_missing, Toast.LENGTH_SHORT).show();
-        }
     }
 }
