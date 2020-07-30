@@ -7,14 +7,25 @@
     tools:context=".mainactivity.SettingsFragment">
 
     <Button
-        android:id="@+id/settingProfilePictureButton"
+        android:id="@+id/settingsProfilePictureGalleryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
-        android:text="@string/profile_picture_button"
-        app:layout_constraintBottom_toTopOf="@id/settingsLogoutButton"
+        android:text="@string/profile_picture_gallery_button"
+        app:layout_constraintBottom_toTopOf="@+id/settingsProfilePictureCameraButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/settingsProfilePictureCameraButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/standard_margin"
+        android:text="@string/profile_picture_camera_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/settingsLogoutButton"
@@ -22,8 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
         android:text="@string/logout_button"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/settingsProfilePictureCameraButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

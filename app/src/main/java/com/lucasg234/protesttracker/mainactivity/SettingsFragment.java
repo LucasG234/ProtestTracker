@@ -76,10 +76,10 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        mBinding.settingProfilePictureButton.setOnClickListener(new View.OnClickListener() {
+        mBinding.settingsProfilePictureCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i(TAG, "Changing profile picture");
+                Log.i(TAG, "Changing profile picture through camera");
                 if(mInternalImageStorage == null) {
                     try {
                         mInternalImageStorage = ImageUtils.configureTempImageStorage(SettingsFragment.this);
@@ -89,6 +89,13 @@ public class SettingsFragment extends Fragment {
                     }
                 }
                 ImageUtils.openCameraForResult(SettingsFragment.this, mInternalImageStorage);
+            }
+        });
+
+        mBinding.settingsProfilePictureGalleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "Changing profile picture through gallery");
             }
         });
     }

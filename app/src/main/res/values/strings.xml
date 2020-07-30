@@ -16,7 +16,8 @@
 
     <!-- Text for settings screen -->
     <string name="logout_button">Logout</string>
-    <string name="profile_picture_button">Change your profile picture</string>
+    <string name="profile_picture_gallery_button">Upload a new profile picture</string>
+    <string name="profile_picture_camera_button">Take a new profile picture</string>
 
     <!-- Text for items in the Post Feed -->
     <string name="feed_filter_text">Distance shown:</string>
