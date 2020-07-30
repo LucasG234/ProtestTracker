@@ -2,6 +2,8 @@ package com.lucasg234.protesttracker.mainactivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,14 +82,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "Changing profile picture through camera");
-                if(mInternalImageStorage == null) {
-                    try {
-                        mInternalImageStorage = ImageUtils.configureTempImageStorage(SettingsFragment.this);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Could not generate internal image storage", e);
-                        Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
-                    }
-                }
+                configureInternalStorage();
                 ImageUtils.openCameraForResult(SettingsFragment.this, mInternalImageStorage);
             }
         });
@@ -96,8 +91,21 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "Changing profile picture through gallery");
+                configureInternalStorage();
+                ImageUtils.openGalleryForResult(SettingsFragment.this);
             }
         });
+    }
+
+    private void configureInternalStorage() {
+        if(mInternalImageStorage == null) {
+            try {
+                mInternalImageStorage = ImageUtils.configureTempImageStorage(SettingsFragment.this);
+            } catch (IOException e) {
+                Log.e(TAG, "Could not generate internal image storage", e);
+                Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     // Used to receive photos after camera or gallery usage
@@ -108,10 +116,23 @@ public class SettingsFragment extends Fragment {
             return;
         }
 
+        User currentUser = (User)User.getCurrentUser();
+
         switch (requestCode) {
             case ImageUtils.ACTIVITY_REQUEST_CODE_CAMERA:
                 Log.i(TAG, "received photo from camera");
-                User currentUser = (User)User.getCurrentUser();
+                currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
+                currentUser.saveInBackground();
+                break;
+            case ImageUtils.ACTIVITY_REQUEST_CODE_GALLERY:
+                Log.i(TAG, "received photo from gallery");
+
+                // Save image to internal storage first
+                Uri photoUri = data.getData();
+                Bitmap takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
+                ImageUtils.saveImageToInternalStorage(takenImage, mInternalImageStorage);
+
+                // Then save it into parse
                 currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
                 currentUser.saveInBackground();
                 break;
