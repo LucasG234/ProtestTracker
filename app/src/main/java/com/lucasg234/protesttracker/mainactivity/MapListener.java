@@ -102,7 +102,6 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
             public void done(Boolean liked, ParseException e) {
-                Log.i(TAG, "" + liked);
                 detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LIKED, liked);
                 mParent.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
             }

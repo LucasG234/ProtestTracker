@@ -140,7 +140,7 @@ public class FeedFragment extends Fragment {
         query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
 
         // Only include posts with distance filter if one exists
-        if(mFeetFilter > 0) {
+        if (mFeetFilter > 0) {
             double miles = mFeetFilter / LocationUtils.MILES_TO_FEET;
             ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(getContext()));
             query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, miles);
@@ -175,7 +175,7 @@ public class FeedFragment extends Fragment {
         query.whereNotEqualTo(Post.KEY_IGNORED_BY, User.getCurrentUser());
 
         // Only include posts with distance filter if one exists
-        if(mFeetFilter > 0) {
+        if (mFeetFilter > 0) {
             double miles = mFeetFilter / LocationUtils.MILES_TO_FEET;
             ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(getContext()));
             query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, miles);

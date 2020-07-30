@@ -36,7 +36,7 @@ public class LocationUtils {
 
     // Converts a ParseGeoPoint object to the equivalent Location object
     public static Location toLocation(ParseGeoPoint geoPoint) {
-        // Null means that this location has no provider
+        // Provide empty string because there is no provider
         Location location = new Location("");
         location.setLatitude(geoPoint.getLatitude());
         location.setLongitude(geoPoint.getLongitude());
