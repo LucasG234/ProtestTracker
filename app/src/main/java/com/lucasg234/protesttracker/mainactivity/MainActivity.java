@@ -20,7 +20,7 @@ import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.permissions.NoPermissionsFragment;
-import com.lucasg234.protesttracker.util.PostUtils;
+import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
 import com.parse.ParseRelation;
@@ -215,11 +215,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
+        ParseUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 
     public void saveIgnore(final Post post) {
-        PostUtils.addIgnoredBy((User) User.getCurrentUser(), post);
+        ParseUtils.addIgnoredBy((User) User.getCurrentUser(), post);
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {

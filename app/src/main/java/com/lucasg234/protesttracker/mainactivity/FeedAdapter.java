@@ -26,7 +26,7 @@ import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.DateUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
-import com.lucasg234.protesttracker.util.PostUtils;
+import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
 
@@ -168,20 +168,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 mBinding.postImage.setVisibility(View.GONE);
             }
 
-            // Load profile picutre
-            if (post.getAuthor().getProfilePicture() != null) {
-                Glide.with(mContext)
-                        .load(post.getAuthor().getProfilePicture().getUrl())
-                        .circleCrop()
-                        .into(mBinding.postProfilePicture);
-            } else if (post.getAuthor().getFacebookPictureUrl() != null) {
-                Glide.with(mContext)
-                        .load(post.getAuthor().getFacebookPictureUrl())
-                        .circleCrop()
-                        .into(mBinding.postProfilePicture);
-            } else {
-                mBinding.postProfilePicture.setImageResource(R.drawable.default_user);
-            }
+            // Load profile image with center crop
+            ParseUtils.loadProfilePicture(post.getAuthor(), mBinding.postProfilePicture, true);
+
 
             // Set a listener for single and double clicks
             mBinding.postTouchHolder.setOnTouchListener(createItemTouchListener(post, this));
@@ -248,7 +237,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                     }
                 }
             };
-            PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
+            ParseUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
         }
 
         // Private helper method used to set the visuals depending on current liked status

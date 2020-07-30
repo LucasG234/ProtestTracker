@@ -14,6 +14,7 @@ import com.lucasg234.protesttracker.databinding.ActivityPostDetailBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.util.DateUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
+import com.lucasg234.protesttracker.util.ParseUtils;
 
 /**
  * Fragment which displays additional details about a given post
@@ -82,20 +83,8 @@ public class PostDetailActivity extends AppCompatActivity {
             mBinding.detailImage.setVisibility(View.GONE);
         }
 
-        // Load profile picutre
-        if (post.getAuthor().getProfilePicture() != null) {
-            Glide.with(this)
-                    .load(post.getAuthor().getProfilePicture().getUrl())
-                    .circleCrop()
-                    .into(mBinding.detailProfilePicture);
-        } else if (post.getAuthor().getFacebookPictureUrl() != null) {
-            Glide.with(this)
-                    .load(post.getAuthor().getFacebookPictureUrl())
-                    .circleCrop()
-                    .into(mBinding.detailProfilePicture);
-        } else {
-            mBinding.detailProfilePicture.setImageResource(R.drawable.default_user);
-        }
+        // Load profile image with center crop
+        ParseUtils.loadProfilePicture(post.getAuthor(), mBinding.detailProfilePicture, true);
 
         changeLikeVisually();
     }

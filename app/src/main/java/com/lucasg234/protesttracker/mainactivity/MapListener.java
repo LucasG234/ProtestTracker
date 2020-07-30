@@ -18,7 +18,7 @@ import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.util.LocationUtils;
-import com.lucasg234.protesttracker.util.PostUtils;
+import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
@@ -107,7 +107,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             }
         };
 
-        PostUtils.getUserLikes((User) User.getCurrentUser(), markerPost, likedCallback);
+        ParseUtils.getUserLikes((User) User.getCurrentUser(), markerPost, likedCallback);
     }
 
     // Call when a camera movement is started
@@ -235,7 +235,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             }
         };
 
-        PostUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
+        ParseUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 }
 

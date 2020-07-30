@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.lucasg234.protesttracker.R;
@@ -23,6 +22,7 @@ import com.lucasg234.protesttracker.databinding.FragmentSettingsBinding;
 import com.lucasg234.protesttracker.login.LoginActivity;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.util.ImageUtils;
+import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
@@ -106,23 +106,8 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        User currentUser = ((User) User.getCurrentUser());
-
-        // Use the user chosen photo if available
-        ParseFile chosenPhoto = currentUser.getProfilePicture();
-        String photoUrl = chosenPhoto == null ? null : chosenPhoto.getUrl();
-
-        // Otherwise, try to use a Facebook provided photo
-        if (photoUrl == null) {
-            photoUrl = currentUser.getFacebookPictureUrl();
-        }
-
-        // If still null, load nothing and leave the placeholder
-        if (photoUrl != null) {
-            Glide.with(getContext())
-                    .load(photoUrl)
-                    .into(mBinding.settingsProfileImage);
-        }
+        // Load profile image with no cropping
+        ParseUtils.loadProfilePicture((User) User.getCurrentUser(), mBinding.settingsProfileImage, false);
     }
 
     private void configureInternalStorage() {
