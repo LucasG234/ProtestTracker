@@ -71,7 +71,11 @@ public class PostDetailActivity extends AppCompatActivity {
         mBinding.detailCreatedAt.setText(relativeCreationTime);
 
         String address = LocationUtils.toAddress(this, post.getLocation());
-        mBinding.detailLocation.setText(address);
+        if (address == null) {
+            mBinding.detailLocation.setText(R.string.error_location);
+        } else {
+            mBinding.detailLocation.setText(address);
+        }
 
         if (post.getImage() != null) {
             mBinding.detailImage.setVisibility(View.VISIBLE);

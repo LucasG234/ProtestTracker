@@ -31,11 +31,14 @@ public class LocationUtils {
 
     // Converts a ParseGeoPoint object to the equivalent LatLng object
     public static LatLng toLatLng(ParseGeoPoint location) {
-        return new LatLng(location.getLatitude(), location.getLongitude());
+        return location == null ? null : new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     // Converts a ParseGeoPoint object to the equivalent Location object
     public static Location toLocation(ParseGeoPoint geoPoint) {
+        if (geoPoint == null) {
+            return null;
+        }
         // Provide empty string because there is no provider
         Location location = new Location("");
         location.setLatitude(geoPoint.getLatitude());
@@ -44,7 +47,7 @@ public class LocationUtils {
     }
 
     public static ParseGeoPoint toParseGeoPoint(Location location) {
-        return new ParseGeoPoint(location.getLatitude(), location.getLongitude());
+        return location == null ? null : new ParseGeoPoint(location.getLatitude(), location.getLongitude());
     }
 
     // Returns the last known location of the user
@@ -59,6 +62,9 @@ public class LocationUtils {
 
     // Returns a string displays the relative location of a post from the user's current location
     public static String toRelativeLocation(Context context, ParseGeoPoint targetGeoPoint) {
+        if (targetGeoPoint == null) {
+            return null;
+        }
         Location currentLocation = getCurrentLocation(context);
         // Provide empty string because there is no provider
         Location targetLocation = new Location("");
@@ -72,6 +78,9 @@ public class LocationUtils {
 
     // Converts the ParseGeoPoint given into a String representing its address
     public static String toAddress(Context context, ParseGeoPoint targetGeoPoint) {
+        if (targetGeoPoint == null) {
+            return null;
+        }
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addressList;
         try {

@@ -155,7 +155,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
             if (LocationPermissions.checkLocationPermission(mContext)) {
                 String relativeLocation = LocationUtils.toRelativeLocation(mContext, post.getLocation());
-                mBinding.postLocation.setText(relativeLocation);
+                if (relativeLocation == null) {
+                    mBinding.postLocation.setText(R.string.error_location);
+                } else {
+                    mBinding.postLocation.setText(relativeLocation);
+                }
             } else {
                 mBinding.postLocation.setText(null);
             }

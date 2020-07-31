@@ -116,7 +116,9 @@ public class MapFragment extends Fragment {
         map.setOnMyLocationButtonClickListener(mMapListener);
 
         LatLng currentLocation = LocationUtils.toLatLng(LocationUtils.getCurrentLocation(getContext()));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM_LEVEL));
+        if (currentLocation != null) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM_LEVEL));
+        }
 
         mMapListener.queryPostsInBounds(map.getProjection().getVisibleRegion().latLngBounds);
 
