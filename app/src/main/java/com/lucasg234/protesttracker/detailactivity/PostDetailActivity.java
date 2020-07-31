@@ -120,5 +120,12 @@ public class PostDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        mBinding.detailFacebookShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "Facebook share button clicked");
+            }
+        });
     }
 }

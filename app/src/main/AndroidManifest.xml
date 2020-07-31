@@ -33,6 +33,10 @@
                 android:resource="@xml/fileprovider" />
         </provider>
 
+        <provider android:authorities="@string/fb_provider_name"
+            android:name="com.facebook.FacebookContentProvider"
+            android:exported="false"/>
+
         <activity android:name=".login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
