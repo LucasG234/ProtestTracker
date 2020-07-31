@@ -42,6 +42,7 @@ public class ComposeFragment extends Fragment {
 
     private FragmentComposeBinding mBinding;
     private File mInternalImageStorage;
+    private boolean mSaving;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -75,7 +76,7 @@ public class ComposeFragment extends Fragment {
         mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validatePost()) {
+                if (validatePost() && !mSaving) {
                     savePost();
                 }
             }
@@ -175,6 +176,10 @@ public class ComposeFragment extends Fragment {
 
     // Constructs Post object and saves it to the Parse server
     private void savePost() {
+        // Mark that the fragment is currently saving a post
+        mSaving = true;
+        mBinding.composeSubmitButton.setText(R.string.compose_submit_button_saving);
+
         Post.Builder postBuilder = new Post.Builder();
 
         // Ensure location permissions before attempting to make post
@@ -206,6 +211,10 @@ public class ComposeFragment extends Fragment {
         postBuilder.createModel().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                // Mark that saving is complete, even if there was an error
+                mSaving = false;
+                mBinding.composeSubmitButton.setText(R.string.compose_submit_button);
+
                 if (e != null) {
                     Log.e(TAG, "Error saving post", e);
                     Toast.makeText(getContext(), R.string.error_save, Toast.LENGTH_SHORT).show();
@@ -215,6 +224,7 @@ public class ComposeFragment extends Fragment {
                 Log.i(TAG, "Saved post successfully");
                 mBinding.composeEditText.setText("");
                 mBinding.composeImagePreview.setImageBitmap(null);
+
                 // Delete the take image from internal storage if there is one
                 if (mInternalImageStorage != null) {
                     mInternalImageStorage.delete();
@@ -227,7 +237,7 @@ public class ComposeFragment extends Fragment {
     // Ensure no floating storage left on fragment deletion
     @Override
     public void onDestroy() {
-        if(mInternalImageStorage != null) {
+        if (mInternalImageStorage != null) {
             mInternalImageStorage.delete();
             mInternalImageStorage = null;
         }
