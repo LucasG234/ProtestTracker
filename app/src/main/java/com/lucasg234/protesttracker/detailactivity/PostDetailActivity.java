@@ -143,5 +143,12 @@ public class PostDetailActivity extends AppCompatActivity {
                 ShareDialog.show(PostDetailActivity.this, content);
             }
         });
+
+        mBinding.detailTwitterShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i(TAG, "Twitter share button clicked");
+            }
+        });
     }
 }
