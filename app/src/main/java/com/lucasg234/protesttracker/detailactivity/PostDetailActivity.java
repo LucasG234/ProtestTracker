@@ -2,13 +2,17 @@ package com.lucasg234.protesttracker.detailactivity;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.ActivityPostDetailBinding;
 import com.lucasg234.protesttracker.models.Post;
@@ -125,6 +129,18 @@ public class PostDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "Facebook share button clicked");
+                if (mPost.getImage() == null) {
+                    Toast.makeText(PostDetailActivity.this, R.string.error_facebook_share, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Uri photoUrl = Uri.parse(mPost.getImage().getUrl());
+
+                ShareLinkContent content = new ShareLinkContent.Builder()
+                        .setContentUrl(photoUrl)
+                        .build();
+
+                ShareDialog.show(PostDetailActivity.this, content);
             }
         });
     }

@@ -71,5 +71,6 @@
     <string name="error_password_match">Please ensure the passwords match.</string>
     <string name="error_liking">Error while recommending this post. Please check your connection and try again.</string>
     <string name="error_ignoring">Error while ignoring this post. Please check your connection and try again.</string>
+    <string name="error_facebook_share">This post contains no media to share.</string>
 
 </resources>
