@@ -33,6 +33,7 @@ public class PostDetailActivity extends AppCompatActivity {
     public static final String KEY_RESULT_POST = "output_post";
     public static final int REQUEST_CODE_POST_DETAIL = 406;
 
+    private static final String TWITTER_CONNECTION_URL = "https://twitter.com/intent/tweet?text=%s&url=%s";
     private static final String TAG = "PostDetailActivity";
 
     private ActivityPostDetailBinding mBinding;
@@ -148,6 +149,18 @@ public class PostDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.i(TAG, "Twitter share button clicked");
+                if (mPost.getImage() == null) {
+                    Toast.makeText(PostDetailActivity.this, R.string.error_facebook_share, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Uri photoUrl = Uri.parse(mPost.getImage().getUrl());
+                String postText = mPost.getText();
+
+                String twitterUrlString = String.format(TWITTER_CONNECTION_URL, postText, photoUrl);
+                Uri twitterUrl = Uri.parse(twitterUrlString);
+
+                startActivity(new Intent(Intent.ACTION_VIEW, twitterUrl));
             }
         });
     }
