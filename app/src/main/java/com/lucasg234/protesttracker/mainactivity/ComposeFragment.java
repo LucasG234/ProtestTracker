@@ -82,6 +82,15 @@ public class ComposeFragment extends Fragment {
             }
         });
 
+        mBinding.composeImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Create the modal overlay to select an image
+                ImageDialogFragment editNameDialogFragment = ImageDialogFragment.newInstance();
+                editNameDialogFragment.show(getActivity().getSupportFragmentManager(), ImageDialogFragment.class.getSimpleName());
+            }
+        });
+
         mBinding.composeCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
