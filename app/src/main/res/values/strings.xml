@@ -38,6 +38,7 @@
     <string name="compose_camera_button">Take picture from camera</string>
     <string name="compose_gallery_button">Take picture from gallery</string>
     <string name="compose_submit_button_saving">Saving post</string>
+    <string name="compose_image_button">Add an image</string>
 
     <!-- Text for no permissions fragment -->
     <string name="no_permissions_text">ProtestTracker requires Location permissions to function. Please click the button below to enable these permissions.</string>
