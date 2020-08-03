@@ -18,17 +18,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/loginPasswordText"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/loginPasswordTextHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
-        android:ems="10"
-        android:hint="@string/password_hint"
-        android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginUsernameText" />
+        app:layout_constraintTop_toBottomOf="@+id/loginUsernameText"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/loginPasswordText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/password_hint"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/loginSubmitButton"
@@ -40,7 +48,7 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordText" />
+        app:layout_constraintTop_toBottomOf="@+id/loginPasswordTextHolder" />
 
     <Button
         android:id="@+id/loginToRegistrationButton"
