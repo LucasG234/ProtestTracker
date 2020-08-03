@@ -181,7 +181,6 @@ public class ComposeFragment extends Fragment {
     private void savePost() {
         // Mark that the fragment is currently saving a post
         mSaving = true;
-        mBinding.composeSubmitButton.setText(R.string.compose_submit_button_saving);
 
         Post.Builder postBuilder = new Post.Builder();
 
@@ -216,7 +215,6 @@ public class ComposeFragment extends Fragment {
             public void done(ParseException e) {
                 // Mark that saving is complete, even if there was an error
                 mSaving = false;
-                mBinding.composeSubmitButton.setText(R.string.compose_submit_button);
 
                 if (e != null) {
                     Log.e(TAG, "Error saving post", e);

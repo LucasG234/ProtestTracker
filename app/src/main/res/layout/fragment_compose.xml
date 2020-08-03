@@ -27,16 +27,6 @@
             android:minLines="5" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/composeImageButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:text="@string/compose_image_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/composeEditTextHolder" />
-
     <ImageView
         android:id="@+id/composeImagePreview"
         android:layout_width="@dimen/match_constraint"
@@ -45,17 +35,25 @@
         app:layout_constraintBottom_toTopOf="@+id/composeSubmitButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/composeImageButton"
+        app:layout_constraintTop_toBottomOf="@+id/composeEditTextHolder"
         tools:src="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/composeSubmitButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/composeImageButton"
+        android:layout_width="@dimen/profile_icon_size"
+        android:layout_height="@dimen/profile_icon_size"
         android:layout_margin="@dimen/standard_margin"
-        android:text="@string/compose_submit_button"
+        android:src="@drawable/baseline_add_a_photo_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/composeSubmitButton" />
+
+    <ImageView
+        android:id="@+id/composeSubmitButton"
+        android:layout_width="@dimen/profile_icon_size"
+        android:layout_height="@dimen/profile_icon_size"
+        android:layout_margin="@dimen/standard_margin"
+        android:src="@drawable/baseline_post_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
