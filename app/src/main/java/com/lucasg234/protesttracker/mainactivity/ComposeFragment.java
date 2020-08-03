@@ -164,6 +164,22 @@ public class ComposeFragment extends Fragment {
         }
     }
 
+    public void onCameraClick() {
+        // Configure internal storage for the image if not already done, then open the camera to take it
+        if (mInternalImageStorage == null) {
+            configureTempImageStorage();
+        }
+        ImageUtils.openCameraForResult(ComposeFragment.this, mInternalImageStorage);
+    }
+
+    public void onGalleryClick() {
+        // Configure internal storage for the image if not already done, then open the gallery to find it
+        if (mInternalImageStorage == null) {
+            configureTempImageStorage();
+        }
+        ImageUtils.openGalleryForResult(ComposeFragment.this);
+    }
+
     // Determines whether the current composeEditText and composeImagePreview represent a valid post
     // Outputs an error message in a Toast if false
     private boolean validatePost() {

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.lucasg234.protesttracker.databinding.FragmentImageDialogBinding;
 
@@ -46,5 +47,23 @@ public class ImageDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mBinding = FragmentImageDialogBinding.bind(view);
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        final ComposeFragment composeParent = (ComposeFragment) fragmentManager.findFragmentByTag(ComposeFragment.class.getSimpleName());
+
+        mBinding.imageCameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Configure internal storage for the image if not already done, then open the camera to take it
+                composeParent.onCameraClick();
+            }
+        });
+
+        mBinding.imageGalleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Configure internal storage for the image if not already done, then open the gallery to find it
+                composeParent.onGalleryClick();
+            }
+        });
     }
 }
