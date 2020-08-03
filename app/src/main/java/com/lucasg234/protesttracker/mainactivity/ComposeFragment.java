@@ -90,28 +90,6 @@ public class ComposeFragment extends Fragment {
                 editNameDialogFragment.show(getActivity().getSupportFragmentManager(), ImageDialogFragment.class.getSimpleName());
             }
         });
-
-        mBinding.composeCameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Configure internal storage for the image if not already done, then open the camera to take it
-                if (mInternalImageStorage == null) {
-                    configureTempImageStorage();
-                }
-                ImageUtils.openCameraForResult(ComposeFragment.this, mInternalImageStorage);
-            }
-        });
-
-        mBinding.composeGalleryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Configure internal storage for the image if not already done, then open the gallery to find it
-                if (mInternalImageStorage == null) {
-                    configureTempImageStorage();
-                }
-                ImageUtils.openGalleryForResult(ComposeFragment.this);
-            }
-        });
     }
 
     // Used to receive photos after camera or gallery usage

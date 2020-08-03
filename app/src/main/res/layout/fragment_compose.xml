@@ -32,30 +32,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
-        android:text="@string/compose_submit_button"
+        android:text="@string/compose_image_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/composeEditTextHolder" />
-
-    <Button
-        android:id="@+id/composeGalleryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:text="@string/compose_gallery_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/composeImageButton" />
-
-    <Button
-        android:id="@+id/composeCameraButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:text="@string/compose_camera_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/composeGalleryButton" />
 
     <ImageView
         android:id="@+id/composeImagePreview"
@@ -65,7 +45,7 @@
         app:layout_constraintBottom_toTopOf="@+id/composeSubmitButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/composeCameraButton"
+        app:layout_constraintTop_toBottomOf="@+id/composeImageButton"
         tools:src="@tools:sample/avatars" />
 
     <Button
