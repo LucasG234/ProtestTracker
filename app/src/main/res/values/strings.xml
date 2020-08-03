@@ -23,8 +23,8 @@
     <string name="feed_filter_text">Distance shown:</string>
     <string name="post_like_button">Recommend</string>
     <string name="post_ignore_button">Ignore</string>
-    <string name="facebook_share_button">Share with facebook</string>
-    <string name="twitter_share_button">Share with twitter</string>
+    <string name="facebook_share_button">Share with Facebook</string>
+    <string name="twitter_share_button">Share with Twitter</string>
 
     <!-- Text for BottomNavigationView -->
     <string name="bottom_navigation_feed">Feed</string>

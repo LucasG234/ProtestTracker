@@ -97,7 +97,9 @@
         android:id="@+id/detailFacebookShareButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/facebook_share_button"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/detailTwitterShareButton"
         app:layout_constraintStart_toStartOf="parent" />
@@ -106,7 +108,9 @@
         android:id="@+id/detailTwitterShareButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/twitter_share_button"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detailFacebookShareButton" />

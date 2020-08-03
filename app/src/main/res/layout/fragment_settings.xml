@@ -11,17 +11,19 @@
         android:layout_width="@dimen/match_constraint"
         android:layout_height="@dimen/standard_image_height"
         android:layout_margin="@dimen/standard_margin"
+        android:src="@drawable/default_user"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/default_user" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/settingsProfilePictureGalleryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/profile_picture_gallery_button"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingsProfileImage" />
@@ -31,7 +33,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/profile_picture_camera_button"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingsProfilePictureGalleryButton" />
@@ -41,7 +45,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/standard_margin"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/logout_button"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settingsProfilePictureCameraButton" />
