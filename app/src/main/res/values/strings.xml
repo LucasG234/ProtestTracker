@@ -70,9 +70,12 @@
     <string name="error_file_generation">Could not access files.</string>
     <string name="error_post_no_text">Cannot create a post with no text.</string>
     <string name="error_post_over_maximum">Cannot create a post over the maximum length.</string>
-    <string name="error_password_match">Please ensure the passwords match.</string>
     <string name="error_liking">Error while recommending this post. Please check your connection and try again.</string>
     <string name="error_ignoring">Error while ignoring this post. Please check your connection and try again.</string>
     <string name="error_facebook_share">This post contains no media to share.</string>
+    <string name="error_password_match">Please ensure the passwords match.</string>
+    <string name="error_credentials_empty">Please enter a username and password.</string>
+    <string name="error_password_whitespace">Your username and password cannot contain whitespace.</string>
+    <string name="error_password_length">Please ensure your password is between %d and %d characters.</string>
 
 </resources>

@@ -20,6 +20,8 @@ import com.parse.SignUpCallback;
  * Accessed from LoginActivity, with a button to return to it
  */
 public class RegistrationActivity extends AppCompatActivity {
+    public static final int PASSWORD_MIN_LENGTH = 8;
+    public static final int PASSWORD_MAX_LENGTH = 20;
 
     private static final String TAG = "RegistrationActivity";
 
@@ -59,10 +61,19 @@ public class RegistrationActivity extends AppCompatActivity {
     private boolean validateRegistration(String username, String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, R.string.error_password_match, Toast.LENGTH_SHORT).show();
-            return false;
+        } else if (password.isEmpty() || username.isEmpty()) {
+            Toast.makeText(this, R.string.error_credentials_empty, Toast.LENGTH_SHORT).show();
+        } else if (password.contains("\\s")) {
+            Toast.makeText(this, R.string.error_password_whitespace, Toast.LENGTH_SHORT).show();
+        } else if (password.length() <= PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
+            String lengthError = String.format(getString(R.string.error_password_length), PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH);
+            Toast.makeText(this, lengthError, Toast.LENGTH_SHORT).show();
         } else {
+            // If username and password pass all tests, then they are valid
             return true;
         }
+        // If any cases fail, then return false
+        return false;
     }
 
     // Attempts to create new Parse user (and log into it)
@@ -75,7 +86,6 @@ public class RegistrationActivity extends AppCompatActivity {
             public void done(ParseException e) {
                 if (e != null) {
                     Log.e(TAG, "Error with login", e);
-                    //TODO: possibly improve to be more specific
                     Toast.makeText(RegistrationActivity.this, R.string.error_registration, Toast.LENGTH_SHORT).show();
                     mBinding.registrationSubmitButton.setText(R.string.register_button_resting);
                     return;
