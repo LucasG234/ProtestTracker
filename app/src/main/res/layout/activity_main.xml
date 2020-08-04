@@ -17,6 +17,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/mainToolbarProfilePicture"
+            android:layout_width="@dimen/profile_icon_size"
+            android:layout_height="@dimen/profile_icon_size"
+            android:gravity="start"
+            android:src="@drawable/default_user" />
+
         <TextView
             android:id="@+id/mainToolbarText"
             style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"

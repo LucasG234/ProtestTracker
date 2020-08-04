@@ -129,7 +129,7 @@ public class SettingsFragment extends Fragment {
             return;
         }
 
-        User currentUser = (User) User.getCurrentUser();
+        final User currentUser = (User) User.getCurrentUser();
         Bitmap takenImage;
 
         switch (requestCode) {
@@ -163,12 +163,14 @@ public class SettingsFragment extends Fragment {
                     return;
                 }
 
-                // After the save, reset the storage
+                // After the save, reset the storage and change the profile picture in the toolbar
                 mInternalImageStorage.delete();
                 mInternalImageStorage = null;
+                ParseUtils.loadProfilePicture(currentUser, mParent.getToolbarProfilePicture(), true);
             }
         });
 
+        // Set the preview in the Fragment to the new picture immediately
         mBinding.settingsProfileImage.setImageBitmap(takenImage);
     }
 

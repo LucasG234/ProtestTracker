@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         User currentUser = (User) User.getCurrentUser();
 
         mBinding.mainToolbarText.setText(currentUser.getUsername());
+        ParseUtils.loadProfilePicture(currentUser, mBinding.mainToolbarProfilePicture, true);
 
         if (!LocationPermissions.checkLocationPermission(this)) {
             Log.i(TAG, "Found no location permissions");
@@ -265,6 +267,10 @@ public class MainActivity extends AppCompatActivity {
         if (mNumProcesses == 0) {
             mBinding.mainProgressBar.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public ImageView getToolbarProfilePicture() {
+        return mBinding.mainToolbarProfilePicture;
     }
 }
 
