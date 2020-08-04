@@ -190,6 +190,8 @@ public class MainActivity extends AppCompatActivity {
         FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
             public void done(final Boolean liked, ParseException e) {
+                subtractProcess();
+
                 if (e != null) {
                     Log.e(TAG, "Error in liking post", e);
                     Toast.makeText(MainActivity.this, R.string.error_liking, Toast.LENGTH_SHORT).show();
@@ -217,14 +219,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        addProcess();
         ParseUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 
     public void saveIgnore(final Post post) {
         ParseUtils.addIgnoredBy((User) User.getCurrentUser(), post);
+        addProcess();
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                subtractProcess();
+
                 if (e != null) {
                     Log.e(TAG, "Error in ignoring post", e);
                     Toast.makeText(MainActivity.this, R.string.error_ignoring, Toast.LENGTH_SHORT).show();

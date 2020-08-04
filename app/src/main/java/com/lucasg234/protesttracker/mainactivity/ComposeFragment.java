@@ -41,6 +41,7 @@ public class ComposeFragment extends Fragment {
     private static final String TAG = "ComposeFragment";
 
     private FragmentComposeBinding mBinding;
+    private MainActivity mParent;
     private File mInternalImageStorage;
     private boolean mSaving;
 
@@ -72,6 +73,7 @@ public class ComposeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mBinding = FragmentComposeBinding.bind(view);
+        mParent = (MainActivity) getActivity();
 
         mBinding.composeSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +183,7 @@ public class ComposeFragment extends Fragment {
     private void savePost() {
         // Mark that the fragment is currently saving a post
         mSaving = true;
+        mParent.addProcess();
 
         Post.Builder postBuilder = new Post.Builder();
 
@@ -215,6 +218,7 @@ public class ComposeFragment extends Fragment {
             public void done(ParseException e) {
                 // Mark that saving is complete, even if there was an error
                 mSaving = false;
+                mParent.subtractProcess();
 
                 if (e != null) {
                     Log.e(TAG, "Error saving post", e);

@@ -1,6 +1,5 @@
 package com.lucasg234.protesttracker.mainactivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
@@ -38,8 +37,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private static final int FASTEST_INTERVAL_MS = 100;
     private static final String TAG = "MapListener";
 
-    private Context mContext;
-    private MapFragment mParent;
+    private MainActivity mParent;
+    private MapFragment mFragment;
     private GoogleMap mMap;
     // Set used to hold objects efficiently without order
     private MapSearchableSet<Post> mPosts;
@@ -49,8 +48,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private float mUnlikedHue;
 
     public MapListener(MapFragment parent, GoogleMap map) {
-        this.mParent = parent;
-        this.mContext = parent.getContext();
+        this.mFragment = parent;
+        this.mParent = (MainActivity) parent.getActivity();
         this.mMap = map;
         this.mPosts = new MapSearchableSet<>(new MapSearchableSet.Accessor<Post>() {
             @Override
@@ -96,14 +95,14 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     public void onInfoWindowClick(Marker marker) {
         Post markerPost = mPosts.getObjectById((String) marker.getTag());
 
-        final Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
+        final Intent detailIntent = new Intent(mParent, PostDetailActivity.class);
         detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, markerPost);
 
         FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
             public void done(Boolean liked, ParseException e) {
                 detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LIKED, liked);
-                mParent.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+                mFragment.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
             }
         };
 
@@ -115,7 +114,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     @Override
     public void onCameraMoveStarted(int reason) {
         if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
-            mParent.setFollowUser(false);
+            mFragment.setFollowUser(false);
         }
     }
 
@@ -123,12 +122,14 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     // When user focuses back to their location, turn on the automatic camera movements
     @Override
     public boolean onMyLocationButtonClick() {
-        mParent.setFollowUser(true);
+        mFragment.setFollowUser(true);
         return false;
     }
 
     // Adds all new posts within current visible bounds to mStoredPosts and calls addMarkers
     public void queryPostsInBounds(LatLngBounds visibleBounds) {
+        mParent.addProcess();
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
 
         ParseGeoPoint southwest = new ParseGeoPoint(visibleBounds.southwest.latitude, visibleBounds.southwest.longitude);
@@ -144,9 +145,11 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
+                mParent.subtractProcess();
+
                 if (e != null) {
                     Log.e(TAG, "Error querying posts for markers");
-                    Toast.makeText(mContext, R.string.error_load, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mParent, R.string.error_load, Toast.LENGTH_SHORT).show();
                 }
                 // Remove all duplicates before adding markers
                 if (posts != null) {
@@ -188,11 +191,11 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private void calculateMapHues() {
         float[] hsvHolder = new float[3];
 
-        int likedColor = ContextCompat.getColor(mContext, R.color.colorAccent);
+        int likedColor = ContextCompat.getColor(mParent, R.color.colorAccent);
         Color.RGBToHSV(Color.red(likedColor), Color.green(likedColor), Color.blue(likedColor), hsvHolder);
         mLikedHue = hsvHolder[0];
 
-        int unlikedColor = ContextCompat.getColor(mContext, R.color.colorComplementary);
+        int unlikedColor = ContextCompat.getColor(mParent, R.color.colorComplementary);
         Color.RGBToHSV(Color.red(unlikedColor), Color.green(unlikedColor), Color.blue(unlikedColor), hsvHolder);
         mUnlikedHue = hsvHolder[0];
     }
@@ -221,6 +224,8 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         FunctionCallback<Boolean> likedCallback = new FunctionCallback<Boolean>() {
             @Override
             public void done(Boolean liked, ParseException e) {
+                mParent.subtractProcess();
+
                 if (e != null) {
                     // Silent error here, otherwise many error messages will appear at once
                     Log.e(TAG, "Error when querying post like status from map");
@@ -235,6 +240,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             }
         };
 
+        mParent.addProcess();
         ParseUtils.getUserLikes((User) User.getCurrentUser(), post, likedCallback);
     }
 }

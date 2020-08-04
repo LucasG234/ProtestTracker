@@ -41,6 +41,7 @@ public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
 
     private FragmentSettingsBinding mBinding;
+    private MainActivity mParent;
     private File mInternalImageStorage;
 
     public SettingsFragment() {
@@ -71,6 +72,7 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mBinding = FragmentSettingsBinding.bind(view);
+        mParent = (MainActivity) getActivity();
 
         mBinding.settingsLogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,11 +152,14 @@ public class SettingsFragment extends Fragment {
                 return;
         }
 
+        mParent.addProcess();
         currentUser.setProfilePicture(new ParseFile(mInternalImageStorage));
         currentUser.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e != null) {
+                mParent.subtractProcess();
+
+                if (e != null) {
                     Log.e(TAG, "ParseException for currentUser save", e);
                     Toast.makeText(getContext(), R.string.error_save, Toast.LENGTH_SHORT).show();
                     return;
@@ -172,7 +177,7 @@ public class SettingsFragment extends Fragment {
     // Ensure no floating storage left on fragment deletion
     @Override
     public void onDestroy() {
-        if(mInternalImageStorage != null) {
+        if (mInternalImageStorage != null) {
             mInternalImageStorage.delete();
             mInternalImageStorage = null;
         }

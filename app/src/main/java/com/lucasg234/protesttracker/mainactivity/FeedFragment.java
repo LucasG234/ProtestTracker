@@ -41,6 +41,7 @@ public class FeedFragment extends Fragment {
     private static final String TAG = "FeedFragment";
 
     private FragmentFeedBinding mBinding;
+    private MainActivity mParent;
     private FeedAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScrollListener;
     private int mFeetFilter;
@@ -73,6 +74,7 @@ public class FeedFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mBinding = FragmentFeedBinding.bind(view);
+        mParent = (MainActivity) getActivity();
 
         configureRecyclerView();
 
@@ -131,6 +133,8 @@ public class FeedFragment extends Fragment {
 
     // Removes all posts within the FeedAdapter and replaces them with the result of a new query
     private void queryClearPosts() {
+        mParent.addProcess();
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
@@ -149,6 +153,8 @@ public class FeedFragment extends Fragment {
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
+                mParent.subtractProcess();
+
                 if (e != null) {
                     Log.e(TAG, "Error querying initial posts", e);
                     Toast.makeText(getContext(), R.string.error_load, Toast.LENGTH_SHORT).show();
@@ -166,6 +172,8 @@ public class FeedFragment extends Fragment {
 
     // Adds the result of a new query to the end of the FeedAdapter
     private void queryAdditionalPosts() {
+        mParent.addProcess();
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.setLimit(Post.QUERY_LIMIT);
@@ -188,6 +196,8 @@ public class FeedFragment extends Fragment {
         query.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> posts, ParseException e) {
+                mParent.subtractProcess();
+
                 if (e != null) {
                     Log.e(TAG, "Error querying additional posts", e);
                     Toast.makeText(getContext(), R.string.error_load, Toast.LENGTH_SHORT).show();
