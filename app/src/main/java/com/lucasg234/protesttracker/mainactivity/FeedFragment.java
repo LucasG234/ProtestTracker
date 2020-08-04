@@ -80,12 +80,12 @@ public class FeedFragment extends Fragment {
 
         // Ask for location permissions before loading posts into the feed
         // If they are not given, posts will load without relative positions
-        if (!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(mParent)) {
             LocationPermissions.requestLocationPermission(this);
         }
 
         // Set up spinner for distance selection
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(), R.array.spinner_options, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(mParent, R.array.spinner_options, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBinding.feedFilterSpinner.setAdapter(spinnerAdapter);
 
@@ -105,9 +105,9 @@ public class FeedFragment extends Fragment {
     }
 
     private void configureRecyclerView() {
-        mAdapter = new FeedAdapter(getContext(), mBinding.feedRecyclerView);
+        mAdapter = new FeedAdapter(mParent, mBinding.feedRecyclerView);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mParent);
         mEndlessScrollListener = new EndlessRecyclerViewScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
@@ -146,7 +146,7 @@ public class FeedFragment extends Fragment {
         // Only include posts with distance filter if one exists
         if (mFeetFilter > 0) {
             double miles = mFeetFilter / LocationUtils.MILES_TO_FEET;
-            ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(getContext()));
+            ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(mParent));
             query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, miles);
         }
 
@@ -157,7 +157,7 @@ public class FeedFragment extends Fragment {
 
                 if (e != null) {
                     Log.e(TAG, "Error querying initial posts", e);
-                    Toast.makeText(getContext(), R.string.error_load, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mParent, R.string.error_load, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Clear any existing posts and add new ones
@@ -185,7 +185,7 @@ public class FeedFragment extends Fragment {
         // Only include posts with distance filter if one exists
         if (mFeetFilter > 0) {
             double miles = mFeetFilter / LocationUtils.MILES_TO_FEET;
-            ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(getContext()));
+            ParseGeoPoint currentLocation = LocationUtils.toParseGeoPoint(LocationUtils.getCurrentLocation(mParent));
             query.whereWithinMiles(Post.KEY_LOCATION, currentLocation, miles);
         }
 
@@ -200,7 +200,7 @@ public class FeedFragment extends Fragment {
 
                 if (e != null) {
                     Log.e(TAG, "Error querying additional posts", e);
-                    Toast.makeText(getContext(), R.string.error_load, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mParent, R.string.error_load, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 // Add new posts, but do not clear old ones
@@ -255,8 +255,7 @@ public class FeedFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
             int position = viewHolder.getAdapterPosition();
-            MainActivity parent = (MainActivity) getActivity();
-            parent.saveIgnore(mAdapter.getPost(position));
+            mParent.saveIgnore(mAdapter.getPost(position));
         }
     }
 }

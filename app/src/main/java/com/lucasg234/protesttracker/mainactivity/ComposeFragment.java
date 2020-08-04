@@ -89,7 +89,7 @@ public class ComposeFragment extends Fragment {
             public void onClick(View view) {
                 // Create the modal overlay to select an image
                 ImageDialogFragment editNameDialogFragment = ImageDialogFragment.newInstance();
-                editNameDialogFragment.show(getActivity().getSupportFragmentManager(), ImageDialogFragment.class.getSimpleName());
+                editNameDialogFragment.show(mParent.getSupportFragmentManager(), ImageDialogFragment.class.getSimpleName());
             }
         });
     }
@@ -98,7 +98,7 @@ public class ComposeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
-            Toast.makeText(getContext(), R.string.error_receive_image, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mParent, R.string.error_receive_image, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -112,7 +112,7 @@ public class ComposeFragment extends Fragment {
             case ImageUtils.ACTIVITY_REQUEST_CODE_GALLERY:
                 Log.i(TAG, "received photo from gallery");
                 Uri photoUri = data.getData();
-                takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
+                takenImage = ImageUtils.decodeExternalImage(mParent.getContentResolver(), photoUri);
                 ImageUtils.saveImageToInternalStorage(takenImage, mInternalImageStorage);
                 break;
             default:
@@ -140,7 +140,7 @@ public class ComposeFragment extends Fragment {
             mInternalImageStorage = ImageUtils.configureTempImageStorage(ComposeFragment.this);
         } catch (IOException e) {
             Log.e(TAG, "Could not generate internal image storage", e);
-            Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mParent, R.string.error_file_generation, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -167,12 +167,12 @@ public class ComposeFragment extends Fragment {
 
         // Ensure text is not empty or only whitespace
         if (text.trim().isEmpty()) {
-            Toast.makeText(getContext(), R.string.error_post_no_text, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mParent, R.string.error_post_no_text, Toast.LENGTH_SHORT).show();
             return false;
         }
         // Impose maximum text length
         else if (text.length() > Post.MAXIMUM_LENGTH) {
-            Toast.makeText(getContext(), R.string.error_post_over_maximum, Toast.LENGTH_LONG).show();
+            Toast.makeText(mParent, R.string.error_post_over_maximum, Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -188,19 +188,19 @@ public class ComposeFragment extends Fragment {
         Post.Builder postBuilder = new Post.Builder();
 
         // Ensure location permissions before attempting to make post
-        if (!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(mParent)) {
             Log.i(TAG, "Cancelling post save to ask for permissions");
             LocationPermissions.requestLocationPermission(this);
             return;
         }
 
         // Next ensure current location can be found
-        Location currentLocation = LocationUtils.getCurrentLocation(getContext());
+        Location currentLocation = LocationUtils.getCurrentLocation(mParent);
         if (currentLocation != null) {
             postBuilder.setLocation(new ParseGeoPoint(currentLocation.getLatitude(), currentLocation.getLongitude()));
         } else {
             Log.e(TAG, "Couldn't find a location");
-            Toast.makeText(getContext(), R.string.error_location, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mParent, R.string.error_location, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -222,7 +222,7 @@ public class ComposeFragment extends Fragment {
 
                 if (e != null) {
                     Log.e(TAG, "Error saving post", e);
-                    Toast.makeText(getContext(), R.string.error_save, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mParent, R.string.error_save, Toast.LENGTH_SHORT).show();
                     return;
                 }
 

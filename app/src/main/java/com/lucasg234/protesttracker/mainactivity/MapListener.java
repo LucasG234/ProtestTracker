@@ -102,7 +102,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
             @Override
             public void done(Boolean liked, ParseException e) {
                 detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LIKED, liked);
-                mFragment.getActivity().startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
+                mParent.startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL);
             }
         };
 

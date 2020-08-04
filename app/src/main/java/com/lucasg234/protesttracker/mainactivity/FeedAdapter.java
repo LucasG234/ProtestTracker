@@ -1,7 +1,6 @@
 package com.lucasg234.protesttracker.mainactivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -41,21 +40,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
     private static final String TAG = "FeedAdapter";
 
-    private Context mContext;
+    private MainActivity mParent;
     private RecyclerView mParentRecyclerView;
     // This list holds posts as they are sorted in the view
     private List<Post> mPosts;
 
-    public FeedAdapter(Context context, RecyclerView parent) {
-        this.mContext = context;
-        this.mParentRecyclerView = parent;
+    public FeedAdapter(MainActivity parentActivity, RecyclerView recyclerView) {
+        this.mParent = parentActivity;
+        this.mParentRecyclerView = recyclerView;
         this.mPosts = new ArrayList<>();
     }
 
     @NonNull
     @Override
     public FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(mParent);
         ItemFeedPostBinding postBinding = ItemFeedPostBinding.inflate(inflater, parent, false);
         return new FeedViewHolder(postBinding);
     }
@@ -114,21 +113,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
     private Bundle getTransitionToDetailView(FeedAdapter.FeedViewHolder postViewHolder) {
         ItemFeedPostBinding postBinding = postViewHolder.getBinding();
 
-        Pair<View, String> pairUsername = Pair.create((View) postBinding.postUsername, mContext.getString(R.string.transition_username));
-        Pair<View, String> pairCreatedAt = Pair.create((View) postBinding.postCreatedAt, mContext.getString(R.string.transition_created_at));
-        Pair<View, String> pairText = Pair.create((View) postBinding.postText, mContext.getString(R.string.transition_text));
+        Pair<View, String> pairUsername = Pair.create((View) postBinding.postUsername, mParent.getString(R.string.transition_username));
+        Pair<View, String> pairCreatedAt = Pair.create((View) postBinding.postCreatedAt, mParent.getString(R.string.transition_created_at));
+        Pair<View, String> pairText = Pair.create((View) postBinding.postText, mParent.getString(R.string.transition_text));
         Pair<View, String> pairProfilePicture = Pair.create((View) postBinding.postProfilePicture,
-                mContext.getString(R.string.transition_profile_picture));
+                mParent.getString(R.string.transition_profile_picture));
 
         ActivityOptionsCompat transitionOptions;
 
         // Only include the image in the transition if it is visible
         if (postBinding.postImage.getVisibility() == View.VISIBLE) {
-            Pair<View, String> pairImage = Pair.create((View) postBinding.postImage, mContext.getString(R.string.transition_image));
-            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
+            Pair<View, String> pairImage = Pair.create((View) postBinding.postImage, mParent.getString(R.string.transition_image));
+            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mParent,
                     pairUsername, pairCreatedAt, pairText, pairProfilePicture, pairImage);
         } else {
-            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mContext,
+            transitionOptions = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) mParent,
                     pairUsername, pairCreatedAt, pairText, pairProfilePicture);
         }
 
@@ -153,8 +152,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             String relativeCreationTime = DateUtils.dateToRelative(post.getCreatedAt());
             mBinding.postCreatedAt.setText(relativeCreationTime);
 
-            if (LocationPermissions.checkLocationPermission(mContext)) {
-                String relativeLocation = LocationUtils.toRelativeLocation(mContext, post.getLocation());
+            if (LocationPermissions.checkLocationPermission(mParent)) {
+                String relativeLocation = LocationUtils.toRelativeLocation(mParent, post.getLocation());
                 if (relativeLocation == null) {
                     mBinding.postLocation.setText(R.string.error_location);
                 } else {
@@ -168,7 +167,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             if (post.getImage() != null) {
                 mBinding.postImage.setVisibility(View.VISIBLE);
                 Log.i(TAG, post.getImage().getUrl());
-                Glide.with(mContext)
+                Glide.with(mParent)
                         .load(post.getImage().getUrl())
                         //.centerCrop()
                         .into(mBinding.postImage);
@@ -187,16 +186,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             mBinding.postLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MainActivity parent = (MainActivity) mContext;
-                    parent.saveLikeChange(post);
+                    mParent.saveLikeChange(post);
                 }
             });
 
             mBinding.postIgnore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    MainActivity parent = (MainActivity) mContext;
-                    parent.saveIgnore(post);
+                    mParent.saveIgnore(post);
                 }
             });
 
@@ -216,7 +213,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         }
 
         private View.OnTouchListener createItemTouchListener(Post post, FeedViewHolder viewHolder) {
-            final GestureDetector gestureDetector = new GestureDetector(mContext, new FeedGestureListener(post, viewHolder));
+            final GestureDetector gestureDetector = new GestureDetector(mParent, new FeedGestureListener(post, viewHolder));
 
             View.OnTouchListener touchListener = new View.OnTouchListener() {
                 @Override
@@ -252,9 +249,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         private void setLikeVisuals() {
             Drawable toReplace;
             if (mLiked) {
-                toReplace = mContext.getDrawable(R.drawable.baseline_star_accent_24);
+                toReplace = mParent.getDrawable(R.drawable.baseline_star_accent_24);
             } else {
-                toReplace = mContext.getDrawable(R.drawable.outline_star_24);
+                toReplace = mParent.getDrawable(R.drawable.outline_star_24);
             }
             mBinding.postLike.setImageDrawable(toReplace);
         }
@@ -276,20 +273,20 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
 
         @Override
         public boolean onDoubleTap(MotionEvent e) {
-            MainActivity parent = (MainActivity) mContext;
+            MainActivity parent = (MainActivity) mParent;
             parent.saveLikeChange(mPost);
             return true;
         }
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            Intent detailIntent = new Intent(mContext, PostDetailActivity.class);
+            Intent detailIntent = new Intent(mParent, PostDetailActivity.class);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_POST, mPost);
             detailIntent.putExtra(PostDetailActivity.KEY_INTENT_EXTRA_LIKED, mViewHolder.mLiked);
 
             Bundle transitionBundle = getTransitionToDetailView(mViewHolder);
 
-            Activity parent = (Activity) mContext;
+            Activity parent = (Activity) mParent;
             parent.startActivityForResult(detailIntent, PostDetailActivity.REQUEST_CODE_POST_DETAIL, transitionBundle);
             return true;
         }

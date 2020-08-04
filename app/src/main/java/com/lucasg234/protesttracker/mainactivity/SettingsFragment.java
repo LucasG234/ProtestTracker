@@ -1,6 +1,5 @@
 package com.lucasg234.protesttracker.mainactivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -83,10 +82,9 @@ public class SettingsFragment extends Fragment {
                 if (AccessToken.getCurrentAccessToken() != null) {
                     LoginManager.getInstance().logOut();
                 }
-                Activity currentParent = getActivity();
-                Intent loginIntent = new Intent(currentParent, LoginActivity.class);
-                currentParent.startActivity(loginIntent);
-                currentParent.finish();
+                Intent loginIntent = new Intent(mParent, LoginActivity.class);
+                mParent.startActivity(loginIntent);
+                mParent.finish();
             }
         });
 
@@ -118,7 +116,7 @@ public class SettingsFragment extends Fragment {
                 mInternalImageStorage = ImageUtils.configureTempImageStorage(SettingsFragment.this);
             } catch (IOException e) {
                 Log.e(TAG, "Could not generate internal image storage", e);
-                Toast.makeText(getContext(), R.string.error_file_generation, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mParent, R.string.error_file_generation, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -127,7 +125,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
-            Toast.makeText(getContext(), R.string.error_receive_image, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mParent, R.string.error_receive_image, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -144,7 +142,7 @@ public class SettingsFragment extends Fragment {
                 Log.i(TAG, "received photo from gallery");
                 // Save the bitmap we already have into internal storage
                 Uri photoUri = data.getData();
-                takenImage = ImageUtils.decodeExternalImage(getContext().getContentResolver(), photoUri);
+                takenImage = ImageUtils.decodeExternalImage(mParent.getContentResolver(), photoUri);
                 ImageUtils.saveImageToInternalStorage(takenImage, mInternalImageStorage);
                 break;
             default:
@@ -161,7 +159,7 @@ public class SettingsFragment extends Fragment {
 
                 if (e != null) {
                     Log.e(TAG, "ParseException for currentUser save", e);
-                    Toast.makeText(getContext(), R.string.error_save, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mParent, R.string.error_save, Toast.LENGTH_SHORT).show();
                     return;
                 }
 

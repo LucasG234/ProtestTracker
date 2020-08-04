@@ -47,6 +47,7 @@ public class MapFragment extends Fragment {
 
     private static final String TAG = "MapFragment";
     private MapListener mMapListener;
+    private MainActivity mParent;
     // Represents whether the camera is currently follow the user's current position
     private boolean mFollowUser;
 
@@ -77,6 +78,8 @@ public class MapFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mParent = (MainActivity) getActivity();
+
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
 
         if (mapFragment != null) {
@@ -88,13 +91,13 @@ public class MapFragment extends Fragment {
             });
         } else {
             Log.e(TAG, "mapFragment was null on onViewCreated");
-            Toast.makeText(getContext(), R.string.error_map_load, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mParent, R.string.error_map_load, Toast.LENGTH_SHORT).show();
         }
     }
 
     // Configures the GoogleMap
     private void loadMap(GoogleMap map) {
-        if (!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(mParent)) {
             LocationPermissions.requestLocationPermission(this);
             return;
         }
@@ -115,7 +118,7 @@ public class MapFragment extends Fragment {
         map.setOnCameraMoveStartedListener(mMapListener);
         map.setOnMyLocationButtonClickListener(mMapListener);
 
-        LatLng currentLocation = LocationUtils.toLatLng(LocationUtils.getCurrentLocation(getContext()));
+        LatLng currentLocation = LocationUtils.toLatLng(LocationUtils.getCurrentLocation(mParent));
         if (currentLocation != null) {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, DEFAULT_ZOOM_LEVEL));
         }
@@ -134,12 +137,12 @@ public class MapFragment extends Fragment {
         locationRequest.setFastestInterval(FASTEST_INTERVAL_MS);
         locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT_METERS);
 
-        if (!LocationPermissions.checkLocationPermission(getContext())) {
+        if (!LocationPermissions.checkLocationPermission(mParent)) {
             LocationPermissions.requestLocationPermission(this);
             return;
         }
         // Call onLocationChange method when new Location is found
-        LocationServices.getFusedLocationProviderClient(getContext())
+        LocationServices.getFusedLocationProviderClient(mParent)
                 .requestLocationUpdates(locationRequest, new LocationCallback() {
                             @Override
                             public void onLocationResult(LocationResult locationResult) {
