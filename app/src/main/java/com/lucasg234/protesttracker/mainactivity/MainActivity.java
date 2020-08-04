@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-
     private ActivityMainBinding mBinding;
     private Fragment mCurrentFragment;
     private boolean mNavigationEnabled;
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
+        setSupportActionBar(mBinding.mainToolbar);
         mNumProcesses = 0;
 
         if (!LocationPermissions.checkLocationPermission(this)) {
