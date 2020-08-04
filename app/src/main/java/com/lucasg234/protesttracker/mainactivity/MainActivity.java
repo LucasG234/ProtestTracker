@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding mBinding;
     private Fragment mCurrentFragment;
     private boolean mNavigationEnabled;
-    private int numProcesses;
+    private int mNumProcesses;
+    private MenuItem mProgressBar;
 
     private FeedFragment mFeed;
     private ComposeFragment mCompose;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        numProcesses = 0;
+        mNumProcesses = 0;
 
         if (!LocationPermissions.checkLocationPermission(this)) {
             Log.i(TAG, "Found no location permissions");
@@ -248,14 +249,25 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_progress_bar, menu);
+        mProgressBar = menu.getItem(0);
         return true;
     }
 
     public void addProcess() {
-        numProcesses++;
+        // If we are adding a process and the bar is currently invisible, make it visibile
+        if (mProgressBar != null && !mProgressBar.isVisible()) {
+            mProgressBar.setVisible(true);
+        }
+        mNumProcesses++;
     }
 
     public void subtractProcess() {
-        numProcesses--;
+        mNumProcesses--;
+        // If we are subtracting the last process, make the bar visible
+        // No problem in null state because the default is invisibility
+        if (mProgressBar != null && mNumProcesses == 0) {
+            mProgressBar.setVisible(false);
+        }
     }
 }
+
