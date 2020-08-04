@@ -33,9 +33,6 @@
     <string name="compose_camera_button">Camera</string>
     <string name="compose_gallery_button">Gallery</string>
 
-    <!-- Text for progress bar-->
-    <string name="menu_progress_bar">Loading</string>
-
     <!-- Text for no permissions fragment -->
     <string name="no_permissions_text">ProtestTracker requires Location permissions to function. Please click the button below to enable these permissions.</string>
     <string name="no_permissions_button">Request Permissions</string>

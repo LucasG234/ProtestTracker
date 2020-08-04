@@ -3,8 +3,8 @@ package com.lucasg234.protesttracker.mainactivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private Fragment mCurrentFragment;
     private boolean mNavigationEnabled;
     private int mNumProcesses;
-    private MenuItem mProgressBar;
 
     private FeedFragment mFeed;
     private ComposeFragment mCompose;
@@ -245,18 +244,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_progress_bar, menu);
-        mProgressBar = menu.getItem(0);
-        return true;
-    }
-
     public void addProcess() {
         // If we are adding a process and the bar is currently invisible, make it visibile
-        if (mProgressBar != null && !mProgressBar.isVisible()) {
-            mProgressBar.setVisible(true);
+        if (mBinding.mainProgressBar.getVisibility() != View.VISIBLE) {
+            mBinding.mainProgressBar.setVisibility(View.VISIBLE);
         }
         mNumProcesses++;
     }
@@ -265,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
         mNumProcesses--;
         // If we are subtracting the last process, make the bar visible
         // No problem in null state because the default is invisibility
-        if (mProgressBar != null && mNumProcesses == 0) {
-            mProgressBar.setVisible(false);
+        if (mNumProcesses == 0) {
+            mBinding.mainProgressBar.setVisibility(View.INVISIBLE);
         }
     }
 }
