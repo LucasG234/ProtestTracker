@@ -95,24 +95,22 @@
         app:layout_constraintTop_toBottomOf="@+id/detailLocation"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
+    <ImageView
         android:id="@+id/detailFacebookShareButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/facebook_share_button"
-        android:textAllCaps="false"
+        android:layout_width="@dimen/profile_icon_size"
+        android:layout_height="@dimen/profile_icon_size"
+        android:src="@drawable/com_facebook_button_icon"
+        android:tint="@color/com_facebook_blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/detailTwitterShareButton"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <ImageView
         android:id="@+id/detailTwitterShareButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/twitter_share_button"
-        android:textAllCaps="false"
+        android:layout_width="@dimen/profile_icon_size"
+        android:layout_height="@dimen/profile_icon_size"
+        android:src="@drawable/twitter_logo_24"
+        android:tint="@color/colorTwitterBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detailFacebookShareButton" />
