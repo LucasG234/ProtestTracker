@@ -15,8 +15,19 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:titleTextColor="@android:color/white">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/mainToolbarText"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="@+id/detailIgnore"
+            app:layout_constraintStart_toStartOf="@+id/detailLike"
+            app:layout_constraintTop_toBottomOf="@+id/detailText"
+            tools:text="Lucas Gates" />
 
         <ProgressBar
             android:id="@+id/mainProgressBar"

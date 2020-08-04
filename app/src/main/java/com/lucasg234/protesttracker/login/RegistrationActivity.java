@@ -65,7 +65,7 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.error_credentials_empty, Toast.LENGTH_SHORT).show();
         } else if (password.contains("\\s")) {
             Toast.makeText(this, R.string.error_password_whitespace, Toast.LENGTH_SHORT).show();
-        } else if (password.length() <= PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
+        } else if (password.length() < PASSWORD_MIN_LENGTH || password.length() > PASSWORD_MAX_LENGTH) {
             String lengthError = String.format(getString(R.string.error_password_length), PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH);
             Toast.makeText(this, lengthError, Toast.LENGTH_SHORT).show();
         } else {

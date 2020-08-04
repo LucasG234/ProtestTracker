@@ -55,8 +55,14 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
-        setSupportActionBar(mBinding.mainToolbar);
         mNumProcesses = 0;
+
+        setSupportActionBar(mBinding.mainToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        User currentUser = (User) User.getCurrentUser();
+
+        mBinding.mainToolbarText.setText(currentUser.getUsername());
 
         if (!LocationPermissions.checkLocationPermission(this)) {
             Log.i(TAG, "Found no location permissions");
