@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding mBinding;
     private Fragment mCurrentFragment;
     private boolean mNavigationEnabled;
+    private int numProcesses;
 
     private FeedFragment mFeed;
     private ComposeFragment mCompose;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         mBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
 
+        numProcesses = 0;
 
         if (!LocationPermissions.checkLocationPermission(this)) {
             Log.i(TAG, "Found no location permissions");
@@ -233,5 +235,13 @@ public class MainActivity extends AppCompatActivity {
                 mMap.ignorePost(post);
             }
         });
+    }
+
+    public void addProcess() {
+        numProcesses++;
+    }
+
+    public void subtractProcess() {
+        numProcesses--;
     }
 }
