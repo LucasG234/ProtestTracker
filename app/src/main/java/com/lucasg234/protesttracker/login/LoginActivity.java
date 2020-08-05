@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        setSupportActionBar(mBinding.loginToolbar);
 
         mBinding.loginSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override

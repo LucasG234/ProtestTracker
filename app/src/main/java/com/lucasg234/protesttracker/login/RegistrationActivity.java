@@ -33,6 +33,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         mBinding = ActivityRegistrationBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        setSupportActionBar(mBinding.registrationToolbar);
 
         mBinding.registrationSubmitButton.setOnClickListener(new View.OnClickListener() {
             @Override
