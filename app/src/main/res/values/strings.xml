@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">ProtestTracker</string>
+    <string name="app_name">Protest Tracker</string>
 
     <!-- Text for login, registration, logout -->
     <string name="username_hint">Username</string>
     <string name="password_hint">Password</string>
     <string name="password_confirm_hint">Confirm Password</string>
     <string name="login_button_resting">Login</string>
-    <string name="login_button_in_progress">Logging in...</string>
+    <string name="login_button_in_progress">Logging in…</string>
     <string name="register_button_resting">Register</string>
-    <string name="register_button_in_progress">Registering...</string>
+    <string name="register_button_in_progress">Registering…</string>
     <string name="login_to_registration_button">No account? Register here.</string>
     <string name="registration_to_login_button">Have an account? Login here.</string>
     <string name="login_completed">Successfully logged in!</string>
@@ -34,7 +34,7 @@
     <string name="compose_gallery_button">Gallery</string>
 
     <!-- Text for no permissions fragment -->
-    <string name="no_permissions_text">ProtestTracker requires Location permissions to function. Please click the button below to enable these permissions.</string>
+    <string name="no_permissions_text">Protest Tracker requires Location permissions to function. Please click the button below to enable these permissions.</string>
     <string name="no_permissions_button">Request Permissions</string>
 
     <!-- Transition names -->
