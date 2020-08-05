@@ -34,7 +34,7 @@
     <string name="compose_gallery_button">Gallery</string>
 
     <!-- Text for no permissions fragment -->
-    <string name="no_permissions_text">Protest Tracker requires Location permissions to function. Please click the button below to enable these permissions.</string>
+    <string name="no_permissions_text">Protest Tracker requires location permissions.</string>
     <string name="no_permissions_button">Request Permissions</string>
 
     <!-- Transition names -->
