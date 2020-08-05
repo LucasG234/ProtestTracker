@@ -24,6 +24,7 @@ import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
 import com.lucasg234.protesttracker.permissions.LocationPermissions;
 import com.lucasg234.protesttracker.util.DateUtils;
+import com.lucasg234.protesttracker.util.ImageUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
 import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.FunctionCallback;
@@ -167,9 +168,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             if (post.getImage() != null) {
                 mBinding.postImage.setVisibility(View.VISIBLE);
                 Log.i(TAG, post.getImage().getUrl());
+                mParent.addProcess();
                 Glide.with(mParent)
                         .load(post.getImage().getUrl())
-                        //.centerCrop()
+                        .addListener(new ImageUtils.ImageRequestListener(mParent))
                         .into(mBinding.postImage);
             } else {
                 mBinding.postImage.setVisibility(View.GONE);

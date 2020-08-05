@@ -14,10 +14,16 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.lucasg234.protesttracker.R;
+import com.lucasg234.protesttracker.mainactivity.MainActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -173,4 +179,27 @@ public class ImageUtils {
         return rotatedBitmap;
     }
 
+    /**
+     * Glide listener which will notify the MainActivity that the process has ended
+     */
+    public static class ImageRequestListener implements RequestListener {
+
+        private MainActivity mParent;
+
+        public ImageRequestListener(MainActivity parent) {
+            this.mParent = parent;
+        }
+
+        @Override
+        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target target, boolean isFirstResource) {
+            mParent.subtractProcess();
+            return false;
+        }
+
+        @Override
+        public boolean onResourceReady(Object resource, Object model, Target target, DataSource dataSource, boolean isFirstResource) {
+            mParent.subtractProcess();
+            return false;
+        }
+    }
 }
