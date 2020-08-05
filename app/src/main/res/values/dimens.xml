@@ -8,4 +8,8 @@
     <dimen name="large_margin">32dp</dimen>
     <dimen name="match_constraint">0dp</dimen>
     <dimen name="standard_image_height">300dp</dimen>
+
+    <!-- Values for the launcher icon -->
+    <dimen name="launcher_icon_size">108dp</dimen>
+    <integer name="launcher_icon_viewport">108</integer>
 </resources>
