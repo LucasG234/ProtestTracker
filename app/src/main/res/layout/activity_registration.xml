@@ -6,80 +6,84 @@
     android:layout_height="match_parent"
     tools:context=".login.RegistrationActivity">
 
-    <EditText
-        android:id="@+id/registrationUsernameText"
+    <LinearLayout
+        android:id="@+id/registrationHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:ems="10"
-        android:hint="@string/username_hint"
-        android:inputType="text"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/registrationPasswordTextHolder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationUsernameText"
-        app:passwordToggleEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/registrationPasswordText"
+        <EditText
+            android:id="@+id/registrationUsernameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_margin"
             android:ems="10"
-            android:hint="@string/password_hint"
-            android:inputType="textPassword" />
+            android:hint="@string/username_hint"
+            android:inputType="text" />
 
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/registrationPasswordConfirmTextHolder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationPasswordTextHolder"
-        app:passwordToggleEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/registrationPasswordConfirmText"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/registrationPasswordTextHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="@string/password_confirm_hint"
-            android:inputType="textPassword" />
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            app:passwordToggleEnabled="true">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/registrationPasswordText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/password_hint"
+                android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/registrationSubmitButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/register_button_resting"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationPasswordConfirmTextHolder" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/registrationToLoginButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/registration_to_login_button"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationSubmitButton" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/registrationPasswordConfirmTextHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/registrationPasswordConfirmText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/password_confirm_hint"
+                android:inputType="textPassword" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/registrationSubmitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/register_button_resting"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/registrationToLoginButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/registration_to_login_button"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

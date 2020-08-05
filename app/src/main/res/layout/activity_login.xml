@@ -6,70 +6,77 @@
     android:layout_height="match_parent"
     tools:context=".login.LoginActivity">
 
-    <EditText
-        android:id="@+id/loginUsernameText"
+    <LinearLayout
+        android:id="@+id/loginHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:ems="10"
-        android:hint="@string/username_hint"
-        android:inputType="text"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/loginPasswordTextHolder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginUsernameText"
-        app:passwordToggleEnabled="true">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/loginPasswordText"
+        <EditText
+            android:id="@+id/loginUsernameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_margin"
             android:ems="10"
-            android:hint="@string/password_hint"
-            android:inputType="textPassword" />
+            android:hint="@string/username_hint"
+            android:inputType="text" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/loginPasswordTextHolder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            app:passwordToggleEnabled="true">
 
-    <Button
-        android:id="@+id/loginSubmitButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/login_button_resting"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginPasswordTextHolder" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/loginPasswordText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/password_hint"
+                android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/loginToRegistrationButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/login_to_registration_button"
-        android:textAllCaps="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginSubmitButton" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/loginFacebookButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/standard_margin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginToRegistrationButton" />
+        <Button
+            android:id="@+id/loginSubmitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/login_button_resting"
+            android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/loginToRegistrationButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            android:backgroundTint="@color/colorAccent"
+            android:text="@string/login_to_registration_button"
+            android:textAllCaps="false" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/loginFacebookButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_marginBottom="@dimen/standard_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/loginToRegistrationButton" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
