@@ -131,6 +131,16 @@ public class ComposeFragment extends Fragment {
         if (requestCode == PermissionsHandler.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             savePost();
+        } else if (requestCode == PermissionsHandler.REQUEST_CODE_STORAGE_PERMISSIONS) {
+            // If storage permissions were just granted, save the image to external storage
+            if (permissions.length >= 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
+            }
+            // No matter the outcome, delete the current internal image
+            if (mInternalImageStorage != null) {
+                mInternalImageStorage.delete();
+            }
+            mInternalImageStorage = null;
         }
     }
 
@@ -230,13 +240,19 @@ public class ComposeFragment extends Fragment {
                 mBinding.composeEditText.setText("");
                 mBinding.composeImagePreview.setImageBitmap(null);
 
-                ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
+                if (PermissionsHandler.checkStoragePermissions(mParent)) {
+                    // If storage permissions are given, save externally and delete the internal version
+                    ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
 
-                // Delete the take image from internal storage if there is one
-                if (mInternalImageStorage != null) {
-                    mInternalImageStorage.delete();
+                    if (mInternalImageStorage != null) {
+                        mInternalImageStorage.delete();
+                    }
+                    mInternalImageStorage = null;
+                } else {
+                    // If no permissions are given, request them and handle internal storage on permissions result
+                    PermissionsHandler.requestStoragePermissions(ComposeFragment.this);
                 }
-                mInternalImageStorage = null;
+
             }
         });
     }

@@ -20,8 +20,8 @@ import com.lucasg234.protesttracker.databinding.ActivityMainBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
-import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.permissions.NoPermissionsFragment;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.FunctionCallback;
 import com.parse.ParseException;
@@ -189,7 +189,8 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (PermissionsHandler.checkLocationPermission(this)) {
+        if (requestCode == PermissionsHandler.REQUEST_CODE_LOCATION_PERMISSIONS &&
+                PermissionsHandler.checkLocationPermission(this)) {
             enableFragmentNavigation();
         }
     }

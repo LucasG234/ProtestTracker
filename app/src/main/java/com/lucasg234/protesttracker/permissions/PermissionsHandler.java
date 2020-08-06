@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
  */
 public class PermissionsHandler {
     public static final int REQUEST_CODE_LOCATION_PERMISSIONS = 12;
+    public static final int REQUEST_CODE_STORAGE_PERMISSIONS = 13;
 
     private static final String TAG = "PermissionsHandler";
 
@@ -23,6 +24,16 @@ public class PermissionsHandler {
     // Asks the user to give permission for location services if not already enabled
     public static void requestLocationPermission(Fragment parent) {
         requestPermissions(parent, REQUEST_CODE_LOCATION_PERMISSIONS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+    }
+
+    // Checks whether external storage permissions are available
+    public static boolean checkStoragePermissions(Context context) {
+        return checkPermissions(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    // Asks the user to give permission for external storage services if not already enabled
+    public static void requestStoragePermissions(Fragment parent) {
+        requestPermissions(parent, REQUEST_CODE_STORAGE_PERMISSIONS, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     private static boolean checkPermissions(Context context, String... permissions) {
