@@ -44,6 +44,9 @@ public class ComposeFragment extends Fragment {
     private MainActivity mParent;
     private File mInternalImageStorage;
     private boolean mSaving;
+    // Stores whether mInternalImageStorage is from the gallery or camera
+    // if mInternalImageStorage == null, value is undefined
+    private boolean mInternalImageFromGallery;
 
     public ComposeFragment() {
         // Required empty public constructor
@@ -107,10 +110,12 @@ public class ComposeFragment extends Fragment {
         switch (requestCode) {
             case ImageUtils.ACTIVITY_REQUEST_CODE_CAMERA:
                 Log.i(TAG, "received photo from camera");
+                mInternalImageFromGallery = false;
                 takenImage = ImageUtils.decodeInternalImage(Uri.fromFile(mInternalImageStorage));
                 break;
             case ImageUtils.ACTIVITY_REQUEST_CODE_GALLERY:
                 Log.i(TAG, "received photo from gallery");
+                mInternalImageFromGallery = true;
                 Uri photoUri = data.getData();
                 takenImage = ImageUtils.decodeExternalImage(mParent.getContentResolver(), photoUri);
                 ImageUtils.saveImageToInternalStorage(takenImage, mInternalImageStorage);
@@ -137,10 +142,7 @@ public class ComposeFragment extends Fragment {
                 ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
             }
             // No matter the outcome, delete the current internal image
-            if (mInternalImageStorage != null) {
-                mInternalImageStorage.delete();
-            }
-            mInternalImageStorage = null;
+            deleteLocalImage();
         }
     }
 
@@ -240,21 +242,32 @@ public class ComposeFragment extends Fragment {
                 mBinding.composeEditText.setText("");
                 mBinding.composeImagePreview.setImageBitmap(null);
 
-                if (PermissionsHandler.checkStoragePermissions(mParent)) {
-                    // If storage permissions are given, save externally and delete the internal version
-                    ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
-
-                    if (mInternalImageStorage != null) {
-                        mInternalImageStorage.delete();
-                    }
-                    mInternalImageStorage = null;
-                } else {
-                    // If no permissions are given, request them and handle internal storage on permissions result
-                    PermissionsHandler.requestStoragePermissions(ComposeFragment.this);
-                }
-
+                storeImageExternally();
             }
         });
+    }
+
+    private void storeImageExternally() {
+        // If image is from the gallery, just delete the local copy
+        if (mInternalImageFromGallery) {
+            deleteLocalImage();
+        } else if (PermissionsHandler.checkStoragePermissions(mParent)) {
+            // If storage permissions are given and image is from camera
+            // Save externally and delete the internal version
+            ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
+            deleteLocalImage();
+        } else {
+            // If no permissions are given and image is from camera
+            // Request permissions and handle internal storage on permissions result
+            PermissionsHandler.requestStoragePermissions(ComposeFragment.this);
+        }
+    }
+
+    private void deleteLocalImage() {
+        if (mInternalImageStorage != null) {
+            mInternalImageStorage.delete();
+        }
+        mInternalImageStorage = null;
     }
 
     // Ensure no floating storage left on fragment deletion
