@@ -26,6 +26,7 @@ public class Post extends ParseObject implements Comparable<Post> {
     public static final String KEY_LIKED_BY = "likedBy";
     public static final String KEY_IGNORED_BY = "ignoredBy";
     public static final String KEY_FUNCTION_USER_LIKES = "getUserLikes";
+    public static final String KEY_HIGHLY_LIKED = "highlyLiked";
 
     // Additional constants
     public static final int QUERY_LIMIT = 20;
@@ -101,6 +102,11 @@ public class Post extends ParseObject implements Comparable<Post> {
 
     public void setLocation(ParseGeoPoint location) {
         put(KEY_LOCATION, location);
+    }
+
+    // No method to set whether a post is highly liked: This is done server side
+    public boolean getHighlyLiked() {
+        return getBoolean(KEY_HIGHLY_LIKED);
     }
 
     // Return the entire relations to allow custom queries
