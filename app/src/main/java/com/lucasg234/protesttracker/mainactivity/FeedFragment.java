@@ -133,6 +133,7 @@ public class FeedFragment extends Fragment {
 
     // Removes all posts within the FeedAdapter and replaces them with the result of a new query
     private void queryClearPosts() {
+        mParent.resetProcesses();
         mParent.addProcess();
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);

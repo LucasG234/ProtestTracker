@@ -265,9 +265,14 @@ public class MainActivity extends AppCompatActivity {
         mNumProcesses--;
         // If we are subtracting the last process, make the bar visible
         // No problem in null state because the default is invisibility
-        if (mNumProcesses == 0) {
+        if (mNumProcesses <= 0) {
+            mNumProcesses = 0;
             mBinding.mainProgressBar.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public void resetProcesses() {
+        mNumProcesses = 0;
     }
 
     public ImageView getToolbarProfilePicture() {

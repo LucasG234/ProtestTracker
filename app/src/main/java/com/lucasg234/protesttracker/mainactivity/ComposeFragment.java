@@ -193,10 +193,6 @@ public class ComposeFragment extends Fragment {
 
     // Constructs Post object and saves it to the Parse server
     private void savePost() {
-        // Mark that the fragment is currently saving a post
-        mSaving = true;
-        mParent.addProcess();
-
         Post.Builder postBuilder = new Post.Builder();
 
         // Ensure location permissions before attempting to make post
@@ -225,6 +221,10 @@ public class ComposeFragment extends Fragment {
             postBuilder.setImage(new ParseFile(mInternalImageStorage));
         }
 
+
+        // Mark that the fragment is currently saving a post only after location confirmed
+        mSaving = true;
+        mParent.addProcess();
         postBuilder.createModel().saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
