@@ -214,9 +214,6 @@ public class MainActivity extends AppCompatActivity {
                     likedBy.add((User) User.getCurrentUser());
                 }
 
-                mFeed.changePostLiked(post);
-                mMap.changePostLiked(post);
-
                 post.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
@@ -224,6 +221,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.e(TAG, "Error saving change to like status", e);
                             Toast.makeText(MainActivity.this, R.string.error_liking, Toast.LENGTH_SHORT).show();
                         }
+
+                        mFeed.changePostLiked(post);
+                        mMap.changePostLiked(post);
                     }
                 });
             }

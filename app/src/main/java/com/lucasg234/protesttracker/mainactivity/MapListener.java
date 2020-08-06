@@ -46,6 +46,7 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
     private Date lastQuery;
     private float mLikedHue;
     private float mUnlikedHue;
+    private float mHighlyLikedHue;
 
     public MapListener(MapFragment parent, GoogleMap map) {
         this.mFragment = parent;
@@ -198,6 +199,10 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
         int unlikedColor = ContextCompat.getColor(mParent, R.color.colorComplementary);
         Color.RGBToHSV(Color.red(unlikedColor), Color.green(unlikedColor), Color.blue(unlikedColor), hsvHolder);
         mUnlikedHue = hsvHolder[0];
+
+        int highlyLikedColor = ContextCompat.getColor(mParent, R.color.colorFadedGold);
+        Color.RGBToHSV(Color.red(highlyLikedColor), Color.green(highlyLikedColor), Color.blue(highlyLikedColor), hsvHolder);
+        mHighlyLikedHue = hsvHolder[0];
     }
 
     // Adds markers to map for each new post
@@ -234,6 +239,9 @@ public class MapListener implements GoogleMap.OnCameraMoveListener, GoogleMap.On
 
                 if (liked) {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(mLikedHue));
+                } else if (post.getHighlyLiked()) {
+                    // Highly liked color only shows when the post is not also liked by the current user
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(mHighlyLikedHue));
                 } else {
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(mUnlikedHue));
                 }
