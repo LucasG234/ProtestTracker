@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.lucasg234.protesttracker.R;
-import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.parse.ParseGeoPoint;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class LocationUtils {
     // Returns the last known location of the user
     public static Location getCurrentLocation(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (!LocationPermissions.checkLocationPermission(context)) {
+        if (!PermissionsHandler.checkLocationPermission(context)) {
             Log.e(TAG, "No location permissions");
             return null;
         }

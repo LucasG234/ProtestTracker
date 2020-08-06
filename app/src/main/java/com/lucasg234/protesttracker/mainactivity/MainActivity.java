@@ -20,7 +20,7 @@ import com.lucasg234.protesttracker.databinding.ActivityMainBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
-import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.permissions.NoPermissionsFragment;
 import com.lucasg234.protesttracker.util.ParseUtils;
 import com.parse.FunctionCallback;
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         mBinding.mainToolbarText.setText(currentUser.getUsername());
         ParseUtils.loadProfilePicture(currentUser, mBinding.mainToolbarProfilePicture, true);
 
-        if (!LocationPermissions.checkLocationPermission(this)) {
+        if (!PermissionsHandler.checkLocationPermission(this)) {
             Log.i(TAG, "Found no location permissions");
             mNavigationEnabled = false;
             disableFragmentNavigation();
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        boolean locationPermissions = LocationPermissions.checkLocationPermission(this);
+        boolean locationPermissions = PermissionsHandler.checkLocationPermission(this);
 
         if (mNavigationEnabled && !locationPermissions) {
             disableFragmentNavigation();
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (LocationPermissions.checkLocationPermission(this)) {
+        if (PermissionsHandler.checkLocationPermission(this)) {
             enableFragmentNavigation();
         }
     }

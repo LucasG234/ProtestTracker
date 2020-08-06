@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentMapBinding;
 import com.lucasg234.protesttracker.models.Post;
-import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.util.LocationUtils;
 
 /**
@@ -97,8 +97,8 @@ public class MapFragment extends Fragment {
 
     // Configures the GoogleMap
     private void loadMap(GoogleMap map) {
-        if (!LocationPermissions.checkLocationPermission(mParent)) {
-            LocationPermissions.requestLocationPermission(this);
+        if (!PermissionsHandler.checkLocationPermission(mParent)) {
+            PermissionsHandler.requestLocationPermission(this);
             return;
         }
         // Map follows current user's location
@@ -137,8 +137,8 @@ public class MapFragment extends Fragment {
         locationRequest.setFastestInterval(FASTEST_INTERVAL_MS);
         locationRequest.setSmallestDisplacement(MINIMUM_DISPLACEMENT_METERS);
 
-        if (!LocationPermissions.checkLocationPermission(mParent)) {
-            LocationPermissions.requestLocationPermission(this);
+        if (!PermissionsHandler.checkLocationPermission(mParent)) {
+            PermissionsHandler.requestLocationPermission(this);
             return;
         }
         // Call onLocationChange method when new Location is found
@@ -178,7 +178,7 @@ public class MapFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // If permission was just granted to allow location services, then restart view loading
-        if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+        if (requestCode == PermissionsHandler.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             getFragmentManager()
                     .beginTransaction()

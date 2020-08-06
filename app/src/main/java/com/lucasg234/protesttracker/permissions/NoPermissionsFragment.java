@@ -53,7 +53,7 @@ public class NoPermissionsFragment extends Fragment {
         mBinding.permissionsRequestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LocationPermissions.requestLocationPermission(NoPermissionsFragment.this);
+                PermissionsHandler.requestLocationPermission(NoPermissionsFragment.this);
             }
         });
     }

@@ -22,7 +22,7 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentFeedBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
-import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -80,8 +80,8 @@ public class FeedFragment extends Fragment {
 
         // Ask for location permissions before loading posts into the feed
         // If they are not given, posts will load without relative positions
-        if (!LocationPermissions.checkLocationPermission(mParent)) {
-            LocationPermissions.requestLocationPermission(this);
+        if (!PermissionsHandler.checkLocationPermission(mParent)) {
+            PermissionsHandler.requestLocationPermission(this);
         }
 
         // Set up spinner for distance selection
@@ -223,7 +223,7 @@ public class FeedFragment extends Fragment {
 
         // If permission was just granted to allow location services, then notify the adapter
         // This will rebind the currently viewed posts with the location information
-        if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+        if (requestCode == PermissionsHandler.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             mAdapter.notifyDataSetChanged();
         }

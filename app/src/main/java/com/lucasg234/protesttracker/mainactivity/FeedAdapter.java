@@ -22,7 +22,7 @@ import com.lucasg234.protesttracker.databinding.ItemFeedPostBinding;
 import com.lucasg234.protesttracker.detailactivity.PostDetailActivity;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
-import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.util.DateUtils;
 import com.lucasg234.protesttracker.util.ImageUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
@@ -153,7 +153,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             String relativeCreationTime = DateUtils.dateToRelative(post.getCreatedAt());
             mBinding.postCreatedAt.setText(relativeCreationTime);
 
-            if (LocationPermissions.checkLocationPermission(mParent)) {
+            if (PermissionsHandler.checkLocationPermission(mParent)) {
                 String relativeLocation = LocationUtils.toRelativeLocation(mParent, post.getLocation());
                 if (relativeLocation == null) {
                     mBinding.postLocation.setText(R.string.error_location);

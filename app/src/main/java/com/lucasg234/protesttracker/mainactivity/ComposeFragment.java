@@ -20,7 +20,7 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.databinding.FragmentComposeBinding;
 import com.lucasg234.protesttracker.models.Post;
 import com.lucasg234.protesttracker.models.User;
-import com.lucasg234.protesttracker.permissions.LocationPermissions;
+import com.lucasg234.protesttracker.permissions.PermissionsHandler;
 import com.lucasg234.protesttracker.util.ImageUtils;
 import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.ParseException;
@@ -128,7 +128,7 @@ public class ComposeFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // If permission was just granted to allow location services, then restart saving the image again
-        if (requestCode == LocationPermissions.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
+        if (requestCode == PermissionsHandler.REQUEST_CODE_LOCATION_PERMISSIONS && permissions.length >= 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
             savePost();
         }
@@ -188,9 +188,9 @@ public class ComposeFragment extends Fragment {
         Post.Builder postBuilder = new Post.Builder();
 
         // Ensure location permissions before attempting to make post
-        if (!LocationPermissions.checkLocationPermission(mParent)) {
+        if (!PermissionsHandler.checkLocationPermission(mParent)) {
             Log.i(TAG, "Cancelling post save to ask for permissions");
-            LocationPermissions.requestLocationPermission(this);
+            PermissionsHandler.requestLocationPermission(this);
             return;
         }
 
@@ -229,7 +229,7 @@ public class ComposeFragment extends Fragment {
                 Log.i(TAG, "Saved post successfully");
                 mBinding.composeEditText.setText("");
                 mBinding.composeImagePreview.setImageBitmap(null);
-                
+
                 ImageUtils.saveImageToExternalStorage(mParent, mInternalImageStorage);
 
                 // Delete the take image from internal storage if there is one
