@@ -1,6 +1,7 @@
 package com.lucasg234.protesttracker.util;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,7 @@ import com.lucasg234.protesttracker.R;
 import com.lucasg234.protesttracker.mainactivity.MainActivity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -111,6 +113,43 @@ public class ImageUtils {
             try {
                 fileOutputStream.close();
             } catch (IOException e) {
+                Log.e(TAG, "Error closing FileOutputStream", e);
+            }
+        }
+    }
+
+    // Save an image in internal storage to the public Gallery
+    public static void saveImageToExternalStorage(Context context, File internalLocation) {
+        File externalDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File externalLocation = new File(externalDir, internalLocation.getName());
+
+        FileOutputStream fileOutputStream = null;
+        FileInputStream fileInputStream = null;
+
+        try {
+            // Copy the contents from internalLocation to externalLocation
+            fileOutputStream = new FileOutputStream(externalLocation);
+            fileInputStream = new FileInputStream(internalLocation);
+            byte[] buffer = new byte[1024];
+
+            int length;
+            while ((length = fileInputStream.read(buffer)) > 0){
+                fileOutputStream.write(buffer, 0, length);
+            }
+
+            // Inform the media scanner about the new image if the operation was successful
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            Uri contentUri = Uri.fromFile(externalLocation);
+            mediaScanIntent.setData(contentUri);
+            context.sendBroadcast(mediaScanIntent);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error writing image to external storage", e);
+        } finally {
+            try {
+                fileOutputStream.close();
+                fileInputStream.close();
+            } catch (Exception e) {
                 Log.e(TAG, "Error closing FileOutputStream", e);
             }
         }
