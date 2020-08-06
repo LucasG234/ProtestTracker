@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -180,7 +181,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
             // Load profile image with center crop
             ParseUtils.loadProfilePicture(post.getAuthor(), mBinding.postProfilePicture, true);
 
-
             // Set a listener for single and double clicks
             mBinding.postTouchHolder.setOnTouchListener(createItemTouchListener(post, this));
 
@@ -199,7 +199,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
                 }
             });
 
-            // Liked state defaults to false but may switch after it is checked
+            // Only check once whether the post is highly liked, because this cannot be changed by the user
+            if (post.getHighlyLiked()) {
+                mBinding.postContentHolder.setBackgroundColor(ContextCompat.getColor(mParent, R.color.colorFadedGold));
+            } else {
+                mBinding.postContentHolder.setBackgroundColor(ContextCompat.getColor(mParent, R.color.colorNone));
+            }
+
+            // Liked by current user: defaults to false but may switch after it is checked in the background
             setLikeVisuals();
             initialLikeCheck(post);
         }
