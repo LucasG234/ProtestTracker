@@ -253,6 +253,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void saveAddPost(final Post post) {
+        addProcess();
+        post.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                mCompose.postFinishedSaving(e);
+            }
+        });
+    }
+
     public void addProcess() {
         // If we are adding a process and the bar is currently invisible, make it visibile
         if (mBinding.mainProgressBar.getVisibility() != View.VISIBLE) {

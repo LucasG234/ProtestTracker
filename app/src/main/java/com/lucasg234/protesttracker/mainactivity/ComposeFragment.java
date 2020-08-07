@@ -26,7 +26,6 @@ import com.lucasg234.protesttracker.util.LocationUtils;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.IOException;
@@ -225,26 +224,26 @@ public class ComposeFragment extends Fragment {
         // Mark that the fragment is currently saving a post only after location confirmed
         mSaving = true;
         mParent.addProcess();
-        postBuilder.createModel().saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                // Mark that saving is complete, even if there was an error
-                mSaving = false;
-                mParent.subtractProcess();
+        mParent.saveAddPost(postBuilder.createModel());
+    }
 
-                if (e != null) {
-                    Log.e(TAG, "Error saving post", e);
-                    Toast.makeText(mParent, R.string.error_save, Toast.LENGTH_SHORT).show();
-                    return;
-                }
+    // Public method which is called by MainActivity after a post is finished saving
+    public void postFinishedSaving(ParseException e) {
+        // Mark that saving is complete, even if there was an error
+        mSaving = false;
+        mParent.subtractProcess();
 
-                Log.i(TAG, "Saved post successfully");
-                mBinding.composeEditText.setText("");
-                mBinding.composeImagePreview.setImageBitmap(null);
+        if (e != null) {
+            Log.e(TAG, "Error saving post", e);
+            Toast.makeText(mParent, R.string.error_save, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                storeImageExternally();
-            }
-        });
+        Log.i(TAG, "Saved post successfully");
+        mBinding.composeEditText.setText("");
+        mBinding.composeImagePreview.setImageBitmap(null);
+
+        storeImageExternally();
     }
 
     private void storeImageExternally() {
@@ -279,4 +278,5 @@ public class ComposeFragment extends Fragment {
         }
         super.onDestroy();
     }
+
 }
