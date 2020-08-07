@@ -258,7 +258,9 @@ public class MainActivity extends AppCompatActivity {
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
+                subtractProcess();
                 mCompose.postFinishedSaving(e);
+                mFeed.addNewlyCreatedPost(post);
             }
         });
     }

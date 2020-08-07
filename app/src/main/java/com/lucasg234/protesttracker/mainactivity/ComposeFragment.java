@@ -243,7 +243,9 @@ public class ComposeFragment extends Fragment {
         mBinding.composeEditText.setText("");
         mBinding.composeImagePreview.setImageBitmap(null);
 
-        storeImageExternally();
+        if (mInternalImageStorage != null) {
+            storeImageExternally();
+        }
     }
 
     private void storeImageExternally() {

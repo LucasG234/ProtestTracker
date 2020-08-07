@@ -78,6 +78,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder
         notifyDataSetChanged();
     }
 
+    // Helper method to add one new post to the top of the RecyclerView
+    public void addToBeginning(Post post) {
+        mPosts.add(0, post);
+        notifyItemInserted(0);
+        mParentRecyclerView.scrollToPosition(0);
+    }
+
     // Helper method to clear the RecyclerView
     public void clear() {
         mPosts.clear();

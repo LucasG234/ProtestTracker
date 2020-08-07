@@ -218,6 +218,10 @@ public class FeedFragment extends Fragment {
         mAdapter.switchPostLiked(post);
     }
 
+    public void addNewlyCreatedPost(Post post) {
+        mAdapter.addToBeginning(post);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
